@@ -62,6 +62,22 @@
             background: #94a3b8;
         }
     </style>
+<style>
+#tab-admin{font-feature-settings:"kern";}
+#tab-admin .adm-hero{background:radial-gradient(900px 260px at 85% -20%,rgba(34,211,238,.28),transparent 60%),radial-gradient(600px 240px at 0% 120%,rgba(99,102,241,.30),transparent 60%),linear-gradient(135deg,#0b1220,#111c33);border:1px solid rgba(148,163,184,.18)}
+#tab-admin .adm-hero h2{font-size:1.65rem;line-height:1.3;letter-spacing:-.01em}
+#tab-admin .adm-hero p{color:#cbd5e1!important;font-size:.875rem!important}
+#tab-admin .adm-nav{background:#fff;border:1px solid #e2e8f0;border-radius:1.1rem;padding:.4rem;box-shadow:0 4px 18px -8px rgba(15,23,42,.12);gap:.25rem;position:sticky;top:.5rem;z-index:20}
+#tab-admin .adm-nav .admin-sub-btn{padding:.65rem 1.1rem;font-size:.9rem;border-radius:.8rem}
+#tab-admin .text-xs{font-size:.8125rem;line-height:1.25rem}
+#tab-admin .text-slate-400{color:#64748b}#tab-admin .text-slate-500{color:#475569}#tab-admin .text-slate-600{color:#334155}
+#tab-admin .text-\[10px\]{font-size:.72rem}
+.mod-card{position:relative;text-align:left;padding:1.1rem;border-radius:1.25rem;background:#fff;border:1px solid #e2e8f0;transition:all .2s;box-shadow:0 1px 2px rgba(15,23,42,.04)}
+.mod-card:hover{transform:translateY(-3px);box-shadow:0 14px 28px -14px rgba(15,23,42,.28)}
+.mod-flow{display:flex;flex-wrap:wrap;align-items:center;gap:.5rem}
+.mod-flow .st{background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.16);color:#f1f5f9;padding:.35rem .8rem;border-radius:999px;font-size:.8125rem;font-weight:600}
+.mod-flow .ar{color:#22d3ee}
+</style>
 </head>
 <body class="bg-slate-50 text-slate-800 antialiased selection:bg-aiBlue-500 selection:text-white">
 
@@ -140,7 +156,8 @@
                         <div class="bg-white/10 backdrop-blur-xl border border-white/20 rounded-2xl p-6 shadow-2xl space-y-6">
                             <h3 class="text-lg font-bold text-white flex items-center justify-between">
                                 <span><i class="fa-solid fa-chart-pie text-cyan-400 mr-2"></i> สถานการณ์สุขภาพเดือนนี้</span>
-                                <span class="text-xs bg-emerald-500/20 text-emerald-300 px-2.5 py-1 rounded-full border border-emerald-500/30">ออนไลน์ อัปเดตเรียลไทม์</span>
+                                <span id="db-status" class="text-xs bg-slate-500/20 text-slate-300 px-3 py-1.5 rounded-full border border-slate-500/30 flex items-center gap-1.5"><i class="fa-solid fa-database"></i> ฐานข้อมูล: กำลังเชื่อมต่อ</span>
+                    <span class="text-xs bg-emerald-500/20 text-emerald-300 px-2.5 py-1 rounded-full border border-emerald-500/30">ออนไลน์ อัปเดตเรียลไทม์</span>
                             </h3>
                             <div class="grid grid-cols-2 gap-4">
                                 <div class="bg-slate-900/40 p-4 rounded-xl border border-white/10">
@@ -336,7 +353,7 @@
             </div>
 
             <!-- Clinic Grid -->
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
                 <!-- Clinic 1 -->
                 <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200 space-y-4 ai-card-glow">
                     <div class="w-14 h-14 rounded-2xl bg-aiBlue-50 text-aiBlue-600 flex items-center justify-center text-2xl">
@@ -373,6 +390,17 @@
                         <button onclick="bookQueue('คลินิกผู้สูงอายุ & กายภาพ')" class="text-aiBlue-600 font-semibold hover:underline">จองคิวออนไลน์</button>
                     </div>
                 </div>
+                <!-- Clinic 4: LTC system (opens in new tab) -->
+                <a href="https://nayor05588.github.io/ltc-nayor/" target="_blank" rel="noopener noreferrer" class="block bg-white p-6 rounded-2xl shadow-sm border border-slate-200 space-y-4 ai-card-glow cursor-pointer hover:border-aiBlue-500 transition">
+                    <div class="w-14 h-14 rounded-2xl bg-amber-50 text-amber-600 flex items-center justify-center text-2xl">
+                        <i class="fa-solid fa-hand-holding-heart"></i>
+                    </div>
+                    <h3 class="text-xl font-bold text-slate-900">ระบบจัดการการดูแลผู้มีภาวะพึ่งพิง (LTC)</h3>
+                    <p class="text-slate-600 text-sm">ระบบบริหารจัดการและติดตามการดูแลผู้มีภาวะพึ่งพิงระยะยาวในชุมชน ร่วมกับทีมสหวิชาชีพและ อสม.</p>
+                    <div class="pt-4 border-t border-slate-100 flex items-center justify-between text-xs text-slate-500">
+                        <span><i class="fa-solid fa-arrow-up-right-from-square mr-1"></i> คลิกที่การ์ดเพื่อเข้าสู่ระบบ</span>
+                    </div>
+                </a>
             </div>
 
             <!-- Online Booking Simulation Box -->
@@ -571,7 +599,7 @@
         <!-- ==================== TAB 5: INTERNAL ADMIN & DASHBOARD ==================== -->
         <div id="tab-admin" class="tab-content hidden max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 space-y-8">
             <!-- Admin Header -->
-            <div class="bg-slate-900 text-white p-6 rounded-3xl flex flex-col md:flex-row md:items-center justify-between gap-4 shadow-xl">
+            <div class="adm-hero text-white p-7 rounded-3xl flex flex-col md:flex-row md:items-center justify-between gap-4 shadow-xl">
                 <div>
                     <span class="text-xs uppercase tracking-wider text-cyan-400 font-semibold"><i class="fa-solid fa-lock mr-1"></i> Restricted Area</span>
                     <h2 class="text-2xl font-bold mt-1">ระบบบริหารจัดการภายในองค์กร (Internal Dashboard)</h2>
@@ -589,60 +617,53 @@
             </div>
 
             <!-- Admin Sub-navigation Tabs -->
-            <div class="flex flex-wrap gap-2 border-b border-slate-200 pb-4">
-                <button onclick="switchAdminSub('calendar')" id="sub-btn-calendar" class="admin-sub-btn px-4 py-2 rounded-xl text-sm font-semibold bg-aiBlue-600 text-white shadow-sm transition">ปฏิทินงานองค์กร</button>
-                <a href="https://nayor05588.github.io/register-05588/" target="_blank" rel="noopener noreferrer" id="sub-btn-registry" class="px-4 py-2 rounded-xl text-sm font-semibold bg-white text-slate-600 hover:bg-slate-100 transition inline-flex items-center gap-1.5"><i class="fa-solid fa-folder-open text-aiBlue-600"></i>ระบบทะเบียนต่างๆ<i class="fa-solid fa-arrow-up-right-from-square text-[10px] text-slate-400"></i></a>
-                <button onclick="switchAdminSub('booking')" id="sub-btn-booking" class="admin-sub-btn px-4 py-2 rounded-xl text-sm font-semibold bg-white text-slate-600 hover:bg-slate-100 transition">จองห้องประชุม/รถยนต์</button>
-                <button onclick="switchAdminSub('doc')" id="sub-btn-doc" class="admin-sub-btn px-4 py-2 rounded-xl text-sm font-semibold bg-white text-slate-600 hover:bg-slate-100 transition">คลังคำสั่ง/หนังสือเวียน</button>
+            <div class="adm-nav flex flex-wrap">
+                <button onclick="switchAdminSub('modules')" id="sub-btn-modules" class="admin-sub-btn px-4 py-2 rounded-xl text-sm font-semibold bg-aiBlue-600 text-white shadow-sm transition"><i class="fa-solid fa-grip mr-1.5"></i>ระบบงานหลัก 8 หมวด</button>
+                <button onclick="switchAdminSub('calendar')" id="sub-btn-calendar" class="admin-sub-btn px-4 py-2 rounded-xl text-sm font-semibold bg-white text-slate-600 hover:bg-slate-100 transition"><i class="fa-solid fa-calendar-days mr-1.5"></i>ปฏิทินงานองค์กร</button>
+                <button onclick="switchAdminSub('doc')" id="sub-btn-doc" class="admin-sub-btn px-4 py-2 rounded-xl text-sm font-semibold bg-white text-slate-600 hover:bg-slate-100 transition"><i class="fa-solid fa-folder-open mr-1.5"></i>คลังคำสั่ง/หนังสือเวียน</button>
+            </div>
+
+            <!-- SUB-SECTION 0: CORE MODULES 2.1-2.8 -->
+            <div id="admin-sub-modules" class="admin-sub-content space-y-6">
+                <div>
+                    <h3 class="text-lg font-bold text-slate-900"><i class="fa-solid fa-grip text-aiBlue-600 mr-2"></i> ระบบงานหลักของ รพ.สต. (8 หมวด)</h3>
+                    <p class="text-xs text-slate-500 mt-1">เลือกหมวดเพื่อดูรายละเอียดงานย่อยที่ออกแบบไว้ — ข้อมูลทุกหมวดเชื่อมโยงกันเป็นศูนย์กลางเดียว</p>
+                </div>
+                <div id="mod-grid" class="grid grid-cols-2 lg:grid-cols-4 gap-4"></div>
+                <div id="mod-detail" class="bg-slate-50 rounded-3xl border border-slate-200 p-5 md:p-6"></div>
+                <div class="adm-hero rounded-2xl p-5 text-white">
+                    <div class="font-bold text-cyan-300 mb-3 text-sm"><i class="fa-solid fa-diagram-project mr-1.5"></i> การไหลของข้อมูลระหว่างหมวด</div>
+                    <div class="space-y-2.5">
+                        <div class="mod-flow"><span class="st">2.1 บริการผู้ป่วย</span><span class="ar">+</span><span class="st">2.2 งานชุมชน</span><i class="fa-solid fa-arrow-right ar"></i><span class="st">2.3 KPI</span><i class="fa-solid fa-arrow-right ar"></i><span class="st">2.4 แผนงาน</span><i class="fa-solid fa-arrow-right ar"></i><span class="st">2.7 คุมงบตามโครงการ</span></div>
+                        <div class="mod-flow"><span class="st">2.1 ใบสั่งยา</span><i class="fa-solid fa-arrow-right ar"></i><span class="st">2.8 ตัดจ่ายคลังยาอัตโนมัติ</span></div>
+                    </div>
+                </div>
             </div>
 
             <!-- SUB-SECTION 1: CALENDAR -->
-            <div id="admin-sub-calendar" class="admin-sub-content space-y-6">
+            <div id="admin-sub-calendar" class="admin-sub-content hidden space-y-6">
                 <div class="flex items-center justify-between">
-                    <h3 class="text-lg font-bold text-slate-900"><i class="fa-solid fa-calendar-days text-aiBlue-600 mr-2"></i> ปฏิทินปฏิบัติงานประจำเดือน ตุลาคม 2569</h3>
-                    <button onclick="showToast('เพิ่มกิจกรรมใหม่สำเร็จ')" class="px-4 py-2 rounded-xl ai-gradient text-white text-xs font-medium shadow-sm"><i class="fa-solid fa-plus mr-1"></i> เพิ่มกิจกรรม</button>
+                    <h3 class="text-lg font-bold text-slate-900"><i class="fa-solid fa-calendar-days text-aiBlue-600 mr-2"></i> ปฏิทินปฏิบัติงานองค์กร</h3>
+                    <button onclick="openEvForm()" class="px-4 py-2 rounded-xl ai-gradient text-white text-sm font-medium shadow-sm"><i class="fa-solid fa-plus mr-1"></i> เพิ่มกิจกรรม</button>
                 </div>
-                <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-6 space-y-4">
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <div class="p-4 rounded-xl bg-aiBlue-50 border border-aiBlue-100 flex items-start space-x-3">
-                            <div class="bg-aiBlue-600 text-white text-center px-3 py-2 rounded-lg font-bold text-sm">
-                                12<br><span class="text-[10px] font-normal">ต.ค.</span>
-                            </div>
-                            <div class="flex-1">
-                                <h4 class="font-bold text-slate-900 text-sm">ออกหน่วยฉีดวัคซีนไข้หวัดใหญ่เคลื่อนที่</h4>
-                                <p class="text-xs text-slate-600 mt-1">สถานที่: ศาลาประชาคมบ้านนายอ หมู่ 1</p>
-                                <span class="inline-block mt-2 text-[10px] bg-aiBlue-200 text-aiBlue-800 px-2 py-0.5 rounded font-medium">งานป้องกันควบคุมโรค</span>
-                            </div>
+                <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-6">
+                    <div id="cal-list" class="grid grid-cols-1 md:grid-cols-2 gap-4"><p class="text-sm text-slate-500">กำลังโหลดข้อมูล...</p></div>
+                </div>
+                <div id="ev-modal" class="hidden fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4">
+                    <div class="bg-white rounded-3xl shadow-2xl w-full max-w-md p-6 space-y-4">
+                        <h4 class="font-bold text-lg text-slate-900"><i class="fa-solid fa-calendar-plus text-aiBlue-600 mr-2"></i>เพิ่มกิจกรรมใหม่</h4>
+                        <input id="ev-title" placeholder="ชื่อกิจกรรม" class="w-full px-4 py-2.5 rounded-xl border border-slate-200 text-sm focus:outline-none focus:border-aiBlue-500">
+                        <input id="ev-date" type="date" class="w-full px-4 py-2.5 rounded-xl border border-slate-200 text-sm focus:outline-none focus:border-aiBlue-500">
+                        <input id="ev-place" placeholder="สถานที่" class="w-full px-4 py-2.5 rounded-xl border border-slate-200 text-sm focus:outline-none focus:border-aiBlue-500">
+                        <select id="ev-cat" class="w-full px-4 py-2.5 rounded-xl border border-slate-200 text-sm bg-white focus:outline-none focus:border-aiBlue-500"></select>
+                        <div>
+                            <label class="text-xs font-semibold text-slate-600"><i class="fa-solid fa-image mr-1 text-aiBlue-600"></i>แนบรูปภาพ (ไม่บังคับ)</label>
+                            <input id="ev-img" type="file" accept="image/*" onchange="previewEvImg(this)" class="mt-1 w-full text-sm text-slate-600 file:mr-3 file:px-3 file:py-1.5 file:rounded-lg file:border-0 file:bg-aiBlue-50 file:text-aiBlue-700 file:font-medium">
+                            <img id="ev-img-prev" class="hidden mt-2 rounded-xl max-h-40 object-cover border border-slate-200" alt="">
                         </div>
-                        <div class="p-4 rounded-xl bg-emerald-50 border border-emerald-100 flex items-start space-x-3">
-                            <div class="bg-emerald-600 text-white text-center px-3 py-2 rounded-lg font-bold text-sm">
-                                15<br><span class="text-[10px] font-normal">ต.ค.</span>
-                            </div>
-                            <div class="flex-1">
-                                <h4 class="font-bold text-slate-900 text-sm">ประชุมประจำเดือน อสม. ครั้งที่ 10/2569</h4>
-                                <p class="text-xs text-slate-600 mt-1">สถานที่: ห้องประชุม รพ.สต.บ้านนายอ</p>
-                                <span class="inline-block mt-2 text-[10px] bg-emerald-200 text-emerald-800 px-2 py-0.5 rounded font-medium">งานบริหารทั่วไป</span>
-                            </div>
-                        </div>
-                        <div class="p-4 rounded-xl bg-amber-50 border border-amber-100 flex items-start space-x-3">
-                            <div class="bg-amber-600 text-white text-center px-3 py-2 rounded-lg font-bold text-sm">
-                                20<br><span class="text-[10px] font-normal">ต.ค.</span>
-                            </div>
-                            <div class="flex-1">
-                                <h4 class="font-bold text-slate-900 text-sm">คัดกรองสุขภาพผู้สูงอายุเชิงรุก</h4>
-                                <p class="text-xs text-slate-600 mt-1">สถานที่: บ้านนายอ หมู่ 2</p>
-                                <span class="inline-block mt-2 text-[10px] bg-amber-200 text-amber-800 px-2 py-0.5 rounded font-medium">คลินิกผู้สูงอายุ</span>
-                            </div>
-                        </div>
-                        <div class="p-4 rounded-xl bg-purple-50 border border-purple-100 flex items-start space-x-3">
-                            <div class="bg-purple-600 text-white text-center px-3 py-2 rounded-lg font-bold text-sm">
-                                25<br><span class="text-[10px] font-normal">ต.ค.</span>
-                            </div>
-                            <div class="flex-1">
-                                <h4 class="font-bold text-slate-900 text-sm">อบรมการใช้ระบบ AI บันทึกข้อมูลสุขภาพ</h4>
-                                <p class="text-xs text-slate-600 mt-1">สถานที่: ห้องประชุมอำเภอภูพาน</p>
-                                <span class="inline-block mt-2 text-[10px] bg-purple-200 text-purple-800 px-2 py-0.5 rounded font-medium">ยุทธศาสตร์ AI</span>
-                            </div>
+                        <div class="flex justify-end gap-2 pt-2">
+                            <button onclick="closeEvForm()" class="px-4 py-2 rounded-xl bg-slate-100 text-slate-700 text-sm font-medium">ยกเลิก</button>
+                            <button onclick="saveEv()" class="px-5 py-2 rounded-xl ai-gradient text-white text-sm font-medium">บันทึก</button>
                         </div>
                     </div>
                 </div>
@@ -650,30 +671,6 @@
 
             <!-- SUB-SECTION 2: REPAIR SYSTEM -->
 
-
-            <!-- SUB-SECTION 3: ROOM & CAR BOOKING -->
-            <div id="admin-sub-booking" class="admin-sub-content hidden space-y-6">
-                <div class="flex items-center justify-between">
-                    <h3 class="text-lg font-bold text-slate-900"><i class="fa-solid fa-door-open text-aiBlue-600 mr-2"></i> ระบบจองห้องประชุมและรถยนต์ราชการ</h3>
-                    <button onclick="showToast('จองสำเร็จ')" class="px-4 py-2 rounded-xl ai-gradient text-white text-xs font-medium shadow-sm"><i class="fa-solid fa-plus mr-1"></i> จองห้อง/รถ</button>
-                </div>
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200 space-y-4">
-                        <h4 class="font-bold text-slate-900 flex items-center gap-2"><i class="fa-solid fa-people-roof text-aiBlue-600"></i> ห้องประชุม รพ.สต. (ความจุ 30 คน)</h4>
-                        <p class="text-xs text-slate-500">พร้อมโปรเจคเตอร์และระบบประชุมทางไกล</p>
-                        <div class="p-3 bg-slate-50 rounded-xl text-xs space-y-2">
-                            <div class="flex justify-between font-semibold text-slate-700"><span>วันนี้:</span> <span class="text-emerald-600">ว่าง (สามารถจองได้)</span></div>
-                        </div>
-                    </div>
-                    <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200 space-y-4">
-                        <h4 class="font-bold text-slate-900 flex items-center gap-2"><i class="fa-solid fa-car text-aiBlue-600"></i> รถยนต์ราชการ (TOYOTA Revo กค-XXXX สกลนคร)</h4>
-                        <p class="text-xs text-slate-500">สำหรับออกหน่วยเยี่ยมบ้านและภารกิจนอกสถานที่</p>
-                        <div class="p-3 bg-slate-50 rounded-xl text-xs space-y-2">
-                            <div class="flex justify-between font-semibold text-slate-700"><span>สถานะ:</span> <span class="text-amber-600">ติดภารกิจออกเยี่ยมบ้าน (13:00 - 16:00)</span></div>
-                        </div>
-                    </div>
-                </div>
-            </div>
 
             <!-- SUB-SECTION 4: DOCUMENTS & CIRCULARS -->
             <div id="admin-sub-doc" class="admin-sub-content hidden space-y-6">
@@ -950,6 +947,105 @@
                 activeBtn.classList.add('bg-aiBlue-600', 'text-white');
             }
         }
+
+        // ===== Core modules 2.1-2.8 =====
+        const MODS=[
+        {n:'2.1',t:'ทะเบียนและบริการผู้ป่วย',i:'fa-user-injured',c:'blue',g:[
+          ['ทะเบียน',['ลงทะเบียน/ค้นหาผู้ป่วย','ตรวจสอบสิทธิ','ออก HN']],
+          ['คิวและจุดบริการ',['คัดกรอง (ซักประวัติ/วัดสัญญาณชีพ)','ตรวจรักษา','จ่ายยา','ชำระเงิน']],
+          ['OPD Card อิเล็กทรอนิกส์',['อาการสำคัญ','การวินิจฉัย','หัตถการ','ใบสั่งยา']],
+          ['งานเฉพาะ',['ANC/ฝากครรภ์','EPI/วัคซีน','วางแผนครอบครัว','NCD (เบาหวาน/ความดัน)','ทันตกรรม','แพทย์แผนไทย']],
+          ['ส่งต่อและนัดหมาย',['Refer in/out','นัดหมาย','ติดตามผู้ขาดนัด']],
+          ['ส่งออกข้อมูล',['ผลิตแฟ้ม 43 แฟ้มอัตโนมัติจากข้อมูลบริการ']]]},
+        {n:'2.2',t:'งานสุขภาพชุมชนและรายงาน',i:'fa-people-roof',c:'emerald',g:[
+          ['ทะเบียนชุมชน',['ครัวเรือนและประชากรในเขต (Type 1–5)','แผนที่หมู่บ้าน/พิกัดบ้าน']],
+          ['เยี่ยมบ้าน (บันทึกผลและภาพ)',['ผู้สูงอายุ','ติดเตียง','หลังคลอด','ผู้ป่วยเรื้อรัง']],
+          ['เชิงรุก',['คัดกรองกลุ่มเสี่ยง','ติดตามกลุ่มเป้าหมาย']],
+          ['อสม.',['ทะเบียนและกิจกรรม อสม.','ค่าป่วยการ']],
+          ['ควบคุมโรคและอนามัย',['ระบาดวิทยา (แจ้งเหตุ รง.506)','อนามัยสิ่งแวดล้อม','คุ้มครองผู้บริโภค']],
+          ['รายงาน',['รายงานตามแบบ สสจ./สสอ.']]]},
+        {n:'2.3',t:'ข้อมูลสารสนเทศ (KPI)',i:'fa-chart-line',c:'violet',g:[
+          ['ตัวชี้วัด',['แยกมิติ: กระทรวง / จังหวัด / อำเภอ / ตำบล','ดึงข้อมูลทุกโมดูลคำนวณอัตโนมัติ (ตัวตั้ง/ตัวหาร/ร้อยละ) เทียบเป้าหมาย']],
+          ['แดชบอร์ดผู้บริหาร',['สถานะสีเขียว/เหลือง/แดง','แนวโน้มรายเดือน/ไตรมาส/ปี']],
+          ['Data Quality',['ข้อมูลขาด','ข้อมูลซ้ำ','ผิดรูปแบบ']],
+          ['ส่งออก',['Excel','PDF']]]},
+        {n:'2.4',t:'งานแผนและยุทธศาสตร์',i:'fa-bullseye',c:'amber',g:[
+          ['วิเคราะห์',['ปัญหาสุขภาพชุมชน (จากข้อ 2.2–2.3)']],
+          ['แผนปฏิบัติการประจำปี',['ยุทธศาสตร์','โครงการ','กิจกรรม','ผู้รับผิดชอบ','งบประมาณ','ตัวชี้วัด']],
+          ['ติดตามผล',['% ดำเนินการ','งบที่ใช้','สรุปผลโครงการ']],
+          ['เชื่อมโยง',['แผนสุขภาพตำบล','กองทุนสุขภาพตำบล (กปท.)']]]},
+        {n:'2.5',t:'งานธุรการ',i:'fa-envelope-open-text',c:'rose',g:[
+          ['ทะเบียนหนังสือรับ–ส่ง',['เลขที่ / เรื่อง / ต้นเรื่อง / สถานะ','สแกนแนบไฟล์']],
+          ['เสนอ–สั่งการ–ติดตาม',['เสนอหนังสือ','สั่งการ','ติดตามหนังสือ']],
+          ['ปฏิทิน',['นัดหมาย','ห้องประชุม']],
+          ['ทะเบียนอื่น',['คำสั่ง/ประกาศ','ระบบจัดเก็บเอกสาร','ครุภัณฑ์/ยานพาหนะ (ขอใช้รถ/เลขไมล์)']]]},
+        {n:'2.6',t:'งานบุคลากร',i:'fa-id-badge',c:'cyan',g:[
+          ['ทะเบียนประวัติ',['ข้าราชการ','พนักงานราชการ','พกส.','ลูกจ้าง']],
+          ['เวลาและเวร',['ลงเวลา','ลา','ไปราชการ','ตารางเวร']],
+          ['พัฒนาบุคลากร',['ประเมินผลงาน','ทะเบียนอบรม','ใบอนุญาตวิชาชีพ (แจ้งเตือนหมดอายุ)']],
+          ['วางแผน',['แผนอัตรากำลัง','ภาระงาน']]]},
+        {n:'2.7',t:'การเงินและงบประมาณ',i:'fa-coins',c:'orange',g:[
+          ['รายรับ',['ค่ารักษา','เงินจัดสรร สปสช. (เหมาจ่าย/PP/กปท.)','เงินบำรุง','เงินบริจาค']],
+          ['รายจ่าย',['ขอเบิก–อนุมัติ–จ่าย','ค่าตอบแทน','ค่าสาธารณูปโภค']],
+          ['บัญชี',['ใบเสร็จรับเงิน','ทะเบียนคุมเงิน/สมุดเงินสด','สมุดบัญชี']],
+          ['คุมงบ/รายงาน',['คุมงบตามโครงการ (เชื่อมแผน 2.4)','รายงานการเงินรายเดือน/ปี']]]},
+        {n:'2.8',t:'พัสดุและคลังยา/เวชภัณฑ์',i:'fa-pills',c:'slate',g:[
+          ['พัสดุ',['ขอซื้อ/จ้าง (ตาม พ.ร.บ.จัดซื้อจัดจ้างฯ)','ใบสั่งซื้อ','ตรวจรับ','ทะเบียนครุภัณฑ์','ตัดจำหน่าย']],
+          ['คลังยา: ทะเบียน',['บัญชียา','ล็อต/วันหมดอายุ','ราคาทุน/ราคาขาย']],
+          ['คลังยา: เคลื่อนไหว',['รับเข้า–จ่ายออก','ตัดจ่ายอัตโนมัติจากใบสั่งยา','Stock card','จุดสั่งซื้อ (Reorder point)','แจ้งเตือนยาใกล้หมดอายุ/ใกล้หมด']],
+          ['คลังยา: อื่นๆ',['เบิกจาก รพช./คลังจังหวัด','ยาควบคุมพิเศษ','ตรวจนับสต็อกประจำเดือน/ปี']]]}
+        ];
+        const ICONS=[
+          [/คุมงบ/,'fa-wallet'],[/เสนอ/,'fa-paper-plane'],[/สปสช/,'fa-building-columns'],[/ตัดจ่าย/,'fa-right-left'],[/แจ้งเตือนยา/,'fa-bell'],[/506|ระบาด|ควบคุมโรค/,'fa-virus'],
+          [/ลงทะเบียน|ค้นหา|ตรวจสอบสิทธิ์?|ตรวจสอบสิทธิ/,'fa-magnifying-glass'],[/HN/,'fa-id-card'],
+          [/คิว/,'fa-list-ol'],[/คัดกรอง|ซักประวัติ/,'fa-stethoscope'],[/ตรวจรักษา/,'fa-user-doctor'],[/จ่ายยา|ใบสั่งยา|บัญชียา|คลังยา|ยาควบคุม/,'fa-pills'],
+          [/ชำระเงิน|ค่ารักษา|ค่าป่วยการ|ค่าตอบแทน|เงินบริจาค|เงินบำรุง/,'fa-money-bill-wave'],
+          [/อาการสำคัญ/,'fa-heart-pulse'],[/วินิจฉัย/,'fa-notes-medical'],[/หัตถการ/,'fa-syringe'],
+          [/ANC|ฝากครรภ์|หลังคลอด/,'fa-baby'],[/EPI|วัคซีน/,'fa-syringe'],[/วางแผนครอบครัว/,'fa-people-roof'],
+          [/NCD|เบาหวาน|ความดัน/,'fa-droplet'],[/ทันตกรรม/,'fa-tooth'],[/แพทย์แผนไทย/,'fa-leaf'],
+          [/Refer|ส่งต่อ/,'fa-truck-medical'],[/ขาดนัด/,'fa-user-clock'],[/นัดหมาย|ปฏิทิน/,'fa-calendar-check'],
+          [/43 แฟ้ม|แฟ้ม/,'fa-file-export'],[/ครัวเรือน|Type/,'fa-house-chimney'],[/แผนที่|พิกัด/,'fa-map-location-dot'],
+          [/ผู้สูงอายุ/,'fa-person-cane'],[/ติดเตียง/,'fa-bed'],[/เรื้อรัง/,'fa-heart-circle-exclamation'],[/เยี่ยมบ้าน/,'fa-house-medical'],
+          [/กลุ่มเสี่ยง|กลุ่มเป้าหมาย/,'fa-bullseye'],[/อสม/,'fa-hands-holding-circle'],[/506|ระบาด|ควบคุมโรค/,'fa-virus'],
+          [/อนามัยสิ่งแวดล้อม/,'fa-seedling'],[/คุ้มครองผู้บริโภค/,'fa-shield-halved'],[/สสจ|รายงาน/,'fa-file-lines'],
+          [/แยกมิติ|กระทรวง/,'fa-layer-group'],[/คำนวณ|ร้อยละ/,'fa-calculator'],[/สีเขียว|แดชบอร์ด/,'fa-gauge-high'],[/แนวโน้ม/,'fa-chart-line'],
+          [/ข้อมูลขาด/,'fa-circle-question'],[/ซ้ำ/,'fa-clone'],[/ผิดรูปแบบ/,'fa-triangle-exclamation'],[/Excel/,'fa-file-excel'],[/PDF/,'fa-file-pdf'],
+          [/วิเคราะห์|ปัญหาสุขภาพ/,'fa-magnifying-glass-chart'],[/ยุทธศาสตร์/,'fa-chess'],[/โครงการ|สรุปผล/,'fa-diagram-project'],[/กิจกรรม/,'fa-person-running'],
+          [/ผู้รับผิดชอบ/,'fa-user-check'],[/งบ|งบประมาณ/,'fa-wallet'],[/ตัวชี้วัด/,'fa-chart-pie'],[/ดำเนินการ/,'fa-bars-progress'],
+          [/แผนสุขภาพตำบล|กปท|กองทุน/,'fa-hand-holding-heart'],[/หนังสือ|เลขที่|ต้นเรื่อง/,'fa-envelope-open-text'],[/สแกน|แนบไฟล์/,'fa-paperclip'],
+          [/เสนอ/,'fa-paper-plane'],[/สั่งการ|คำสั่ง|ประกาศ/,'fa-gavel'],[/ห้องประชุม/,'fa-people-group'],[/จัดเก็บเอกสาร/,'fa-box-archive'],
+          [/ยานพาหนะ|รถ|ไมล์/,'fa-car'],[/ครุภัณฑ์/,'fa-computer'],[/ข้าราชการ|พนักงาน|พกส|ลูกจ้าง/,'fa-user-tie'],
+          [/ลงเวลา/,'fa-clock'],[/ลา$|^ลา/,'fa-umbrella-beach'],[/ไปราชการ/,'fa-plane-departure'],[/เวร/,'fa-calendar-days'],
+          [/ประเมิน/,'fa-clipboard-check'],[/อบรม/,'fa-chalkboard-user'],[/ใบอนุญาต/,'fa-certificate'],[/อัตรากำลัง|ภาระงาน/,'fa-users-gear'],
+          [/สปสช|เงินจัดสรร|เหมาจ่าย/,'fa-building-columns'],[/ขอเบิก|เบิกจาก/,'fa-hand-holding-dollar'],[/สาธารณูปโภค/,'fa-bolt'],
+          [/ใบเสร็จ/,'fa-receipt'],[/เงินสด|ทะเบียนคุมเงิน|สมุดบัญชี/,'fa-book'],[/ขอซื้อ|ใบสั่งซื้อ|จัดซื้อ/,'fa-cart-shopping'],
+          [/ตรวจรับ/,'fa-box-open'],[/ตัดจำหน่าย/,'fa-trash-can'],[/ล็อต|วันหมดอายุ/,'fa-hourglass-end'],[/ราคา/,'fa-tags'],
+          [/รับเข้า|จ่ายออก/,'fa-right-left'],[/Stock|สต็อก/,'fa-boxes-stacked'],[/Reorder|จุดสั่งซื้อ/,'fa-bell'],[/ควบคุมพิเศษ/,'fa-lock'],[/ตรวจนับ/,'fa-clipboard-list']
+        ];
+        function iconFor(t,d){for(const r of ICONS){if(r[0].test(t))return r[1];}return d||'fa-circle-dot';}
+        const GICON={'ทะเบียน':'fa-address-book','คิวและจุดบริการ':'fa-list-ol','ส่งออกข้อมูล':'fa-file-export','งานเฉพาะ':'fa-star-of-life','ส่งต่อและนัดหมาย':'fa-truck-medical','ทะเบียนชุมชน':'fa-house-chimney','เชิงรุก':'fa-bullseye','อสม.':'fa-hands-holding-circle','ควบคุมโรคและอนามัย':'fa-virus','รายงาน':'fa-file-lines','ตัวชี้วัด':'fa-chart-pie','แดชบอร์ดผู้บริหาร':'fa-gauge-high','ส่งออก':'fa-file-export','วิเคราะห์':'fa-magnifying-glass-chart','ติดตามผล':'fa-bars-progress','เชื่อมโยง':'fa-link','ปฏิทิน':'fa-calendar-days','ทะเบียนอื่น':'fa-folder-tree','เวลาและเวร':'fa-clock','พัฒนาบุคลากร':'fa-user-graduate','วางแผน':'fa-users-gear','รายรับ':'fa-arrow-down-long','รายจ่าย':'fa-arrow-up-long','บัญชี':'fa-book','คุมงบ/รายงาน':'fa-wallet','พัสดุ':'fa-box','คลังยา: ทะเบียน':'fa-prescription-bottle-medical','คลังยา: เคลื่อนไหว':'fa-right-left','คลังยา: อื่นๆ':'fa-warehouse'};
+        function renderGrid(a){
+            document.getElementById('mod-grid').innerHTML=MODS.map((m,k)=>{
+              const n=m.g.reduce((t,g)=>t+g[1].length,0), on=k===a;
+              return '<button onclick="openMod('+k+')" class="mod-card '+(on?'ring-2 ring-'+m.c+'-500 bg-'+m.c+'-50 shadow-lg':'')+'">'
+              +'<span class="absolute top-3 right-3 text-xs font-bold text-'+m.c+'-700 bg-'+m.c+'-100 px-2 py-0.5 rounded-full">'+m.n+'</span>'
+              +'<div class="w-12 h-12 rounded-2xl bg-gradient-to-br from-'+m.c+'-400 to-'+m.c+'-600 text-white flex items-center justify-center text-xl shadow-md mb-3"><i class="fa-solid '+m.i+'"></i></div>'
+              +'<div class="text-[15px] font-bold text-slate-900 leading-snug">'+m.t+'</div>'
+              +'<div class="text-xs text-slate-500 mt-1">'+m.g.length+' กลุ่มงาน · '+n+' รายการ</div></button>';}).join('');
+        }
+        function openMod(k){
+            const m=MODS[k], c=m.c; renderGrid(k);
+            document.getElementById('mod-detail').innerHTML=
+              '<div class="flex items-center gap-4 rounded-2xl p-5 mb-5 bg-gradient-to-r from-'+c+'-50 to-white border border-'+c+'-100">'
+              +'<div class="w-14 h-14 rounded-2xl bg-gradient-to-br from-'+c+'-400 to-'+c+'-600 text-white flex items-center justify-center text-2xl shadow-lg"><i class="fa-solid '+m.i+'"></i></div>'
+              +'<div><div class="text-xs font-semibold text-'+c+'-700">หมวด '+m.n+'</div><h4 class="font-bold text-slate-900 text-xl leading-tight">'+m.t+'</h4></div></div>'
+              +'<div class="grid grid-cols-1 md:grid-cols-2 gap-4">'+m.g.map(g=>
+                '<div class="rounded-2xl bg-white border border-slate-200 border-l-4 border-l-'+c+'-400 p-4 shadow-sm">'
+                +'<div class="text-[15px] font-bold text-slate-900 mb-3 flex items-center gap-2"><i class="fa-solid '+(GICON[g[0]]||iconFor(g[0],m.i))+' text-'+c+'-600 w-5 text-center"></i>'+g[0]+'</div><ul class="space-y-2">'
+                +g[1].map(x=>'<li class="flex items-start gap-2.5 text-sm text-slate-700 leading-snug"><span class="w-7 h-7 shrink-0 rounded-full bg-'+c+'-50 text-'+c+'-600 flex items-center justify-center text-xs"><i class="fa-solid '+iconFor(x,m.i)+'"></i></span><span class="pt-1">'+x+'</span></li>').join('')
+                +'</ul></div>').join('')+'</div>';
+        }
+        (function(){ openMod(0); })();
 
         // AI Chatbot Toggle
         function toggleAIChat() {
@@ -1304,6 +1400,85 @@ function hashPw(user,pw){
     // Esc / backdrop for auth modals
     document.addEventListener('keydown',e=>{ if(e.key==='Escape'){ closeLogin(); closePw(false); closeUsers(); } });
     [['login-modal',closeLogin],['users-modal',closeUsers]].forEach(([id,fn])=>document.getElementById(id).addEventListener('click',e=>{ if(e.target.id===id) fn(); }));
+    </script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
+    <script>
+    // ===== Firebase Realtime Database (project: website05588) =====
+    const FB_CFG={apiKey:"AIzaSyDRftp85X5__md1-NR1nLqK3Kxp5pHMOrQ",authDomain:"website05588.firebaseapp.com",databaseURL:"https://website05588-default-rtdb.asia-southeast1.firebasedatabase.app",projectId:"website05588",storageBucket:"website05588.firebasestorage.app",messagingSenderId:"628232531451",appId:"1:628232531451:web:527e280b80f284be696f5e"};
+    let rtdb=null;
+    function setDbStatus(ok,msg){const e=document.getElementById('db-status');if(!e)return;
+        e.className='text-xs px-3 py-1.5 rounded-full border flex items-center gap-1.5 '+(ok?'bg-cyan-500/20 text-cyan-200 border-cyan-500/30':'bg-rose-500/20 text-rose-200 border-rose-500/30');
+        e.innerHTML='<i class="fa-solid fa-database"></i> ฐานข้อมูล: '+msg;}
+    try{
+        firebase.initializeApp(FB_CFG); rtdb=firebase.database();
+        rtdb.ref('.info/connected').on('value',sn=>setDbStatus(sn.val()===true,sn.val()===true?'เชื่อมต่อแล้ว':'ออฟไลน์'));
+    }catch(err){ console.error(err); setDbStatus(false,'เชื่อมต่อไม่ได้'); }
+    // reusable helpers for other modules
+    window.DB={
+        push:(path,data)=>rtdb.ref(path).push(Object.assign({},data,{createdAt:firebase.database.ServerValue.TIMESTAMP})),
+        set:(path,data)=>rtdb.ref(path).set(data),
+        remove:path=>rtdb.ref(path).remove(),
+        listen:(path,cb,err)=>rtdb.ref(path).on('value',sn=>cb(sn.val()||{}),err)
+    };
+    const EV_CATS=[['งานป้องกันควบคุมโรค','blue'],['งานบริหารทั่วไป','emerald'],['คลินิกผู้สูงอายุ','amber'],['ยุทธศาสตร์ AI','purple'],['อื่นๆ','slate']];
+    const TH_M=['ม.ค.','ก.พ.','มี.ค.','เม.ย.','พ.ค.','มิ.ย.','ก.ค.','ส.ค.','ก.ย.','ต.ค.','พ.ย.','ธ.ค.'];
+    document.getElementById('ev-cat').innerHTML=EV_CATS.map(c=>'<option>'+c[0]+'</option>').join('');
+    function renderCal(data){
+        const list=Object.entries(data).map(([id,v])=>Object.assign({id},v)).sort((a,b)=>(a.date||'').localeCompare(b.date||''));
+        document.getElementById('cal-list').innerHTML=list.length?list.map(v=>{
+            const col=(EV_CATS.find(c=>c[0]===v.cat)||EV_CATS[4])[1], d=(v.date||'').split('-');
+            return '<div class="p-4 rounded-xl bg-'+col+'-50 border border-'+col+'-100 flex items-start gap-3">'
+              +'<div class="bg-'+col+'-600 text-white text-center px-3 py-2 rounded-lg font-bold text-sm leading-tight">'+(+d[2]||'-')+'<br><span class="text-[10px] font-normal">'+(TH_M[(+d[1]||1)-1])+' '+String((+d[0]||0)+543).slice(-2)+'</span></div>'
+              +'<div class="flex-1 min-w-0"><h4 class="font-bold text-slate-900 text-sm">'+escapeHTML(v.title||'')+'</h4>'
+              +'<p class="text-xs text-slate-600 mt-1">สถานที่: '+escapeHTML(v.place||'-')+'</p>'
+              +(/^https:\/\//.test(v.img||'')?'<a href="'+escapeHTML(v.img)+'" target="_blank" rel="noopener noreferrer"><img src="'+escapeHTML(v.img)+'" loading="lazy" class="mt-2 rounded-lg h-24 w-full object-cover border border-white" alt=""></a>':'')
+              +'<span class="inline-block mt-2 text-[10px] bg-'+col+'-200 text-'+col+'-800 px-2 py-0.5 rounded font-medium">'+escapeHTML(v.cat||'อื่นๆ')+'</span></div>'
+              +'<button onclick="delEv(\''+v.id+'\')" title="ลบ" class="text-slate-400 hover:text-rose-600"><i class="fa-solid fa-trash-can"></i></button></div>';
+        }).join(''):'<p class="text-sm text-slate-500">ยังไม่มีกิจกรรม กด "เพิ่มกิจกรรม" เพื่อเริ่มต้น</p>';
+    }
+    if(rtdb) DB.listen('calendar',renderCal,e=>{ setDbStatus(false,'สิทธิ์ถูกปฏิเสธ (ตรวจ Rules)'); document.getElementById('cal-list').innerHTML='<p class="text-sm text-rose-600">อ่านข้อมูลไม่ได้: '+escapeHTML(e.message)+'</p>'; });
+    function openEvForm(){document.getElementById('ev-modal').classList.remove('hidden');}
+    function closeEvForm(){document.getElementById('ev-modal').classList.add('hidden');}
+    // ===== ImgBB image storage =====
+    const IMGBB_KEY="234cdaaf895dbf40c09cf45a9bc10475";
+    function shrinkImg(file,max){return new Promise((res,rej)=>{
+        const im=new Image(), u=URL.createObjectURL(file);
+        im.onload=()=>{URL.revokeObjectURL(u);const r=Math.min(1,max/Math.max(im.width,im.height)),c=document.createElement('canvas');
+            c.width=Math.round(im.width*r);c.height=Math.round(im.height*r);c.getContext('2d').drawImage(im,0,0,c.width,c.height);
+            c.toBlob(b=>b?res(b):rej(new Error('แปลงรูปไม่สำเร็จ')),'image/jpeg',.85);};
+        im.onerror=()=>rej(new Error('ไฟล์ภาพไม่ถูกต้อง'));im.src=u;});}
+    window.IMG={ // IMG.upload(file) -> Promise<url>
+        upload:async function(file,name){
+            const blob=await shrinkImg(file,1600), fd=new FormData();
+            fd.append('image',blob,'img.jpg'); if(name) fd.append('name',name);
+            const r=await fetch('https://api.imgbb.com/1/upload?key='+IMGBB_KEY,{method:'POST',body:fd}), j=await r.json();
+            if(!j.success) throw new Error((j.error&&j.error.message)||'อัปโหลดไม่สำเร็จ');
+            return j.data.url;
+        }};
+    function previewEvImg(inp){const p=document.getElementById('ev-img-prev'),f=inp.files[0];
+        if(f){p.src=URL.createObjectURL(f);p.classList.remove('hidden');}else{p.classList.add('hidden');}}
+    async function saveEv(){
+        const t=document.getElementById('ev-title').value.trim(), d=document.getElementById('ev-date').value;
+        if(!t||!d){showToast('กรุณากรอกชื่อกิจกรรมและวันที่');return;}
+        let by='-'; try{by=getSession().user.name;}catch(e){}
+        const f=document.getElementById('ev-img').files[0]; let img='';
+        try{
+            if(f){showToast('กำลังอัปโหลดรูปภาพ...');img=await IMG.upload(f,'event-'+d);}
+            await DB.push('calendar',{title:t,date:d,place:document.getElementById('ev-place').value.trim(),cat:document.getElementById('ev-cat').value,by:by,img:img});
+            showToast('บันทึกกิจกรรมแล้ว');closeEvForm();
+            ['ev-title','ev-date','ev-place','ev-img'].forEach(i=>document.getElementById(i).value='');document.getElementById('ev-img-prev').classList.add('hidden');
+        }catch(e){showToast('บันทึกไม่สำเร็จ: '+e.message);}
+    }
+    function delEv(id){ if(confirm('ลบกิจกรรมนี้?')) DB.remove('calendar/'+id).catch(e=>showToast('ลบไม่สำเร็จ: '+e.message)); }
+    // public queue booking -> /bookings
+    window.submitBooking=function(){
+        const g=i=>document.getElementById(i), name=g('booking-name').value.trim(), phone=g('booking-phone').value.trim(), date=g('booking-date').value;
+        if(!name||!phone||!date){showToast('กรุณากรอกข้อมูลการจองให้ครบถ้วน');return;}
+        DB.push('bookings',{name:name,phone:phone,service:g('booking-service').value,date:date,status:'new'})
+          .then(()=>{showToast('จองคิวสำเร็จ! บันทึกข้อมูลเรียบร้อยแล้ว');['booking-name','booking-phone','booking-date'].forEach(i=>g(i).value='');})
+          .catch(e=>showToast('จองคิวไม่สำเร็จ: '+e.message));
+    };
     </script>
 </body>
 </html>
