@@ -11,6 +11,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <!-- Google Font: Prompt -->
     <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Thai:wght@400;500;600&display=swap" rel="stylesheet">
     <script>
         tailwind.config = {
             theme: {
@@ -63,20 +64,153 @@
         }
     </style>
 <style>
-#tab-admin{font-feature-settings:"kern";}
-#tab-admin .adm-hero{background:radial-gradient(900px 260px at 85% -20%,rgba(34,211,238,.28),transparent 60%),radial-gradient(600px 240px at 0% 120%,rgba(99,102,241,.30),transparent 60%),linear-gradient(135deg,#0b1220,#111c33);border:1px solid rgba(148,163,184,.18)}
-#tab-admin .adm-hero h2{font-size:1.65rem;line-height:1.3;letter-spacing:-.01em}
-#tab-admin .adm-hero p{color:#cbd5e1!important;font-size:.875rem!important}
-#tab-admin .adm-nav{background:#fff;border:1px solid #e2e8f0;border-radius:1.1rem;padding:.4rem;box-shadow:0 4px 18px -8px rgba(15,23,42,.12);gap:.25rem;position:sticky;top:.5rem;z-index:20}
-#tab-admin .adm-nav .admin-sub-btn{padding:.65rem 1.1rem;font-size:.9rem;border-radius:.8rem}
+/* ===== Ocean design system (admin + modals) ===== */
+:root{
+  --sea-950:#031c30; --sea-900:#052a47; --sea-800:#06406b; --sea-700:#0a5c93; --sea-600:#0b78b8;
+  --sea-500:#1294d0; --sea-400:#3ab4e0; --sea-300:#7fd3ec; --sea-100:#d8f0fa; --sea-50:#eef8fd;
+  --sea-ink:#0b2538; --sea-muted:#4f677a; --sea-line:#d3e4ee; --sea-coral:#d6455d;
+}
+main:has(#tab-admin:not(.hidden)){background:linear-gradient(180deg,#e9f6fc 0,#f4fafd 360px,#f8fbfd 100%)}
+#tab-admin{font-family:'IBM Plex Sans Thai','Prompt',sans-serif;color:var(--sea-ink)}
+#tab-admin h2,#tab-admin h3,#tab-admin h4,#tab-admin h5{font-family:'Prompt',sans-serif}
 #tab-admin .text-xs{font-size:.8125rem;line-height:1.25rem}
-#tab-admin .text-slate-400{color:#64748b}#tab-admin .text-slate-500{color:#475569}#tab-admin .text-slate-600{color:#334155}
+#tab-admin .text-slate-400{color:#5d7486}#tab-admin .text-slate-500{color:var(--sea-muted)}#tab-admin .text-slate-600{color:#38566b}
 #tab-admin .text-\[10px\]{font-size:.72rem}
-.mod-card{position:relative;text-align:left;padding:1.1rem;border-radius:1.25rem;background:#fff;border:1px solid #e2e8f0;transition:all .2s;box-shadow:0 1px 2px rgba(15,23,42,.04)}
-.mod-card:hover{transform:translateY(-3px);box-shadow:0 14px 28px -14px rgba(15,23,42,.28)}
+#tab-admin .ai-gradient,#login-modal .ai-gradient,#pw-modal .ai-gradient,#users-modal .ai-gradient,#ev-modal .ai-gradient,#repair-modal .ai-gradient{background:linear-gradient(135deg,var(--sea-700),var(--sea-500) 60%,var(--sea-400))}
+#toast{background:var(--sea-900)}
+
+/* Hero */
+#tab-admin .adm-hero{position:relative;overflow:hidden;isolation:isolate;border-radius:1.75rem;color:#fff;padding:1.75rem 1.75rem 1.5rem;
+  background:radial-gradient(720px 320px at 92% -12%,rgba(127,211,236,.5),transparent 62%),linear-gradient(135deg,var(--sea-950) 0%,var(--sea-800) 52%,var(--sea-600) 100%);
+  box-shadow:0 28px 50px -30px rgba(3,28,48,.8)}
+#tab-admin .adm-hero::before{content:"";position:absolute;inset:0;z-index:-1;opacity:.5;pointer-events:none;
+  background-image:radial-gradient(rgba(255,255,255,.55) 1px,transparent 1.2px);background-size:20px 20px;
+  -webkit-mask-image:linear-gradient(115deg,#000 0,transparent 55%);mask-image:linear-gradient(115deg,#000 0,transparent 55%)}
+#tab-admin .adm-waves{position:absolute;left:0;right:0;bottom:0;width:100%;height:62%;z-index:-1;pointer-events:none;opacity:.55}
+#tab-admin .adm-top{display:flex;flex-wrap:wrap;gap:1.25rem;align-items:flex-start;justify-content:space-between}
+#tab-admin .adm-badge{display:inline-flex;align-items:center;gap:.4rem;padding:.3rem .75rem;border-radius:999px;font-size:.8125rem;font-weight:500;color:var(--sea-100);background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.2)}
+#tab-admin .adm-hero h2{margin:.75rem 0 .3rem;font-size:clamp(1.45rem,1rem + 1.6vw,2rem);line-height:1.25;font-weight:600;letter-spacing:-.01em}
+#tab-admin .adm-hero .adm-sub{color:#bfe5f4;font-size:.9rem;max-width:38rem}
+#tab-admin .adm-side{display:flex;flex-direction:column;align-items:flex-end;gap:.65rem}
+#tab-admin .adm-user{display:flex;align-items:center;gap:.65rem;padding:.4rem 1rem .4rem .4rem;border-radius:999px;background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.22);backdrop-filter:blur(8px)}
+#tab-admin .adm-avatar{width:2.25rem;height:2.25rem;border-radius:50%;display:grid;place-items:center;background:linear-gradient(135deg,var(--sea-300),var(--sea-500));color:var(--sea-950)}
+#tab-admin .adm-user .nm{font-size:.875rem;font-weight:600;line-height:1.2}
+#tab-admin .adm-user .rl{font-size:.75rem;color:#bfe5f4;line-height:1.2}
+#tab-admin .adm-actions{display:flex;flex-wrap:wrap;gap:.4rem;justify-content:flex-end}
+#tab-admin .adm-btn{display:inline-flex;align-items:center;gap:.4rem;padding:.45rem .85rem;border-radius:.75rem;font-size:.8125rem;font-weight:500;color:#fff;background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.2);transition:background .15s,border-color .15s;cursor:pointer}
+#tab-admin .adm-btn:hover{background:rgba(255,255,255,.22);border-color:rgba(255,255,255,.35)}
+#tab-admin .adm-btn.danger{background:rgba(214,69,93,.3);border-color:rgba(255,160,175,.45)}
+#tab-admin .adm-btn.danger:hover{background:rgba(214,69,93,.5)}
+#tab-admin .adm-stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(9.5rem,1fr));gap:.75rem;margin-top:1.5rem}
+#tab-admin .adm-stat{display:flex;align-items:center;gap:.75rem;padding:.75rem .9rem;border-radius:1rem;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.18);backdrop-filter:blur(8px)}
+#tab-admin .adm-stat>i{width:2.25rem;height:2.25rem;border-radius:.7rem;display:grid;place-items:center;color:var(--sea-100);background:rgba(255,255,255,.14)}
+#tab-admin .adm-stat b{display:block;font-family:'Prompt',sans-serif;font-size:1.35rem;font-weight:600;line-height:1.1;font-variant-numeric:tabular-nums}
+#tab-admin .adm-stat span{font-size:.8125rem;color:#bfe5f4}
+
+/* Sub navigation */
+#tab-admin .adm-nav{position:sticky;top:5.5rem;z-index:20;display:flex;gap:.25rem;padding:.35rem;overflow-x:auto;background:rgba(255,255,255,.92);backdrop-filter:blur(10px);border:1px solid var(--sea-line);border-radius:1.1rem;box-shadow:0 10px 24px -18px rgba(5,42,71,.5);scrollbar-width:none}
+#tab-admin .adm-nav::-webkit-scrollbar{display:none}
+#tab-admin .adm-tab{flex:1 0 auto;display:inline-flex;align-items:center;justify-content:center;gap:.5rem;padding:.65rem 1.1rem;border-radius:.8rem;font-size:.9rem;font-weight:500;color:var(--sea-muted);white-space:nowrap;transition:background .15s,color .15s;cursor:pointer}
+#tab-admin .adm-tab:hover{background:var(--sea-50);color:var(--sea-700)}
+#tab-admin .adm-tab.is-active{color:#fff;font-weight:600;background:linear-gradient(135deg,var(--sea-700),var(--sea-500));box-shadow:0 8px 18px -10px var(--sea-600)}
+
+/* Section heads & buttons */
+#tab-admin .adm-sec-head{display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:.75rem}
+#tab-admin .adm-sec-head h3{display:flex;align-items:center;gap:.65rem;font-size:1.2rem;font-weight:600;color:var(--sea-ink)}
+#tab-admin .adm-sec-head h3 .hi{width:2.25rem;height:2.25rem;border-radius:.75rem;display:grid;place-items:center;font-size:1rem;color:var(--sea-600);background:var(--sea-100)}
+#tab-admin .adm-sec-head p{margin-top:.25rem;font-size:.875rem;color:var(--sea-muted)}
+#tab-admin .btn-ocean{display:inline-flex;align-items:center;gap:.45rem;padding:.6rem 1.1rem;border-radius:.85rem;font-size:.875rem;font-weight:600;color:#fff;background:linear-gradient(135deg,var(--sea-700),var(--sea-500));box-shadow:0 10px 20px -12px var(--sea-600);transition:filter .15s,transform .15s;cursor:pointer}
+#tab-admin .btn-ocean:hover{filter:brightness(1.08)}
+#tab-admin .btn-line{display:inline-flex;align-items:center;gap:.4rem;padding:.45rem .9rem;border-radius:.7rem;font-size:.8125rem;font-weight:500;color:var(--sea-700);background:#fff;border:1px solid var(--sea-line);transition:background .15s,border-color .15s;cursor:pointer}
+#tab-admin .btn-line:hover{background:var(--sea-50);border-color:var(--sea-300)}
+
+/* Module cards */
+.mod-card{position:relative;display:flex;flex-direction:column;align-items:flex-start;gap:.3rem;width:100%;text-align:left;padding:1rem;border-radius:1.15rem;background:#fff;border:1px solid var(--sea-line);transition:border-color .18s,box-shadow .18s;cursor:pointer}
+.mod-card:hover{border-color:color-mix(in srgb,var(--mc) 45%,#fff);box-shadow:0 14px 28px -18px color-mix(in srgb,var(--mc) 75%,transparent)}
+.mod-card .mod-ic{width:2.75rem;height:2.75rem;border-radius:.9rem;display:grid;place-items:center;font-size:1.1rem;color:var(--mc);background:color-mix(in srgb,var(--mc) 11%,#fff);margin-bottom:.45rem}
+.mod-card .mod-no{position:absolute;top:.95rem;right:1rem;font-size:.8125rem;font-weight:600;color:var(--mc);font-variant-numeric:tabular-nums}
+.mod-card .mod-t{font-family:'Prompt',sans-serif;font-weight:600;font-size:.95rem;line-height:1.35;color:var(--sea-ink)}
+.mod-card .mod-meta{display:flex;flex-wrap:wrap;gap:.2rem .8rem;font-size:.8125rem;color:var(--sea-muted)}
+.mod-card .mod-meta b{font-weight:600;color:var(--sea-ink)}
+.mod-card.is-on{background:linear-gradient(145deg,var(--sea-900),color-mix(in srgb,var(--mc) 72%,var(--sea-900)));border-color:transparent;box-shadow:0 20px 36px -20px var(--mc)}
+.mod-card.is-on .mod-ic{background:rgba(255,255,255,.16);color:#fff}
+.mod-card.is-on .mod-no,.mod-card.is-on .mod-t,.mod-card.is-on .mod-meta,.mod-card.is-on .mod-meta b{color:#fff}
+.mod-card.is-on .mod-meta{color:#cdeaf6}
+
+/* Module detail */
+#mod-detail{background:#fff;border:1px solid var(--sea-line);border-radius:1.5rem;padding:1.15rem;box-shadow:0 18px 40px -34px rgba(5,42,71,.5)}
+.mod-head{display:flex;align-items:center;gap:1rem;padding:1rem 1.15rem;margin-bottom:1rem;border-radius:1.1rem;background:linear-gradient(100deg,color-mix(in srgb,var(--mc) 13%,#fff),#fff 75%);border:1px solid color-mix(in srgb,var(--mc) 22%,#fff)}
+.mod-head .ic{flex:none;width:3.25rem;height:3.25rem;border-radius:1rem;display:grid;place-items:center;font-size:1.35rem;color:#fff;background:linear-gradient(145deg,color-mix(in srgb,var(--mc) 72%,var(--sea-900)),var(--mc));box-shadow:0 12px 22px -12px var(--mc)}
+.mod-head .no{font-size:.8125rem;font-weight:600;color:var(--mc)}
+.mod-head h4{font-size:1.25rem;font-weight:600;line-height:1.25;color:var(--sea-ink)}
+.mod-head .tot{margin-left:auto;font-size:.8125rem;color:var(--sea-muted);white-space:nowrap;text-align:right}
+.mod-head .tot b{display:block;font-family:'Prompt',sans-serif;font-size:1.3rem;font-weight:600;color:var(--mc);line-height:1.1}
+.mod-groups{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,19rem),1fr));gap:.9rem}
+.mod-group{background:#fff;border:1px solid var(--sea-line);border-top:3px solid var(--mc);border-radius:1rem;padding:1rem}
+.mod-group h5{display:flex;align-items:center;gap:.55rem;margin-bottom:.8rem;font-size:.95rem;font-weight:600;color:var(--sea-ink)}
+.mod-group h5>i{width:1.25rem;text-align:center;color:var(--mc)}
+.mod-group h5 .cnt{margin-left:auto;min-width:1.5rem;padding:.05rem .45rem;border-radius:999px;text-align:center;font-size:.75rem;font-weight:600;color:var(--mc);background:color-mix(in srgb,var(--mc) 11%,#fff)}
+.mod-group ul{display:grid;gap:.5rem;list-style:none;margin:0;padding:0}
+.mod-group li{display:flex;align-items:flex-start;gap:.65rem;font-size:.875rem;line-height:1.4;color:#27475c}
+.mod-group li .li-ic{flex:none;width:1.75rem;height:1.75rem;border-radius:.55rem;display:grid;place-items:center;font-size:.75rem;color:var(--mc);background:color-mix(in srgb,var(--mc) 10%,#fff)}
+.mod-group li .tx{padding-top:.2rem}
+
+/* Data-flow panel */
+#tab-admin .adm-flow{position:relative;overflow:hidden;border-radius:1.25rem;padding:1.25rem;color:#fff;background:linear-gradient(135deg,var(--sea-950),var(--sea-800))}
+#tab-admin .adm-flow-title{display:flex;align-items:center;gap:.5rem;margin-bottom:.9rem;font-family:'Prompt',sans-serif;font-weight:600;font-size:.95rem;color:var(--sea-300)}
 .mod-flow{display:flex;flex-wrap:wrap;align-items:center;gap:.5rem}
-.mod-flow .st{background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.16);color:#f1f5f9;padding:.35rem .8rem;border-radius:999px;font-size:.8125rem;font-weight:600}
-.mod-flow .ar{color:#22d3ee}
+.mod-flow+.mod-flow{margin-top:.65rem}
+.mod-flow .st{background:rgba(255,255,255,.09);border:1px solid rgba(255,255,255,.18);color:#eef9fe;padding:.35rem .8rem;border-radius:999px;font-size:.8125rem;font-weight:500}
+.mod-flow .ar{color:var(--sea-300);font-size:.8125rem}
+
+/* Calendar */
+#tab-admin .cal-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,22rem),1fr));gap:.9rem}
+.ev-card{position:relative;display:flex;align-items:flex-start;gap:.9rem;padding:1rem;border-radius:1.1rem;background:#fff;border:1px solid var(--sea-line);transition:box-shadow .18s,border-color .18s}
+.ev-card:hover{border-color:color-mix(in srgb,var(--ec) 40%,#fff);box-shadow:0 14px 26px -20px var(--ec)}
+.ev-date{flex:none;width:3.6rem;padding:.5rem .25rem;border-radius:.9rem;text-align:center;color:#fff;background:linear-gradient(160deg,color-mix(in srgb,var(--ec) 70%,var(--sea-900)),var(--ec))}
+.ev-date b{display:block;font-family:'Prompt',sans-serif;font-size:1.45rem;font-weight:600;line-height:1.1}
+.ev-date span{display:block;margin-top:.1rem;font-size:.75rem;opacity:.92}
+.ev-body{flex:1;min-width:0}
+.ev-body h4{font-size:.95rem;font-weight:600;line-height:1.35;color:var(--sea-ink)}
+.ev-body p{margin-top:.3rem;font-size:.8125rem;color:var(--sea-muted)}
+.ev-body p i{margin-right:.4rem;color:var(--ec)}
+.ev-img{margin-top:.6rem;width:100%;height:6.5rem;object-fit:cover;border-radius:.75rem;border:1px solid var(--sea-line)}
+.ev-chip{display:inline-block;margin-top:.6rem;padding:.12rem .6rem;border-radius:999px;font-size:.75rem;font-weight:500;color:color-mix(in srgb,var(--ec) 80%,#000);background:color-mix(in srgb,var(--ec) 12%,#fff)}
+.ev-del{flex:none;width:2rem;height:2rem;border-radius:.6rem;display:grid;place-items:center;color:#7b93a4;transition:background .15s,color .15s;cursor:pointer}
+.ev-del:hover{color:var(--sea-coral);background:#fdecef}
+.adm-empty{grid-column:1/-1;display:flex;flex-direction:column;align-items:center;gap:.6rem;padding:2.5rem 1rem;text-align:center;color:var(--sea-muted);background:rgba(255,255,255,.7);border:1.5px dashed #b2d3e4;border-radius:1.25rem}
+.adm-empty i{font-size:1.75rem;color:var(--sea-400)}
+#cal-list>p{grid-column:1/-1;font-size:.875rem;color:var(--sea-muted)}
+
+/* Documents */
+#tab-admin .doc-list{display:grid;gap:.65rem}
+.doc-row{display:flex;align-items:center;gap:.9rem;padding:.9rem 1rem;border-radius:1rem;background:#fff;border:1px solid var(--sea-line);transition:border-color .15s,box-shadow .15s}
+.doc-row:hover{border-color:var(--sea-300);box-shadow:0 12px 24px -20px var(--sea-600)}
+.doc-row .fi{flex:none;width:2.6rem;height:2.6rem;border-radius:.8rem;display:grid;place-items:center;font-size:1.1rem;color:var(--sea-coral);background:#fdecef}
+.doc-row .dt{flex:1;min-width:0}
+.doc-row h4{font-size:.9rem;font-weight:600;line-height:1.4;color:var(--sea-ink)}
+.doc-row p{margin-top:.15rem;font-size:.8125rem;color:var(--sea-muted)}
+
+/* Modals */
+#login-modal>div,#pw-modal>div,#users-modal>div,#ev-modal>div,#repair-modal>div{border:1px solid var(--sea-line);border-radius:1.5rem;background:linear-gradient(90deg,var(--sea-600),var(--sea-300)) top/100% 4px no-repeat,#fff;box-shadow:0 30px 60px -24px rgba(3,28,48,.55)}
+#login-modal,#pw-modal,#users-modal,#ev-modal,#repair-modal{background:rgba(3,28,48,.6)}
+#login-modal input,#pw-modal input,#users-modal input,#users-modal select,#ev-modal input,#ev-modal select,#repair-modal input,#repair-modal textarea{background:var(--sea-50);border-color:#c9e0ec;color:var(--sea-ink);transition:border-color .15s,box-shadow .15s,background .15s}
+#login-modal input:focus,#pw-modal input:focus,#users-modal input:focus,#users-modal select:focus,#ev-modal input:focus,#ev-modal select:focus,#repair-modal input:focus,#repair-modal textarea:focus{background:#fff;border-color:var(--sea-500);box-shadow:0 0 0 3px rgba(18,148,208,.2);outline:none}
+#login-modal h3,#pw-modal h3,#users-modal h3,#ev-modal h4,#repair-modal h3{font-family:'Prompt',sans-serif;color:var(--sea-ink)}
+#login-modal label,#pw-modal label{color:#38566b}
+#users-modal thead{background:var(--sea-50);color:var(--sea-muted)}
+
+/* Quality floor */
+#tab-admin :is(button,a):focus-visible,#login-modal :is(button,input):focus-visible{outline:3px solid var(--sea-400);outline-offset:2px}
+@media (max-width:640px){
+  #tab-admin .adm-hero{padding:1.25rem 1.1rem}
+  #tab-admin .adm-side{align-items:stretch;width:100%}
+  #tab-admin .adm-actions{justify-content:flex-start}
+  #tab-admin .adm-nav{top:5.25rem}
+  .mod-head{flex-wrap:wrap}
+  .mod-head .tot{margin-left:0;text-align:left}
+}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important;scroll-behavior:auto!important}}
 </style>
 </head>
 <body class="bg-slate-50 text-slate-800 antialiased selection:bg-aiBlue-500 selection:text-white">
@@ -599,56 +733,75 @@
         <!-- ==================== TAB 5: INTERNAL ADMIN & DASHBOARD ==================== -->
         <div id="tab-admin" class="tab-content hidden max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 space-y-8">
             <!-- Admin Header -->
-            <div class="adm-hero text-white p-7 rounded-3xl flex flex-col md:flex-row md:items-center justify-between gap-4 shadow-xl">
-                <div>
-                    <span class="text-xs uppercase tracking-wider text-cyan-400 font-semibold"><i class="fa-solid fa-lock mr-1"></i> Restricted Area</span>
-                    <h2 class="text-2xl font-bold mt-1">ระบบบริหารจัดการภายในองค์กร (Internal Dashboard)</h2>
-                    <p class="text-slate-400 text-xs mt-1">ยินดีต้อนรับสู่ระบบหลังบ้าน รพ.สต.บ้านนายอ ยุค AI</p>
+            <section class="adm-hero">
+                <svg class="adm-waves" viewBox="0 0 1200 220" preserveAspectRatio="none" aria-hidden="true" fill="none" stroke="#bfeaf7" stroke-width="1.2">
+                    <path stroke-opacity=".5" d="M0 120 C150 60 300 180 450 120 S750 60 900 120 S1100 170 1200 110"/>
+                    <path stroke-opacity=".38" d="M0 140 C150 80 300 200 450 140 S750 80 900 140 S1100 190 1200 130"/>
+                    <path stroke-opacity=".28" d="M0 160 C150 100 300 220 450 160 S750 100 900 160 S1100 210 1200 150"/>
+                    <path stroke-opacity=".2" d="M0 180 C150 120 300 240 450 180 S750 120 900 180 S1100 230 1200 170"/>
+                    <path stroke-opacity=".14" d="M0 200 C150 140 300 260 450 200 S750 140 900 200 S1100 250 1200 190"/>
+                </svg>
+                <div class="adm-top">
+                    <div>
+                        <span class="adm-badge"><i class="fa-solid fa-lock"></i> เฉพาะเจ้าหน้าที่</span>
+                        <h2>ระบบบริหารจัดการภายในองค์กร</h2>
+                        <p class="adm-sub">ระบบหลังบ้าน รพ.สต.บ้านนายอ ต.สร้างค้อ อ.ภูพาน จ.สกลนคร ยุค AI</p>
+                    </div>
+                    <div class="adm-side">
+                        <div class="adm-user">
+                            <span class="adm-avatar"><i class="fa-solid fa-user-shield"></i></span>
+                            <div><div class="nm" id="auth-name">-</div><div class="rl" id="auth-role"></div></div>
+                        </div>
+                        <div class="adm-actions">
+                            <button id="auth-users-btn" type="button" onclick="openUsers()" class="hidden adm-btn"><i class="fa-solid fa-users-gear"></i>จัดการผู้ใช้</button>
+                            <button type="button" onclick="openPw(false)" class="adm-btn"><i class="fa-solid fa-key"></i>เปลี่ยนรหัสผ่าน</button>
+                            <button type="button" onclick="switchTab('home')" class="adm-btn"><i class="fa-solid fa-house"></i>กลับหน้าหลัก</button>
+                            <button type="button" onclick="logout()" class="adm-btn danger"><i class="fa-solid fa-right-from-bracket"></i>ออกจากระบบ</button>
+                        </div>
+                    </div>
                 </div>
-                <div class="flex flex-wrap items-center gap-2 md:gap-3">
-                    <span class="text-xs bg-emerald-500/20 text-emerald-300 px-3 py-1.5 rounded-full border border-emerald-500/30 flex items-center gap-1.5">
-                        <i class="fa-solid fa-circle-user"></i> <span id="auth-name">-</span> <span id="auth-role" class="text-emerald-200/70"></span>
-                    </span>
-                    <button id="auth-users-btn" onclick="openUsers()" class="hidden px-3 py-2 rounded-xl bg-slate-800 text-slate-300 hover:bg-slate-700 text-xs font-medium"><i class="fa-solid fa-users-gear mr-1"></i>จัดการผู้ใช้</button>
-                    <button onclick="openPw(false)" class="px-3 py-2 rounded-xl bg-slate-800 text-slate-300 hover:bg-slate-700 text-xs font-medium"><i class="fa-solid fa-key mr-1"></i>เปลี่ยนรหัสผ่าน</button>
-                    <button onclick="logout()" class="px-3 py-2 rounded-xl bg-rose-600/90 text-white hover:bg-rose-600 text-xs font-medium"><i class="fa-solid fa-right-from-bracket mr-1"></i>ออกจากระบบ</button>
-                    <button onclick="switchTab('home')" class="px-4 py-2 rounded-xl bg-slate-800 text-slate-300 hover:bg-slate-700 text-xs font-medium">กลับหน้าหลัก</button>
+                <div class="adm-stats">
+                    <div class="adm-stat"><i class="fa-solid fa-grip"></i><div><b id="stat-mods">8</b><span>หมวดงานหลัก</span></div></div>
+                    <div class="adm-stat"><i class="fa-solid fa-list-check"></i><div><b id="stat-items">-</b><span>รายการงานย่อย</span></div></div>
+                    <div class="adm-stat"><i class="fa-solid fa-calendar-days"></i><div><b id="stat-cal">-</b><span>กิจกรรมในปฏิทิน</span></div></div>
+                    <div class="adm-stat"><i class="fa-solid fa-folder-open"></i><div><b id="stat-docs">-</b><span>คำสั่ง/หนังสือเวียน</span></div></div>
                 </div>
-            </div>
+            </section>
 
             <!-- Admin Sub-navigation Tabs -->
-            <div class="adm-nav flex flex-wrap">
-                <button onclick="switchAdminSub('modules')" id="sub-btn-modules" class="admin-sub-btn px-4 py-2 rounded-xl text-sm font-semibold bg-aiBlue-600 text-white shadow-sm transition"><i class="fa-solid fa-grip mr-1.5"></i>ระบบงานหลัก 8 หมวด</button>
-                <button onclick="switchAdminSub('calendar')" id="sub-btn-calendar" class="admin-sub-btn px-4 py-2 rounded-xl text-sm font-semibold bg-white text-slate-600 hover:bg-slate-100 transition"><i class="fa-solid fa-calendar-days mr-1.5"></i>ปฏิทินงานองค์กร</button>
-                <button onclick="switchAdminSub('doc')" id="sub-btn-doc" class="admin-sub-btn px-4 py-2 rounded-xl text-sm font-semibold bg-white text-slate-600 hover:bg-slate-100 transition"><i class="fa-solid fa-folder-open mr-1.5"></i>คลังคำสั่ง/หนังสือเวียน</button>
+            <div class="adm-nav" role="tablist">
+                <button type="button" onclick="switchAdminSub('modules')" id="sub-btn-modules" class="admin-sub-btn adm-tab is-active"><i class="fa-solid fa-grip"></i>ระบบงานหลัก 8 หมวด</button>
+                <button type="button" onclick="switchAdminSub('calendar')" id="sub-btn-calendar" class="admin-sub-btn adm-tab"><i class="fa-solid fa-calendar-days"></i>ปฏิทินงานองค์กร</button>
+                <button type="button" onclick="switchAdminSub('doc')" id="sub-btn-doc" class="admin-sub-btn adm-tab"><i class="fa-solid fa-folder-open"></i>คลังคำสั่ง/หนังสือเวียน</button>
             </div>
 
             <!-- SUB-SECTION 0: CORE MODULES 2.1-2.8 -->
             <div id="admin-sub-modules" class="admin-sub-content space-y-6">
-                <div>
-                    <h3 class="text-lg font-bold text-slate-900"><i class="fa-solid fa-grip text-aiBlue-600 mr-2"></i> ระบบงานหลักของ รพ.สต. (8 หมวด)</h3>
-                    <p class="text-xs text-slate-500 mt-1">เลือกหมวดเพื่อดูรายละเอียดงานย่อยที่ออกแบบไว้ — ข้อมูลทุกหมวดเชื่อมโยงกันเป็นศูนย์กลางเดียว</p>
+                <div class="adm-sec-head">
+                    <div>
+                        <h3><span class="hi"><i class="fa-solid fa-grip"></i></span>ระบบงานหลักของ รพ.สต. (8 หมวด)</h3>
+                        <p>เลือกหมวดเพื่อดูรายละเอียดงานย่อย ข้อมูลทุกหมวดเชื่อมโยงกันเป็นศูนย์กลางเดียว</p>
+                    </div>
                 </div>
                 <div id="mod-grid" class="grid grid-cols-2 lg:grid-cols-4 gap-4"></div>
-                <div id="mod-detail" class="bg-slate-50 rounded-3xl border border-slate-200 p-5 md:p-6"></div>
-                <div class="adm-hero rounded-2xl p-5 text-white">
-                    <div class="font-bold text-cyan-300 mb-3 text-sm"><i class="fa-solid fa-diagram-project mr-1.5"></i> การไหลของข้อมูลระหว่างหมวด</div>
-                    <div class="space-y-2.5">
-                        <div class="mod-flow"><span class="st">2.1 บริการผู้ป่วย</span><span class="ar">+</span><span class="st">2.2 งานชุมชน</span><i class="fa-solid fa-arrow-right ar"></i><span class="st">2.3 KPI</span><i class="fa-solid fa-arrow-right ar"></i><span class="st">2.4 แผนงาน</span><i class="fa-solid fa-arrow-right ar"></i><span class="st">2.7 คุมงบตามโครงการ</span></div>
-                        <div class="mod-flow"><span class="st">2.1 ใบสั่งยา</span><i class="fa-solid fa-arrow-right ar"></i><span class="st">2.8 ตัดจ่ายคลังยาอัตโนมัติ</span></div>
-                    </div>
+                <div id="mod-detail"></div>
+                <div class="adm-flow">
+                    <div class="adm-flow-title"><i class="fa-solid fa-diagram-project"></i>การไหลของข้อมูลระหว่างหมวด</div>
+                    <div class="mod-flow"><span class="st">2.1 บริการผู้ป่วย</span><span class="ar">+</span><span class="st">2.2 งานชุมชน</span><i class="fa-solid fa-arrow-right ar"></i><span class="st">2.3 KPI</span><i class="fa-solid fa-arrow-right ar"></i><span class="st">2.4 แผนงาน</span><i class="fa-solid fa-arrow-right ar"></i><span class="st">2.7 คุมงบตามโครงการ</span></div>
+                    <div class="mod-flow"><span class="st">2.1 ใบสั่งยา</span><i class="fa-solid fa-arrow-right ar"></i><span class="st">2.8 ตัดจ่ายคลังยาอัตโนมัติ</span></div>
                 </div>
             </div>
 
             <!-- SUB-SECTION 1: CALENDAR -->
             <div id="admin-sub-calendar" class="admin-sub-content hidden space-y-6">
-                <div class="flex items-center justify-between">
-                    <h3 class="text-lg font-bold text-slate-900"><i class="fa-solid fa-calendar-days text-aiBlue-600 mr-2"></i> ปฏิทินปฏิบัติงานองค์กร</h3>
-                    <button onclick="openEvForm()" class="px-4 py-2 rounded-xl ai-gradient text-white text-sm font-medium shadow-sm"><i class="fa-solid fa-plus mr-1"></i> เพิ่มกิจกรรม</button>
+                <div class="adm-sec-head">
+                    <div>
+                        <h3><span class="hi"><i class="fa-solid fa-calendar-days"></i></span>ปฏิทินปฏิบัติงานองค์กร</h3>
+                        <p>กิจกรรมและนัดหมายของเจ้าหน้าที่ เรียงตามวันที่</p>
+                    </div>
+                    <button type="button" onclick="openEvForm()" class="btn-ocean"><i class="fa-solid fa-plus"></i>เพิ่มกิจกรรม</button>
                 </div>
-                <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-6">
-                    <div id="cal-list" class="grid grid-cols-1 md:grid-cols-2 gap-4"><p class="text-sm text-slate-500">กำลังโหลดข้อมูล...</p></div>
-                </div>
+                <div id="cal-list" class="cal-grid"><p>กำลังโหลดข้อมูล...</p></div>
                 <div id="ev-modal" class="hidden fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4">
                     <div class="bg-white rounded-3xl shadow-2xl w-full max-w-md p-6 space-y-4">
                         <h4 class="font-bold text-lg text-slate-900"><i class="fa-solid fa-calendar-plus text-aiBlue-600 mr-2"></i>เพิ่มกิจกรรมใหม่</h4>
@@ -674,30 +827,29 @@
 
             <!-- SUB-SECTION 4: DOCUMENTS & CIRCULARS -->
             <div id="admin-sub-doc" class="admin-sub-content hidden space-y-6">
-                <div class="flex items-center justify-between">
-                    <h3 class="text-lg font-bold text-slate-900"><i class="fa-solid fa-folder-open text-aiBlue-600 mr-2"></i> คลังคำสั่งและหนังสือเวียนภายใน</h3>
-                    <button onclick="showToast('อัปโหลดคำสั่งสำเร็จ')" class="px-4 py-2 rounded-xl ai-gradient text-white text-xs font-medium shadow-sm"><i class="fa-solid fa-upload mr-1"></i> อัปโหลดคำสั่ง</button>
-                </div>
-                <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-6 space-y-3">
-                    <div class="flex items-center justify-between p-3 rounded-xl hover:bg-slate-50 border border-slate-100 transition">
-                        <div class="flex items-center space-x-3">
-                            <div class="w-10 h-10 rounded-lg bg-red-50 text-red-600 flex items-center justify-center font-bold text-sm"><i class="fa-solid fa-file-pdf"></i></div>
-                            <div>
-                                <h4 class="font-bold text-slate-800 text-sm">คำสั่ง รพ.สต.บ้านนายอ ที่ 45/2569 เรื่อง แต่งตั้งเวรปฏิบัติงาน</h4>
-                                <p class="text-xs text-slate-400">เผยแพร่เมื่อ 1 ต.ค. 2569 | ขนาดไฟล์ 1.2 MB</p>
-                            </div>
-                        </div>
-                        <button onclick="showToast('กำลังดาวน์โหลดไฟล์...')" class="px-3 py-1.5 rounded-lg border border-slate-200 text-slate-600 hover:bg-slate-100 text-xs font-medium">ดาวน์โหลด</button>
+                <div class="adm-sec-head">
+                    <div>
+                        <h3><span class="hi"><i class="fa-solid fa-folder-open"></i></span>คลังคำสั่งและหนังสือเวียนภายใน</h3>
+                        <p>ดาวน์โหลดคำสั่งและแนวทางปฏิบัติล่าสุดของหน่วยงาน</p>
                     </div>
-                    <div class="flex items-center justify-between p-3 rounded-xl hover:bg-slate-50 border border-slate-100 transition">
-                        <div class="flex items-center space-x-3">
-                            <div class="w-10 h-10 rounded-lg bg-red-50 text-red-600 flex items-center justify-center font-bold text-sm"><i class="fa-solid fa-file-pdf"></i></div>
-                            <div>
-                                <h4 class="font-bold text-slate-800 text-sm">แนวทางปฏิบัติการบันทึกข้อมูลสุขภาพยุค AI สคร.8</h4>
-                                <p class="text-xs text-slate-400">เผยแพร่เมื่อ 28 ก.ย. 2569 | ขนาดไฟล์ 3.4 MB</p>
-                            </div>
+                    <button type="button" onclick="showToast('อัปโหลดคำสั่งสำเร็จ')" class="btn-ocean"><i class="fa-solid fa-upload"></i>อัปโหลดคำสั่ง</button>
+                </div>
+                <div class="doc-list">
+                    <div class="doc-row">
+                        <div class="fi"><i class="fa-solid fa-file-pdf"></i></div>
+                        <div class="dt">
+                            <h4>คำสั่ง รพ.สต.บ้านนายอ ที่ 45/2569 เรื่อง แต่งตั้งเวรปฏิบัติงาน</h4>
+                            <p>เผยแพร่เมื่อ 1 ต.ค. 2569 ขนาดไฟล์ 1.2 MB</p>
                         </div>
-                        <button onclick="showToast('กำลังดาวน์โหลดไฟล์...')" class="px-3 py-1.5 rounded-lg border border-slate-200 text-slate-600 hover:bg-slate-100 text-xs font-medium">ดาวน์โหลด</button>
+                        <button type="button" onclick="showToast('กำลังดาวน์โหลดไฟล์...')" class="btn-line"><i class="fa-solid fa-download"></i>ดาวน์โหลด</button>
+                    </div>
+                    <div class="doc-row">
+                        <div class="fi"><i class="fa-solid fa-file-pdf"></i></div>
+                        <div class="dt">
+                            <h4>แนวทางปฏิบัติการบันทึกข้อมูลสุขภาพยุค AI สคร.8</h4>
+                            <p>เผยแพร่เมื่อ 28 ก.ย. 2569 ขนาดไฟล์ 3.4 MB</p>
+                        </div>
+                        <button type="button" onclick="showToast('กำลังดาวน์โหลดไฟล์...')" class="btn-line"><i class="fa-solid fa-download"></i>ดาวน์โหลด</button>
                     </div>
                 </div>
             </div>
@@ -936,16 +1088,9 @@
         function switchAdminSub(subId) {
             document.querySelectorAll('.admin-sub-content').forEach(el => el.classList.add('hidden'));
             document.getElementById('admin-sub-' + subId).classList.remove('hidden');
-
-            document.querySelectorAll('.admin-sub-btn').forEach(btn => {
-                btn.classList.remove('bg-aiBlue-600', 'text-white');
-                btn.classList.add('bg-white', 'text-slate-600');
-            });
+            document.querySelectorAll('.admin-sub-btn').forEach(btn => btn.classList.remove('is-active'));
             const activeBtn = document.getElementById('sub-btn-' + subId);
-            if(activeBtn) {
-                activeBtn.classList.remove('bg-white', 'text-slate-600');
-                activeBtn.classList.add('bg-aiBlue-600', 'text-white');
-            }
+            if (activeBtn) activeBtn.classList.add('is-active');
         }
 
         // ===== Core modules 2.1-2.8 =====
@@ -1024,28 +1169,35 @@
         ];
         function iconFor(t,d){for(const r of ICONS){if(r[0].test(t))return r[1];}return d||'fa-circle-dot';}
         const GICON={'ทะเบียน':'fa-address-book','คิวและจุดบริการ':'fa-list-ol','ส่งออกข้อมูล':'fa-file-export','งานเฉพาะ':'fa-star-of-life','ส่งต่อและนัดหมาย':'fa-truck-medical','ทะเบียนชุมชน':'fa-house-chimney','เชิงรุก':'fa-bullseye','อสม.':'fa-hands-holding-circle','ควบคุมโรคและอนามัย':'fa-virus','รายงาน':'fa-file-lines','ตัวชี้วัด':'fa-chart-pie','แดชบอร์ดผู้บริหาร':'fa-gauge-high','ส่งออก':'fa-file-export','วิเคราะห์':'fa-magnifying-glass-chart','ติดตามผล':'fa-bars-progress','เชื่อมโยง':'fa-link','ปฏิทิน':'fa-calendar-days','ทะเบียนอื่น':'fa-folder-tree','เวลาและเวร':'fa-clock','พัฒนาบุคลากร':'fa-user-graduate','วางแผน':'fa-users-gear','รายรับ':'fa-arrow-down-long','รายจ่าย':'fa-arrow-up-long','บัญชี':'fa-book','คุมงบ/รายงาน':'fa-wallet','พัสดุ':'fa-box','คลังยา: ทะเบียน':'fa-prescription-bottle-medical','คลังยา: เคลื่อนไหว':'fa-right-left','คลังยา: อื่นๆ':'fa-warehouse'};
+        const MOD_HUE=['#0a5db5','#0b6fc0','#0a7fbd','#0b8bb3','#0a93a8','#0a8c9a','#0b7d8f','#0e6f86'];
         function renderGrid(a){
             document.getElementById('mod-grid').innerHTML=MODS.map((m,k)=>{
               const n=m.g.reduce((t,g)=>t+g[1].length,0), on=k===a;
-              return '<button onclick="openMod('+k+')" class="mod-card '+(on?'ring-2 ring-'+m.c+'-500 bg-'+m.c+'-50 shadow-lg':'')+'">'
-              +'<span class="absolute top-3 right-3 text-xs font-bold text-'+m.c+'-700 bg-'+m.c+'-100 px-2 py-0.5 rounded-full">'+m.n+'</span>'
-              +'<div class="w-12 h-12 rounded-2xl bg-gradient-to-br from-'+m.c+'-400 to-'+m.c+'-600 text-white flex items-center justify-center text-xl shadow-md mb-3"><i class="fa-solid '+m.i+'"></i></div>'
-              +'<div class="text-[15px] font-bold text-slate-900 leading-snug">'+m.t+'</div>'
-              +'<div class="text-xs text-slate-500 mt-1">'+m.g.length+' กลุ่มงาน · '+n+' รายการ</div></button>';}).join('');
+              return '<button type="button" onclick="openMod('+k+',true)" aria-pressed="'+on+'" class="mod-card'+(on?' is-on':'')+'" style="--mc:'+MOD_HUE[k]+'">'
+              +'<span class="mod-no">'+m.n+'</span>'
+              +'<span class="mod-ic"><i class="fa-solid '+m.i+'"></i></span>'
+              +'<span class="mod-t">'+m.t+'</span>'
+              +'<span class="mod-meta"><span><b>'+m.g.length+'</b> กลุ่มงาน</span><span><b>'+n+'</b> รายการ</span></span></button>';}).join('');
         }
-        function openMod(k){
-            const m=MODS[k], c=m.c; renderGrid(k);
-            document.getElementById('mod-detail').innerHTML=
-              '<div class="flex items-center gap-4 rounded-2xl p-5 mb-5 bg-gradient-to-r from-'+c+'-50 to-white border border-'+c+'-100">'
-              +'<div class="w-14 h-14 rounded-2xl bg-gradient-to-br from-'+c+'-400 to-'+c+'-600 text-white flex items-center justify-center text-2xl shadow-lg"><i class="fa-solid '+m.i+'"></i></div>'
-              +'<div><div class="text-xs font-semibold text-'+c+'-700">หมวด '+m.n+'</div><h4 class="font-bold text-slate-900 text-xl leading-tight">'+m.t+'</h4></div></div>'
-              +'<div class="grid grid-cols-1 md:grid-cols-2 gap-4">'+m.g.map(g=>
-                '<div class="rounded-2xl bg-white border border-slate-200 border-l-4 border-l-'+c+'-400 p-4 shadow-sm">'
-                +'<div class="text-[15px] font-bold text-slate-900 mb-3 flex items-center gap-2"><i class="fa-solid '+(GICON[g[0]]||iconFor(g[0],m.i))+' text-'+c+'-600 w-5 text-center"></i>'+g[0]+'</div><ul class="space-y-2">'
-                +g[1].map(x=>'<li class="flex items-start gap-2.5 text-sm text-slate-700 leading-snug"><span class="w-7 h-7 shrink-0 rounded-full bg-'+c+'-50 text-'+c+'-600 flex items-center justify-center text-xs"><i class="fa-solid '+iconFor(x,m.i)+'"></i></span><span class="pt-1">'+x+'</span></li>').join('')
-                +'</ul></div>').join('')+'</div>';
+        function openMod(k,scroll){
+            const m=MODS[k]; renderGrid(k);
+            const total=m.g.reduce((t,g)=>t+g[1].length,0), box=document.getElementById('mod-detail');
+            box.style.setProperty('--mc',MOD_HUE[k]);
+            box.innerHTML=
+              '<div class="mod-head"><div class="ic"><i class="fa-solid '+m.i+'"></i></div>'
+              +'<div><div class="no">หมวด '+m.n+'</div><h4>'+m.t+'</h4></div>'
+              +'<div class="tot"><b>'+total+'</b>รายการงาน</div></div>'
+              +'<div class="mod-groups">'+m.g.map(g=>
+                '<section class="mod-group"><h5><i class="fa-solid '+(GICON[g[0]]||iconFor(g[0],m.i))+'"></i>'+g[0]+'<span class="cnt">'+g[1].length+'</span></h5><ul>'
+                +g[1].map(x=>'<li><span class="li-ic"><i class="fa-solid '+iconFor(x,m.i)+'"></i></span><span class="tx">'+x+'</span></li>').join('')
+                +'</ul></section>').join('')+'</div>';
+            if(scroll && window.innerWidth<1024) box.scrollIntoView({behavior:'smooth',block:'start'});
         }
-        (function(){ openMod(0); })();
+        (function(){
+            openMod(0);
+            const si=document.getElementById('stat-items'); if(si) si.textContent=MODS.reduce((t,m)=>t+m.g.reduce((x,g)=>x+g[1].length,0),0);
+            const sd=document.getElementById('stat-docs'); if(sd) sd.textContent=document.querySelectorAll('#admin-sub-doc .doc-row').length;
+        })();
 
         // AI Chatbot Toggle
         function toggleAIChat() {
@@ -1421,21 +1573,22 @@ function hashPw(user,pw){
         remove:path=>rtdb.ref(path).remove(),
         listen:(path,cb,err)=>rtdb.ref(path).on('value',sn=>cb(sn.val()||{}),err)
     };
-    const EV_CATS=[['งานป้องกันควบคุมโรค','blue'],['งานบริหารทั่วไป','emerald'],['คลินิกผู้สูงอายุ','amber'],['ยุทธศาสตร์ AI','purple'],['อื่นๆ','slate']];
+    const EV_CATS=[['งานป้องกันควบคุมโรค','#0b6fc0'],['งานบริหารทั่วไป','#0a8c9a'],['คลินิกผู้สูงอายุ','#1a9fd4'],['ยุทธศาสตร์ AI','#4a5fd0'],['อื่นๆ','#5b7a8c']];
     const TH_M=['ม.ค.','ก.พ.','มี.ค.','เม.ย.','พ.ค.','มิ.ย.','ก.ค.','ส.ค.','ก.ย.','ต.ค.','พ.ย.','ธ.ค.'];
     document.getElementById('ev-cat').innerHTML=EV_CATS.map(c=>'<option>'+c[0]+'</option>').join('');
     function renderCal(data){
         const list=Object.entries(data).map(([id,v])=>Object.assign({id},v)).sort((a,b)=>(a.date||'').localeCompare(b.date||''));
+        const sc=document.getElementById('stat-cal'); if(sc) sc.textContent=list.length;
         document.getElementById('cal-list').innerHTML=list.length?list.map(v=>{
             const col=(EV_CATS.find(c=>c[0]===v.cat)||EV_CATS[4])[1], d=(v.date||'').split('-');
-            return '<div class="p-4 rounded-xl bg-'+col+'-50 border border-'+col+'-100 flex items-start gap-3">'
-              +'<div class="bg-'+col+'-600 text-white text-center px-3 py-2 rounded-lg font-bold text-sm leading-tight">'+(+d[2]||'-')+'<br><span class="text-[10px] font-normal">'+(TH_M[(+d[1]||1)-1])+' '+String((+d[0]||0)+543).slice(-2)+'</span></div>'
-              +'<div class="flex-1 min-w-0"><h4 class="font-bold text-slate-900 text-sm">'+escapeHTML(v.title||'')+'</h4>'
-              +'<p class="text-xs text-slate-600 mt-1">สถานที่: '+escapeHTML(v.place||'-')+'</p>'
-              +(/^https:\/\//.test(v.img||'')?'<a href="'+escapeHTML(v.img)+'" target="_blank" rel="noopener noreferrer"><img src="'+escapeHTML(v.img)+'" loading="lazy" class="mt-2 rounded-lg h-24 w-full object-cover border border-white" alt=""></a>':'')
-              +'<span class="inline-block mt-2 text-[10px] bg-'+col+'-200 text-'+col+'-800 px-2 py-0.5 rounded font-medium">'+escapeHTML(v.cat||'อื่นๆ')+'</span></div>'
-              +'<button onclick="delEv(\''+v.id+'\')" title="ลบ" class="text-slate-400 hover:text-rose-600"><i class="fa-solid fa-trash-can"></i></button></div>';
-        }).join(''):'<p class="text-sm text-slate-500">ยังไม่มีกิจกรรม กด "เพิ่มกิจกรรม" เพื่อเริ่มต้น</p>';
+            return '<article class="ev-card" style="--ec:'+col+'">'
+              +'<div class="ev-date"><b>'+(+d[2]||'-')+'</b><span>'+(TH_M[(+d[1]||1)-1])+' '+String((+d[0]||0)+543).slice(-2)+'</span></div>'
+              +'<div class="ev-body"><h4>'+escapeHTML(v.title||'')+'</h4>'
+              +'<p><i class="fa-solid fa-location-dot"></i>'+escapeHTML(v.place||'-')+'</p>'
+              +(/^https:\/\//.test(v.img||'')?'<a href="'+escapeHTML(v.img)+'" target="_blank" rel="noopener noreferrer"><img src="'+escapeHTML(v.img)+'" loading="lazy" class="ev-img" alt=""></a>':'')
+              +'<span class="ev-chip">'+escapeHTML(v.cat||'อื่นๆ')+'</span></div>'
+              +'<button type="button" onclick="delEv(\''+v.id+'\')" title="ลบกิจกรรม" aria-label="ลบกิจกรรม" class="ev-del"><i class="fa-solid fa-trash-can"></i></button></article>';
+        }).join(''):'<div class="adm-empty"><i class="fa-regular fa-calendar-plus"></i><p>ยังไม่มีกิจกรรม กด “เพิ่มกิจกรรม” เพื่อเริ่มต้น</p></div>';
     }
     if(rtdb) DB.listen('calendar',renderCal,e=>{ setDbStatus(false,'สิทธิ์ถูกปฏิเสธ (ตรวจ Rules)'); document.getElementById('cal-list').innerHTML='<p class="text-sm text-rose-600">อ่านข้อมูลไม่ได้: '+escapeHTML(e.message)+'</p>'; });
     function openEvForm(){document.getElementById('ev-modal').classList.remove('hidden');}
