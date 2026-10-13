@@ -770,16 +770,16 @@ main:has(#tab-admin:not(.hidden)){background:linear-gradient(180deg,#e0f2fe 0,#f
 
             <!-- Admin Sub-navigation Tabs -->
             <div class="adm-nav" role="tablist">
-                <button type="button" onclick="switchAdminSub('modules')" id="sub-btn-modules" class="admin-sub-btn adm-tab is-active"><i class="fa-solid fa-grip"></i>ระบบงานหลัก 8 หมวด</button>
+                <button type="button" onclick="switchAdminSub('modules')" id="sub-btn-modules" class="admin-sub-btn adm-tab is-active"><i class="fa-solid fa-grip"></i>ระบบงานหลัก 9 หมวด</button>
                 <button type="button" onclick="switchAdminSub('calendar')" id="sub-btn-calendar" class="admin-sub-btn adm-tab"><i class="fa-solid fa-calendar-days"></i>ปฏิทินงานองค์กร</button>
                 <button type="button" onclick="switchAdminSub('doc')" id="sub-btn-doc" class="admin-sub-btn adm-tab"><i class="fa-solid fa-folder-open"></i>คลังคำสั่ง/หนังสือเวียน</button>
             </div>
 
-            <!-- SUB-SECTION 0: CORE MODULES 2.1-2.8 -->
+            <!-- SUB-SECTION 0: CORE MODULES 2.1-2.9 -->
             <div id="admin-sub-modules" class="admin-sub-content space-y-6">
                 <div class="adm-sec-head">
                     <div>
-                        <h3><span class="hi"><i class="fa-solid fa-grip"></i></span>ระบบงานหลักของ รพ.สต. (8 หมวด)</h3>
+                        <h3><span class="hi"><i class="fa-solid fa-grip"></i></span>ระบบงานหลักของ รพ.สต. (9 หมวด)</h3>
                         <p>เลือกหมวดเพื่อดูรายละเอียดงานย่อย ข้อมูลทุกหมวดเชื่อมโยงกันเป็นศูนย์กลางเดียว</p>
                     </div>
                 </div>
@@ -1093,16 +1093,11 @@ main:has(#tab-admin:not(.hidden)){background:linear-gradient(180deg,#e0f2fe 0,#f
             if (activeBtn) activeBtn.classList.add('is-active');
         }
 
-        // ===== Core modules 2.1-2.8 =====
+        // ===== Core modules 2.1-2.9 =====
         const MODS=[
-        {n:'2.1',t:'ทะเบียนและบริการผู้ป่วย',i:'fa-user-injured',c:'blue',g:[
-          ['ทะเบียน',['ลงทะเบียน/ค้นหาผู้ป่วย','ตรวจสอบสิทธิ','ออก HN']],
-          ['คิวและจุดบริการ',['คัดกรอง (ซักประวัติ/วัดสัญญาณชีพ)','ตรวจรักษา','จ่ายยา','ชำระเงิน']],
-          ['OPD Card อิเล็กทรอนิกส์',['อาการสำคัญ','การวินิจฉัย','หัตถการ','ใบสั่งยา']],
-          ['งานเฉพาะ',['ANC/ฝากครรภ์','EPI/วัคซีน','วางแผนครอบครัว','NCD (เบาหวาน/ความดัน)','ทันตกรรม','แพทย์แผนไทย']],
-          ['ส่งต่อและนัดหมาย',['Refer in/out','นัดหมาย','ติดตามผู้ขาดนัด']],
-          ['ส่งออกข้อมูล',['ผลิตแฟ้ม 43 แฟ้มอัตโนมัติจากข้อมูลบริการ']]]},
-        {n:'2.2',t:'งานสุขภาพชุมชนและรายงาน',i:'fa-people-roof',c:'emerald',g:[
+        {n:'2.1',t:'ระบบจัดการการลา',i:'fa-user-injured',c:'blue',g:[
+          ['งานการลา',['เขียนใบลา','ทะเบียนคุมการลา','สรุปการลา']]]},
+        {n:'2.2',t:'การขออนุญาตใช้รถยนต์ราชการ',i:'fa-people-roof',c:'emerald',g:[
           ['ทะเบียนชุมชน',['ครัวเรือนและประชากรในเขต (Type 1–5)','แผนที่หมู่บ้าน/พิกัดบ้าน']],
           ['เยี่ยมบ้าน (บันทึกผลและภาพ)',['ผู้สูงอายุ','ติดเตียง','หลังคลอด','ผู้ป่วยเรื้อรัง']],
           ['เชิงรุก',['คัดกรองกลุ่มเสี่ยง','ติดตามกลุ่มเป้าหมาย']],
@@ -1138,7 +1133,12 @@ main:has(#tab-admin:not(.hidden)){background:linear-gradient(180deg,#e0f2fe 0,#f
           ['พัสดุ',['ขอซื้อ/จ้าง (ตาม พ.ร.บ.จัดซื้อจัดจ้างฯ)','ใบสั่งซื้อ','ตรวจรับ','ทะเบียนครุภัณฑ์','ตัดจำหน่าย']],
           ['คลังยา: ทะเบียน',['บัญชียา','ล็อต/วันหมดอายุ','ราคาทุน/ราคาขาย']],
           ['คลังยา: เคลื่อนไหว',['รับเข้า–จ่ายออก','ตัดจ่ายอัตโนมัติจากใบสั่งยา','Stock card','จุดสั่งซื้อ (Reorder point)','แจ้งเตือนยาใกล้หมดอายุ/ใกล้หมด']],
-          ['คลังยา: อื่นๆ',['เบิกจาก รพช./คลังจังหวัด','ยาควบคุมพิเศษ','ตรวจนับสต็อกประจำเดือน/ปี']]]}
+          ['คลังยา: อื่นๆ',['เบิกจาก รพช./คลังจังหวัด','ยาควบคุมพิเศษ','ตรวจนับสต็อกประจำเดือน/ปี']]]},
+        {n:'2.9',t:'ประเมินความสะอาด รพ.สต.',i:'fa-broom',c:'teal',g:[
+          ['แบบประเมิน',['เกณฑ์/หัวข้อประเมินความสะอาด','กำหนดรอบการประเมิน (รายวัน/สัปดาห์/เดือน)']],
+          ['พื้นที่ประเมิน',['ห้องตรวจ/ห้องฉีดยา','ห้องน้ำ','ห้องยา','บริเวณภายนอกอาคาร']],
+          ['บันทึกผล',['ให้คะแนนรายพื้นที่','แนบภาพถ่าย','ผู้ประเมิน/วันที่ประเมิน']],
+          ['ติดตามและรายงาน',['สรุปผลคะแนนรายเดือน/ปี','แจ้งเตือนจุดที่ต้องแก้ไข','ส่งออกรายงาน']]]}
         ];
         const ICONS=[
           [/คุมงบ/,'fa-wallet'],[/เสนอ/,'fa-paper-plane'],[/สปสช/,'fa-building-columns'],[/ตัดจ่าย/,'fa-right-left'],[/แจ้งเตือนยา/,'fa-bell'],[/506|ระบาด|ควบคุมโรค/,'fa-virus'],
@@ -1169,14 +1169,14 @@ main:has(#tab-admin:not(.hidden)){background:linear-gradient(180deg,#e0f2fe 0,#f
         ];
         function iconFor(t,d){for(const r of ICONS){if(r[0].test(t))return r[1];}return d||'fa-circle-dot';}
         const GICON={'ทะเบียน':'fa-address-book','คิวและจุดบริการ':'fa-list-ol','ส่งออกข้อมูล':'fa-file-export','งานเฉพาะ':'fa-star-of-life','ส่งต่อและนัดหมาย':'fa-truck-medical','ทะเบียนชุมชน':'fa-house-chimney','เชิงรุก':'fa-bullseye','อสม.':'fa-hands-holding-circle','ควบคุมโรคและอนามัย':'fa-virus','รายงาน':'fa-file-lines','ตัวชี้วัด':'fa-chart-pie','แดชบอร์ดผู้บริหาร':'fa-gauge-high','ส่งออก':'fa-file-export','วิเคราะห์':'fa-magnifying-glass-chart','ติดตามผล':'fa-bars-progress','เชื่อมโยง':'fa-link','ปฏิทิน':'fa-calendar-days','ทะเบียนอื่น':'fa-folder-tree','เวลาและเวร':'fa-clock','พัฒนาบุคลากร':'fa-user-graduate','วางแผน':'fa-users-gear','รายรับ':'fa-arrow-down-long','รายจ่าย':'fa-arrow-up-long','บัญชี':'fa-book','คุมงบ/รายงาน':'fa-wallet','พัสดุ':'fa-box','คลังยา: ทะเบียน':'fa-prescription-bottle-medical','คลังยา: เคลื่อนไหว':'fa-right-left','คลังยา: อื่นๆ':'fa-warehouse'};
-        const MOD_HUE=['#0284c7','#0ea5e9','#0891b2','#06b6d4','#0369a1','#0ea5e9','#0284c7','#0891b2'];
+        const MOD_HUE=['#0284c7','#0ea5e9','#0891b2','#06b6d4','#0369a1','#0ea5e9','#0284c7','#0891b2','#0369a1'];
         function renderGrid(a){
             document.getElementById('mod-grid').innerHTML=MODS.map((m,k)=>{
               const n=m.g.reduce((t,g)=>t+g[1].length,0), on=k===a;
               return '<button type="button" onclick="'+(m.u?'window.open(\''+m.u+'\',\'_blank\',\'noopener\')':'openMod('+k+',true)')+'" aria-pressed="'+on+'" class="mod-card'+(on?' is-on':'')+'" style="--mc:'+MOD_HUE[k]+'">'
               +'<span class="mod-ic"><i class="fa-solid '+m.i+'"></i></span>'
               +'<span class="mod-t">'+m.t+'</span>'
-              +(m.d?'<span class="mod-meta">'+m.d+'</span>':'<span class="mod-meta"><span><b>'+m.g.length+'</b> กลุ่มงาน</span><span><b>'+n+'</b> รายการ</span></span>')+'</button>';}).join('');
+              +(m.d?'<span class="mod-meta">'+m.d+'</span>':'')+'</button>';}).join('');
         }
         function openMod(k,scroll){
             const m=MODS[k]; renderGrid(k);
@@ -1190,6 +1190,7 @@ main:has(#tab-admin:not(.hidden)){background:linear-gradient(180deg,#e0f2fe 0,#f
                 '<section class="mod-group"><h5><i class="fa-solid '+(GICON[g[0]]||iconFor(g[0],m.i))+'"></i>'+g[0]+'<span class="cnt">'+g[1].length+'</span></h5><ul>'
                 +g[1].map(x=>'<li><span class="li-ic"><i class="fa-solid '+iconFor(x,m.i)+'"></i></span><span class="tx">'+x+'</span></li>').join('')
                 +'</ul></section>').join('')+'</div>';
+            if(m.n==='2.1') box.querySelectorAll('li').forEach((li,i)=>{li.style.cursor='pointer';li.title='คลิกเพื่อเปิด';li.onclick=()=>openLeave(['form','register','summary'][i]);});
             if(scroll && window.innerWidth<1024) box.scrollIntoView({behavior:'smooth',block:'start'});
         }
         (function(){
@@ -1197,6 +1198,361 @@ main:has(#tab-admin:not(.hidden)){background:linear-gradient(180deg,#e0f2fe 0,#f
             const si=document.getElementById('stat-items'); if(si) si.textContent=MODS.reduce((t,m)=>t+m.g.reduce((x,g)=>x+g[1].length,0),0);
             const sd=document.getElementById('stat-docs'); if(sd) sd.textContent=document.querySelectorAll('#admin-sub-doc .doc-row').length;
         })();
+
+        // ===== ระบบจัดการการลา (เขียนใบลา / ทะเบียนคุม / สรุป) =====
+const LV_TYPES=['ป่วย','กิจส่วนตัว','พักผ่อน','สาย','คลอดบุตร','ศึกษาอบรมดูงาน'], LV_KEY='rpst_leaves';
+let lvView='form', lvFYsel=null;
+const lvEsc=x=>String(x==null?'':x).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+function lvLoad(){try{return JSON.parse(localStorage.getItem(LV_KEY)||'[]')}catch(e){return []}}
+function lvSave(a){try{localStorage.setItem(LV_KEY,JSON.stringify(a));return true}catch(e){return false}}
+const lvName=t=>t==='สาย'?'มาสาย':'ลา'+t;
+const lvD=d=>new Date(d+'T00:00');
+function lvFY(d){const x=lvD(d);return x.getFullYear()+(x.getMonth()>=9?1:0)+543}
+function lvDays(f,t){if(!f||!t)return 0;let a=lvD(f),b=lvD(t),n=0;if(b<a)return 0;for(;a<=b;a.setDate(a.getDate()+1)){const w=a.getDay();if(w&&w<6)n++}return n}
+const lvTH=d=>{if(!d)return '-';const x=lvD(d);return x.getDate()+'/'+(x.getMonth()+1)+'/'+(x.getFullYear()+543)};
+function lvToday(){const t=new Date();return t.getFullYear()+'-'+String(t.getMonth()+1).padStart(2,'0')+'-'+String(t.getDate()).padStart(2,'0')}
+const $lv=id=>document.getElementById(id);
+
+function lvEnsure(){
+  if($lv('lv-modal'))return;
+  const st=document.createElement('style');
+  st.textContent=`#lv-modal{position:fixed;inset:0;background:rgba(15,23,42,.55);z-index:80;display:none;align-items:flex-start;justify-content:center;padding:16px;overflow:auto}
+  #lv-modal.on{display:flex}.lv-box{background:#fff;border-radius:16px;width:100%;max-width:880px;box-shadow:0 20px 50px rgba(0,0,0,.3)}
+  .lv-top{display:flex;align-items:center;gap:8px;flex-wrap:wrap;padding:14px 18px;border-bottom:1px solid #e2e8f0;position:sticky;top:0;background:#fff;border-radius:16px 16px 0 0;z-index:2}
+  .lv-top b{font-size:17px;margin-right:auto}.lv-tab{padding:6px 12px;border-radius:999px;border:1px solid #cbd5e1;background:#fff;font-size:13px;cursor:pointer}
+  .lv-tab.on{background:#0284c7;border-color:#0284c7;color:#fff}.lv-x{border:0;background:#f1f5f9;border-radius:8px;width:32px;height:32px;cursor:pointer}
+  #lv-body{padding:18px}.lv-note{background:#f0f9ff;border:1px solid #bae6fd;color:#075985;border-radius:10px;padding:8px 12px;font-size:13px;margin-bottom:14px}
+  .lv-g{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px;margin-bottom:12px}
+  #lv-body label{display:flex;flex-direction:column;gap:4px;font-size:13px;color:#475569;font-weight:600}
+  #lv-body input:not([type=radio]),#lv-body textarea,#lv-body select{border:1px solid #cbd5e1;border-radius:8px;padding:8px 10px;font-size:14px;font-weight:400;color:#0f172a;background:#fff;width:100%}
+  .lv-sec{font-weight:700;color:#0369a1;margin:14px 0 8px;font-size:14px}.lv-seg{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px}
+  .lv-seg label{flex:1;min-width:110px}.lv-seg input{display:none}.lv-seg span{display:block;text-align:center;padding:10px;border:2px solid #cbd5e1;border-radius:10px;cursor:pointer;font-weight:600;color:#475569}
+  .lv-seg input:checked+span{border-color:#0284c7;background:#e0f2fe;color:#075985}
+  .lv-t{width:100%;border-collapse:collapse;font-size:13px;margin-top:6px}.lv-t th,.lv-t td{border:1px solid #e2e8f0;padding:7px 8px;text-align:center}
+  .lv-t th{background:#f1f5f9}.lv-t tr.hl td{background:#fef9c3;font-weight:700}.lv-t td.l{text-align:left}.lv-wrap{overflow-x:auto}
+  .lv-btn{background:#0284c7;color:#fff;border:0;border-radius:10px;padding:10px 20px;font-size:15px;font-weight:600;cursor:pointer;margin-top:14px}
+  .lv-del{border:0;background:none;color:#dc2626;cursor:pointer}.lv-empty{text-align:center;color:#94a3b8;padding:28px}`;
+  document.head.appendChild(st);
+  const m=document.createElement('div');m.id='lv-modal';
+  m.innerHTML='<div class="lv-box"><div class="lv-top"><b id="lv-title"></b>'
+    +[['form','เขียนใบลา'],['register','ทะเบียนคุมการลา'],['summary','สรุปการลา']].map(v=>'<button type="button" class="lv-tab" id="lv-tab-'+v[0]+'" onclick="lvShow(\''+v[0]+'\')">'+v[1]+'</button>').join('')
+    +'<button type="button" class="lv-x" onclick="lvClose()">✕</button></div><div id="lv-body" oninput="lvChange(event)" onchange="lvChange(event)"></div></div>';
+  document.body.appendChild(m);
+  m.addEventListener('click',e=>{if(e.target===m)lvClose()});
+}
+function openLeave(v){lvEnsure();$lv('lv-modal').classList.add('on');lvShow(v||'form')}
+function lvClose(){$lv('lv-modal').classList.remove('on')}
+function lvFYopts(recs){
+  const set=new Set(recs.map(r=>lvFY(r.from)));set.add(lvFY(lvToday()));
+  const a=[...set].sort((x,y)=>y-x);if(!lvFYsel||!set.has(lvFYsel))lvFYsel=lvFY(lvToday());
+  return '<label style="max-width:240px;margin-bottom:12px">ปีงบประมาณ (1 ต.ค. – 30 ก.ย.)<select onchange="lvFYsel=+this.value;lvShow(lvView)">'+a.map(y=>'<option value="'+y+'"'+(y===lvFYsel?' selected':'')+'>พ.ศ. '+y+'</option>').join('')+'</select></label>';
+}
+function lvShow(v){
+  lvView=v;const recs=lvLoad();
+  ['form','register','summary'].forEach(k=>$lv('lv-tab-'+k).classList.toggle('on',k===v));
+  $lv('lv-title').textContent={form:'แบบฟอร์มใบลา',register:'ทะเบียนคุมการลา',summary:'สรุปการลา'}[v];
+  let h='';
+  if(v==='form'){
+    const names=[...new Set(LV_ROSTER.map(x=>x[0]).concat(recs.map(r=>r.name)))];
+    h='<datalist id="lv-names">'+names.map(n=>'<option value="'+lvEsc(n)+'">').join('')+'</datalist>'
+    +'<div class="lv-note">เขียนที่ รพ.สต.บ้านนายอ · เรียน นายกองค์การบริหารส่วนจังหวัดสกลนคร</div>'
+    +'<div class="lv-g"><label>ชื่อ-สกุล (ข้าพเจ้า)<input id="lv-name" list="lv-names" placeholder="เช่น นางสมศรี ใจดี" autocomplete="off"></label>'
+    +'<label>ตำแหน่ง<input id="lv-pos"></label><label>สังกัด<input id="lv-dept" value="รพ.สต.บ้านนายอ"></label>'
+    +'<label>วันที่เขียนใบลา<input type="date" id="lv-written" value="'+lvToday()+'"></label></div>'
+    +'<div class="lv-sec">ประเภทการลา</div><div class="lv-seg">'+LV_TYPES.map((t,i)=>'<label><input type="radio" name="lv-type" value="'+t+'"'+(i?'':' checked')+'><span>'+lvName(t)+'</span></label>').join('')+'</div>'
+    +'<label style="margin-bottom:12px">เนื่องจาก (เหตุผลการลา)<textarea id="lv-reason" rows="2"></textarea></label>'
+    +'<div class="lv-g"><label>ตั้งแต่วันที่<input type="date" id="lv-from"></label><label>ถึงวันที่<input type="date" id="lv-to"></label>'
+    +'<label>มีกำหนด (วันทำการ)<input type="number" id="lv-days" min="0" step="0.5" placeholder="คำนวณอัตโนมัติ"></label></div>'
+    +'<div class="lv-sec">การลาครั้งสุดท้าย (ดึงจากทะเบียนอัตโนมัติ)</div>'
+    +'<div class="lv-g"><label>ตั้งแต่วันที่<input type="date" id="lv-lf"></label><label>ถึงวันที่<input type="date" id="lv-lt"></label><label>มีกำหนด (วัน)<input type="number" id="lv-ld" min="0" step="0.5"></label></div>'
+    +'<label style="margin-bottom:12px">ระหว่างลาติดต่อข้าพเจ้าได้ที่<input id="lv-contact" placeholder="ที่อยู่ / เบอร์โทร"></label>'
+    +'<div class="lv-sec">สถิติการลาในปีงบประมาณนี้ (กรอกอัตโนมัติ)</div><div class="lv-wrap"><table class="lv-t"><thead><tr><th>ประเภทการลา</th><th>ลามาแล้ว (วันทำการ)</th><th>ลาครั้งนี้ (วันทำการ)</th><th>รวมเป็น (วันทำการ)</th></tr></thead><tbody id="lv-stats"></tbody></table></div>'
+    +'<div style="display:flex;gap:8px;flex-wrap:wrap"><button type="button" class="lv-btn" onclick="lvSubmit()">บันทึกใบลา</button>'
+    +'<button type="button" class="lv-btn" style="background:#16a34a" onclick="lvSubmit(true)">🖨 บันทึกและพิมพ์ใบลา</button>'
+    +'<button type="button" class="lv-btn" style="background:#64748b" onclick="lvPrintForm()">พิมพ์ใบลา (ไม่บันทึก)</button></div>';
+    $lv('lv-body').innerHTML=h;lvStats();return;
+  }
+  const rs=recs.filter(r=>lvFY(r.from)===(lvFYsel||lvFY(lvToday())));
+  h=lvFYopts(recs);
+  const cur=recs.filter(r=>lvFY(r.from)===lvFYsel).sort((a,b)=>a.from<b.from?-1:1);
+  if(v==='register')h+=lvRegister(recs);else h+=lvSummary(recs);
+  $lv('lv-body').innerHTML=h;
+}
+// ----- สรุปการลา ตามแบบฟอร์ม Excel (บัญชีสรุปวันลา) -----
+const LV_ROSTER=[['นายตะวัน กุดวงค์แก้ว','ผอ.รพ.สต.บ้านนายอ'],['นางสาวพรรณกาญจน์ ไวแสน','พยาบาลวิชาชีพชำนาญการ'],['นางสาวศิริมุกดา โพธิสิม','เจ้าพนักงานสาธารณสุขชำนาญงาน'],['นางสาวธันยชนก วรรณหนองคู','เจ้าพนักงานทันตสาธารณสุขปฏิบัติงาน'],['นางจินตหรา ภูสำรอง','นักวิชาการสาธารณสุขชำนาญการ'],['นางสาวชไมพร มุงคุณ','แพทย์แผนไทยปฏิบัติการ'],['นางสาวสุปรียา วงศ์เจริญ','นักวิชาการสาธารณสุข'],['นางสาวลำใย ปราศรัยงาม','พนักงานช่วยการพยาบาล'],['นางสาวจุฑามาศ ประกอบแก้ว','พนักงานช่วยการพยาบาล'],['นายวีระชัย วรรณสังข์','พนักงานบริการ'],['นางสาวโนรา คณานันท์','เจ้าพนักงานการเงินและบัญชี']];
+const LV_MON=['ตุลาคม','พฤศจิกายน','ธันวาคม','มกราคม','กุมภาพันธ์','มีนาคม','เมษายน','พฤษภาคม','มิถุนายน','กรกฎาคม','สิงหาคม','กันยายน'];
+let lvM1=0,lvM2=11;
+const lvMI=d=>(lvD(d).getMonth()+3)%12;
+const lvMY=i=>LV_MON[i]+' '+(i<3?lvFYsel-1:lvFYsel);
+function lvRange(){
+  const g=i=>[(i<3?lvFYsel-1:lvFYsel)-543,(i+9)%12], p=n=>String(n).padStart(2,'0');
+  const [y1,m1]=g(lvM1),[y2,m2]=g(lvM2);
+  return {a:y1+'-'+p(m1+1)+'-01',b:y2+'-'+p(m2+1)+'-'+p(new Date(y2,m2+1,0).getDate())};
+}
+// จำนวนวันลาของใบลา r ที่ตกอยู่ในช่วง R (ใบลาคาบเกี่ยวหลายเดือนจะแบ่งวันตามสัดส่วนวันทำการ)
+function lvPart(r,R){
+  if(r.from>=R.a&&r.to<=R.b)return +r.days;
+  const a=r.from>R.a?r.from:R.a, b=r.to<R.b?r.to:R.b;
+  if(b<a)return 0;
+  const tot=lvDays(r.from,r.to), part=lvDays(a,b);
+  return tot?+(+r.days*part/tot).toFixed(2):0;
+}
+function lvData(recs){
+  const R=lvRange();
+  const ppl=LV_ROSTER.map(x=>({name:x[0],pos:x[1],t:{}}));
+  recs.forEach(r=>{
+    const d=lvPart(r,R);if(!(d>0))return;
+    let o=ppl.find(p=>p.name===r.name);if(!o){o={name:r.name,pos:r.pos,t:{}};ppl.push(o)}
+    const c=o.t[r.type]=o.t[r.type]||{n:0,d:0};c.n++;c.d=+(c.d+d).toFixed(2);
+  });
+  return ppl;
+}
+function lvTitle(){
+  let t='บัญชีสรุปวันลาของข้าราชการ/ลูกจ้างชั่วคราวเงินนอกงบประมาณ (เงินบำรุง) ประจำปีงบประมาณ '+lvFYsel;
+  if(lvM1===0&&lvM2===11)return t;
+  if(lvM1===0&&lvM2===5)t+=' รอบที่ 1'; else if(lvM1===6&&lvM2===11)t+=' รอบที่ 2';
+  const R=lvRange(), f=x=>{const d=lvD(x);return d.getDate()+' '+LV_MON[lvMI(x)]+' '+(d.getFullYear()+543)};
+  return t+' ('+f(R.a)+' ถึง '+f(R.b)+')';
+}
+function lvRemSum(o){return [['คลอดบุตร','ลาคลอดบุตร'],['ศึกษาอบรมดูงาน','ลาศึกษาอบรมดูงาน']].map(x=>{const b=o.t[x[0]];return b&&b.n?x[1]+' '+b.n+' ครั้ง '+b.d+' วัน':''}).filter(Boolean).join(' · ')}
+function lvTableHtml(ppl){
+  const v=(o,t,k)=>{const c=o.t[t];return c&&c.n?c[k]:'-'};
+  return '<table class="lv-t"><thead><tr><th rowspan="3">ที่</th><th rowspan="3">ชื่อ-สกุล</th><th rowspan="3">ตำแหน่ง</th><th colspan="8">จำนวนวันลา</th><th rowspan="3">หมายเหตุ</th></tr>'
+   +'<tr><th colspan="2">ลาป่วย</th><th colspan="2">ลากิจ</th><th colspan="2">ลาพักผ่อน</th><th colspan="2">สาย</th></tr><tr>'+'<th>ครั้ง</th><th>วัน</th>'.repeat(4)+'</tr></thead><tbody>'
+   +ppl.map((o,i)=>{return '<tr><td>'+(i+1)+'</td><td class="l">'+lvEsc(o.name)+'</td><td class="l">'+lvEsc(o.pos)+'</td>'
+     +['ป่วย','กิจส่วนตัว','พักผ่อน','สาย'].map(t=>'<td>'+v(o,t,'n')+'</td><td>'+v(o,t,'d')+'</td>').join('')
+     +'<td class="l">'+lvEsc(lvRemSum(o))+'</td></tr>'}).join('')+'</tbody></table>';
+}
+const lvSigHtml='<div style="display:flex;justify-content:space-around;flex-wrap:wrap;gap:24px;margin-top:28px;text-align:center;font-size:14px;line-height:1.7"><div>(ลงชื่อ).........................................<br>( นายตะวัน กุดวงค์แก้ว )<br>ผู้อำนวยการโรงพยาบาลส่งเสริมสุขภาพตำบลบ้านนายอ</div><div>(ลงชื่อ).........................................ผู้รับรอง<br>( นางกนกอร จันทะวงศ์ )<br>ผู้อำนวยการโรงพยาบาลส่งเสริมสุขภาพตำบลบ้านนางเติ่ง<br>ประธานเครือข่ายโรงพยาบาลส่งเสริมสุขภาพตำบลระดับอำเภอ อำเภอภูพาน</div></div>';
+function lvDocHtml(){
+  const recs=lvLoad();
+  return '<h3 style="text-align:center;margin:0">'+lvTitle()+'</h3><div style="text-align:center">โรงพยาบาลส่งเสริมสุขภาพตำบลบ้านนายอ อำเภอภูพาน จังหวัดสกลนคร<br>กองสาธารณสุข องค์การบริหารส่วนจังหวัดสกลนคร</div><br>'+lvTableHtml(lvData(recs))+lvSigHtml;
+}
+function lvSetRange(a,b){lvM1=a;lvM2=b;lvShow('summary')}
+function lvSummary(recs){
+  const opt=(sel)=>LV_MON.map((m,i)=>'<option value="'+i+'"'+(i===sel?' selected':'')+'>'+lvMY(i)+'</option>').join('');
+  const pb='class="lv-tab" type="button" onclick="lvSetRange(';
+  return '<div class="lv-g" style="align-items:end"><label>ตั้งแต่เดือน<select onchange="lvM1=+this.value;if(lvM1>lvM2)lvM2=lvM1;lvShow(\'summary\')">'+opt(lvM1)+'</select></label>'
+    +'<label>ถึงเดือน<select onchange="lvM2=+this.value;if(lvM2<lvM1)lvM1=lvM2;lvShow(\'summary\')">'+opt(lvM2)+'</select></label></div>'
+    +'<div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:14px"><button '+pb+'0,11)">ทั้งปีงบประมาณ</button><button '+pb+'0,5)">รอบที่ 1 (ต.ค.–มี.ค.)</button><button '+pb+'6,11)">รอบที่ 2 (เม.ย.–ก.ย.)</button>'
+    +'<span style="flex:1"></span><button class="lv-btn" style="margin:0;padding:6px 14px;font-size:13px" onclick="lvPrint()">🖨 พิมพ์ / บันทึก PDF</button><button class="lv-btn" style="margin:0;padding:6px 14px;font-size:13px;background:#16a34a" onclick="lvXls()">⬇ ดาวน์โหลด Excel</button></div>'
+    +'<div style="font-weight:700;text-align:center;margin-bottom:8px">'+lvTitle()+'</div><div class="lv-wrap">'+lvTableHtml(lvData(recs))+'</div>'
+    +'<div style="font-size:12px;color:#64748b;margin-top:8px">นับวันลาตามช่วงเดือนที่เลือก (ใบลาที่คาบเกี่ยวหลายเดือนจะแบ่งวันตามเดือน) · ลาคลอดบุตร/ลาศึกษาอบรมดูงานแสดงในช่องหมายเหตุ · ดึงข้อมูลจากใบลาที่บันทึกในหน้า "เขียนใบลา" อัตโนมัติ</div>'+lvSigHtml;
+}
+function lvPrint(h,css){
+  const f=document.createElement('iframe');f.style.cssText='position:fixed;width:0;height:0;border:0';document.body.appendChild(f);
+  const d=f.contentWindow.document;d.open();
+  d.write('<html><head><meta charset="utf-8"><style>@page{size:A4 portrait;margin:12mm}body{font-family:"Sarabun","TH Sarabun New",Tahoma,sans-serif;font-size:13px}table{width:100%;border-collapse:collapse}th,td{border:1px solid #000;padding:3px 5px;text-align:center}td.l{text-align:left}.pg{page-break-after:always}.pg:last-child{page-break-after:auto}'+(css||'')+'</style></head><body>'+(h||lvDocHtml())+'</body></html>');
+  d.close();f.contentWindow.focus();setTimeout(()=>{f.contentWindow.print();setTimeout(()=>f.remove(),1500)},300);
+}
+function lvXlsHtml(){
+  const h='<html xmlns:x="urn:schemas-microsoft-com:office:excel"><head><meta charset="utf-8"><style>table{border-collapse:collapse}th,td{border:1px solid #000;padding:3px 5px;text-align:center}td.l{text-align:left}</style></head><body>'+lvDocHtml()+'</body></html>';
+  const a=document.createElement('a');a.href=URL.createObjectURL(new Blob(['\ufeff'+h],{type:'application/vnd.ms-excel'}));
+  a.download='สรุปวันลา_ปีงบ'+lvFYsel+'.xls';document.body.appendChild(a);a.click();a.remove();
+}
+const LV_AB=['ต.ค.','พ.ย.','ธ.ค.','ม.ค.','ก.พ.','มี.ค.','เม.ย.','พ.ค.','มิ.ย.','ก.ค.','ส.ค.','ก.ย.'];
+function lvLoadXJ(){return new Promise((ok,no)=>{if(window.ExcelJS)return ok();const s=document.createElement('script');s.src='https://cdnjs.cloudflare.com/ajax/libs/exceljs/4.4.0/exceljs.min.js';s.onload=ok;s.onerror=no;document.head.appendChild(s)})}
+async function lvXls(){
+  try{await lvLoadXJ()}catch(e){showToast('โหลดตัวสร้าง Excel ไม่ได้ ใช้ไฟล์แบบสำรองแทน');return lvXlsHtml()}
+  const ppl=lvData(lvLoad()), n=ppl.length, whole=(lvM1===0&&lvM2===11);
+  const suf=whole?'':' '+LV_AB[lvM1]+'-'+LV_AB[lvM2];
+  const wb=new ExcelJS.Workbook();
+  const ws=wb.addWorksheet('ปีงบ '+lvFYsel+suf,{pageSetup:{paperSize:9,orientation:'portrait',fitToPage:true,fitToWidth:1,fitToHeight:0,margins:{left:.51,right:.31,top:.75,bottom:.75,header:.3,footer:.3}}});
+  const F={name:'TH Sarabun New',size:16}, th={style:'thin'}, B={top:th,left:th,bottom:th,right:th};
+  const hasRem=ppl.some(o=>lvRemSum(o));
+  [3.5,25.1,32.9,6.1,5.9,6.1,5.4,5.6,5.8,5.3,5.4,hasRem?26:8.4].forEach((w,i)=>ws.getColumn(i+1).width=w);
+  const C={horizontal:'center',vertical:'middle'}, L={horizontal:'left',vertical:'middle'};
+  const put=(a,v,al)=>{const c=ws.getCell(a);c.value=v;c.font=F;c.alignment=al||C;return c};
+  ws.mergeCells('A1:L1');put('A1',lvTitle(),{horizontal:'center',vertical:'middle',wrapText:true});ws.getRow(1).height=46;
+  ws.mergeCells('A2:L2');put('A2','โรงพยาบาลส่งเสริมสุขภาพตำบลบ้านนายอ   อำเภอภูพาน  จังหวัดสกลนคร');
+  ws.mergeCells('A3:L3');put('A3','กองสาธารณสุข    องค์การบริหารส่วนจังหวัดสกลนคร');
+  ['A4:A6','B4:B6','C4:C6','L4:L6','D4:K4','D5:E5','F5:G5','H5:I5','J5:K5'].forEach(r=>ws.mergeCells(r));
+  put('A4','ที่');put('B4','ชื่อ-สกุล');put('C4','ตำแหน่ง');put('L4','หมายเหตุ');put('D4','จำนวนวันลา');
+  [['D5','ลาป่วย'],['F5','ลากิจ'],['H5','ลาพักผ่อน'],['J5','สาย']].forEach(x=>put(x[0],x[1]));
+  'DEFGHIJK'.split('').forEach((c,i)=>put(c+'6',i%2?'วัน':'ครั้ง'));
+  ppl.forEach((o,i)=>{
+    const r=7+i;put('A'+r,i+1);put('B'+r,o.name,L);put('C'+r,o.pos,L);
+    ['ป่วย','กิจส่วนตัว','พักผ่อน','สาย'].forEach((t,k)=>{const c=o.t[t],has=c&&c.n;put('DFHJ'[k]+r,has?c.n:' -');put('EGIK'[k]+r,has?c.d:' -')});
+    put('L'+r,lvRemSum(o),{horizontal:'left',vertical:'middle',wrapText:true});
+  });
+  for(let r=4;r<=6+n;r++)for(let c=1;c<=12;c++){const x=ws.getCell(r,c);x.border=B;if(!x.font||!x.font.name)x.font=F}
+  const s0=7+n+2, T=(a,v)=>put(a,v,{horizontal:'left',vertical:'middle'});
+  T('E'+s0,'   (ลงชื่อ).........................................');
+  T('E'+(s0+1),'            ( นายตะวัน  กุดวงค์แก้ว )');
+  T('D'+(s0+2),'   ผู้อำนวยการโรงพยาบาลส่งเสริมสุขภาพตำบลบ้านนายอ');
+  T('E'+(s0+5),'   (ลงชื่อ).........................................ผู้รับรอง');
+  T('E'+(s0+6),'          ( นางกนกอร จันทะวงศ์ )');
+  T('D'+(s0+7),'ผู้อำนวยการโรงพยาบาลส่งเสริมสุขภาพตำบลบ้านนางเติ่ง');
+  T('C'+(s0+8),'                                              ประธานเครือข่ายโรงพยาบาลส่งเสริมสุขภาพตำบลระดับอำเภอ อำเภอภูพาน');
+  const buf=await wb.xlsx.writeBuffer();
+  const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([buf],{type:'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'}));
+  a.download='สรุปวันลา_ปีงบ'+lvFYsel+(whole?'':'_'+LV_AB[lvM1]+'-'+LV_AB[lvM2])+'.xlsx';document.body.appendChild(a);a.click();a.remove();
+}
+// ===== ทะเบียนคุมการลารายบุคคล (ตามแบบ "ทะเบียนวันลา") =====
+const LV_POSKEY='rpst_lv_posno';let lvPerson=null;
+function lvPosNo(){try{return JSON.parse(localStorage.getItem(LV_POSKEY)||'{}')}catch(e){return {}}}
+function lvSetPosNo(n,v){const m=lvPosNo();m[n]=v.trim();try{localStorage.setItem(LV_POSKEY,JSON.stringify(m))}catch(e){}}
+function lvPeople(recs){return [...new Set(LV_ROSTER.map(x=>x[0]).concat(recs.map(r=>r.name)))]}
+function lvInfo(name,recs){
+  const rs=recs.filter(r=>r.name===name), l=rs[rs.length-1]||{}, ro=LV_ROSTER.find(x=>x[0]===name);
+  return {pos:l.pos||(ro&&ro[1])||'',dept:l.dept||'รพ.สต.บ้านนายอ',no:lvPosNo()[name]||''};
+}
+function lvRegRows(name,recs){return recs.filter(r=>r.name===name&&lvFY(r.from)===lvFYsel).sort((a,b)=>a.from<b.from?-1:a.from>b.from?1:0)}
+function lvRegCells(r){
+  const col={'ป่วย':0,'กิจส่วนตัว':1,'คลอดบุตร':2,'พักผ่อน':3,'ศึกษาอบรมดูงาน':4}[r.type], c=['','','','',''];if(col!=null)c[col]='/';
+  return {col:col,c:c,period:r.from===r.to?lvTH(r.from):lvTH(r.from)+' - '+lvTH(r.to),rem:[r.type==='สาย'?'มาสาย':'',r.reason].filter(Boolean).join(' · ')};
+}
+function lvRegTotals(rs){
+  const t=[0,0,0,0,0];let all=0,late=0;
+  rs.forEach(r=>{const x=lvRegCells(r),d=+r.days||0;if(x.col!=null)t[x.col]+=d;else if(r.type==='สาย')late+=d;all+=d});
+  return {t:t.map(v=>+v.toFixed(2)),all:+all.toFixed(2),late:+late.toFixed(2)};
+}
+function lvRegHtml(name,recs,pr){
+  const inf=lvInfo(name,recs), rs=lvRegRows(name,recs), N=Math.max(18,rs.length), T=lvRegTotals(rs);
+  const ul=(t,f)=>'<span style="flex:'+f+';border-bottom:1px solid #000;padding:0 6px;min-height:1.5em">'+lvEsc(t)+'</span>';
+  const ln=a=>'<div style="display:flex;gap:6px;align-items:flex-end;margin:8px 0">'+a+'</div>';
+  let body='';
+  for(let i=0;i<N;i++){
+    const r=rs[i];
+    if(r){const x=lvRegCells(r);
+      body+='<tr style="height:26px"><td>'+(i+1)+'</td>'+x.c.map(t=>'<td>'+t+'</td>').join('')+'<td>'+x.period+'</td><td>'+r.days+'</td><td class="l">'+lvEsc(x.rem)+'</td>'
+        +(pr?'':'<td style="border:0"><button type="button" class="lv-del" title="ลบ" onclick="lvDel(\''+r.id+'\')">🗑</button><button type="button" class="lv-del" style="color:#0284c7" title="พิมพ์ใบลา" onclick="lvPrintRec(\''+r.id+'\')">🖨</button></td>')+'</tr>';
+    }else body+='<tr style="height:26px">'+'<td>&nbsp;</td>'.repeat(9)+(pr?'':'<td style="border:0"></td>')+'</tr>';
+  }
+  if(rs.length)body+='<tr style="height:26px;font-weight:700"><td></td>'+T.t.map(v=>'<td>'+(v||'')+'</td>').join('')+'<td>รวม</td><td>'+T.all+'</td><td class="l">'+(T.late?'มาสาย '+T.late+' วัน':'')+'</td>'+(pr?'':'<td style="border:0"></td>')+'</tr>';
+  return '<div style="font-weight:700;text-align:center;font-size:1.15em;margin-bottom:10px">ทะเบียนวันลา</div>'
+    +ln('<span>ชื่อ - สกุล</span>'+ul(name,3)+'<span>เลขที่ตำแหน่ง</span>'+ul(inf.no,2))
+    +ln('<span>ตำแหน่ง</span>'+ul(inf.pos,2)+'<span>สังกัด</span>'+ul(inf.dept,3))
+    +'<table class="lv-t" style="margin-top:12px"><thead><tr><th rowspan="2" style="width:7%">ครั้ง<br>ที่</th><th colspan="5">ประเภทวันลา</th><th rowspan="2" style="width:17%">ระยะเวลาที่ลา</th><th rowspan="2" style="width:9%">จำนวนวัน</th><th rowspan="2" style="width:12%">หมายเหตุ</th>'+(pr?'':'<th style="border:0;background:none"></th>')+'</tr>'
+    +'<tr><th style="width:6%">ลา<br>ป่วย</th><th style="width:5%">ลา<br>กิจ</th><th style="width:7%">ลา<br>คลอด</th><th style="width:8%">ลา<br>พักผ่อน</th><th style="width:16%">ลาศึกษาอบรมดูงาน<br>ศึกษาต่อ</th></tr></thead><tbody>'+body+'</tbody></table>';
+}
+function lvRegNames(recs){const p=lvPeople(recs);return lvPerson==='*'?p:[lvPerson]}
+function lvRegDoc(){const recs=lvLoad();return lvRegNames(recs).map(n=>'<div class="pg">'+lvRegHtml(n,recs,true)+'</div>').join('')}
+function lvRegister(recs){
+  const people=lvPeople(recs);
+  if(!lvPerson||(lvPerson!=='*'&&people.indexOf(lvPerson)<0))lvPerson=people[0];
+  const one=lvPerson!=='*';
+  let h='<div class="lv-g" style="align-items:end"><label>บุคลากร<select onchange="lvPerson=this.value;lvShow(\'register\')"><option value="*"'+(one?'':' selected')+'>— ทุกคน —</option>'
+    +people.map(n=>'<option value="'+lvEsc(n)+'"'+(n===lvPerson?' selected':'')+'>'+lvEsc(n)+'</option>').join('')+'</select></label>'
+    +(one?'<label>เลขที่ตำแหน่ง<input value="'+lvEsc(lvInfo(lvPerson,recs).no)+'" placeholder="กรอกครั้งเดียว ระบบจำไว้" onchange="lvSetPosNo(lvPerson,this.value);lvShow(\'register\')"></label>':'')+'</div>'
+    +'<div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:14px"><span style="flex:1"></span>'
+    +'<button class="lv-btn" style="margin:0;padding:6px 14px;font-size:13px" onclick="lvPrint(lvRegDoc())">🖨 พิมพ์ / บันทึก PDF'+(one?'':' (ทุกคน)')+'</button>'
+    +'<button class="lv-btn" style="margin:0;padding:6px 14px;font-size:13px;background:#16a34a" onclick="lvRegXls()">⬇ ดาวน์โหลด Excel'+(one?'':' (คนละชีต)')+'</button></div>';
+  h+=lvRegNames(recs).map(n=>'<div class="lv-wrap" style="margin-bottom:30px">'+lvRegHtml(n,recs,false)+'</div>').join('');
+  return h+'<div style="font-size:12px;color:#64748b">กรอกอัตโนมัติจากใบลาที่บันทึกในหน้า "เขียนใบลา" ตามปีงบประมาณที่เลือก · มาสายแสดงในช่องหมายเหตุ · ลาศึกษาอบรมดูงาน/ศึกษาต่อ ดึงจากใบลาประเภท "ลาศึกษาอบรมดูงาน"</div>';
+}
+async function lvRegXls(){
+  try{await lvLoadXJ()}catch(e){showToast('โหลดตัวสร้าง Excel ไม่ได้ กรุณาใช้ปุ่มพิมพ์ / PDF แทน');return}
+  const recs=lvLoad(), wb=new ExcelJS.Workbook(), names=lvRegNames(recs);
+  const F={name:'TH Sarabun New',size:16}, th={style:'thin'}, B={top:th,left:th,bottom:th,right:th};
+  const C={horizontal:'center',vertical:'middle',wrapText:true}, L={horizontal:'left',vertical:'middle',wrapText:true};
+  names.forEach(name=>{
+    const inf=lvInfo(name,recs), rs=lvRegRows(name,recs), N=Math.max(18,rs.length), T=lvRegTotals(rs);
+    const ws=wb.addWorksheet(name.slice(0,31),{pageSetup:{paperSize:9,orientation:'portrait',fitToPage:true,fitToWidth:1,fitToHeight:0,margins:{left:.6,right:.4,top:.75,bottom:.75,header:.3,footer:.3}}});
+    [6,7,7,8,9,22,22,11,20].forEach((w,i)=>ws.getColumn(i+1).width=w);
+    const put=(a,v,al)=>{const c=ws.getCell(a);c.value=v;c.font=F;c.alignment=al||C;return c};
+    const ulr=(r1,c1,c2)=>{for(let c=c1;c<=c2;c++){const x=ws.getCell(r1,c);x.border={bottom:th};x.font=F}};
+    ws.mergeCells('A1:I1');put('A1','ทะเบียนวันลา');ws.getRow(1).height=30;
+    ws.mergeCells('A2:B2');put('A2','ชื่อ - สกุล',L);ws.mergeCells('C2:F2');put('C2',name,L);ulr(2,3,6);ws.mergeCells('G2:G2');put('G2','เลขที่ตำแหน่ง',{horizontal:'right',vertical:'middle'});ws.mergeCells('H2:I2');put('H2',inf.no,L);ulr(2,8,9);
+    ws.mergeCells('A3:B3');put('A3','ตำแหน่ง',L);ws.mergeCells('C3:F3');put('C3',inf.pos,L);ulr(3,3,6);put('G3','สังกัด',{horizontal:'right',vertical:'middle'});ws.mergeCells('H3:I3');put('H3',inf.dept,L);ulr(3,8,9);
+    ['A5:A6','B5:F5','G5:G6','H5:H6','I5:I6'].forEach(r=>ws.mergeCells(r));
+    put('A5','ครั้งที่');put('B5','ประเภทวันลา');put('G5','ระยะเวลาที่ลา');put('H5','จำนวนวัน');put('I5','หมายเหตุ');
+    ['ลาป่วย','ลากิจ','ลาคลอด','ลาพักผ่อน','ลาศึกษาอบรมดูงาน/ศึกษาต่อ'].forEach((t,i)=>put(String.fromCharCode(66+i)+'6',t));
+    ws.getRow(6).height=44;
+    for(let i=0;i<N;i++){
+      const r=rs[i],R=7+i;ws.getRow(R).height=24;
+      if(r){const x=lvRegCells(r);put('A'+R,i+1);x.c.forEach((t,k)=>put(String.fromCharCode(66+k)+R,t));put('G'+R,x.period);put('H'+R,+r.days);put('I'+R,x.rem,L)}
+    }
+    let last=6+N;
+    if(rs.length){last++;const R=last;ws.getRow(R).height=24;T.t.forEach((v,k)=>put(String.fromCharCode(66+k)+R,v||''));put('G'+R,'รวม');put('H'+R,T.all);put('I'+R,T.late?'มาสาย '+T.late+' วัน':'',L)}
+    for(let r=5;r<=last;r++)for(let c=1;c<=9;c++){const x=ws.getCell(r,c);x.border=B;if(!x.font||!x.font.name)x.font=F}
+    ws.getRow(1).font=Object.assign({},F,{bold:true});ws.getRow(5).font=F;
+  });
+  const buf=await wb.xlsx.writeBuffer(), a=document.createElement('a');
+  a.href=URL.createObjectURL(new Blob([buf],{type:'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'}));
+  a.download='ทะเบียนคุมการลา_ปีงบ'+lvFYsel+(names.length===1?'_'+names[0]:'')+'.xlsx';document.body.appendChild(a);a.click();a.remove();
+}
+function lvStats(){
+  const name=($lv('lv-name').value||'').trim(), from=$lv('lv-from').value||$lv('lv-written').value||lvToday();
+  const type=(document.querySelector('input[name=lv-type]:checked')||{}).value, d=+$lv('lv-days').value||0, fy=lvFY(from);
+  const recs=lvLoad().filter(r=>r.name===name&&lvFY(r.from)===fy);
+  $lv('lv-stats').innerHTML=LV_TYPES.map(t=>{
+    const prev=recs.filter(r=>r.type===t).reduce((a,r)=>a+(+r.days),0), now=t===type?d:0;
+    return '<tr'+(t===type?' class="hl"':'')+'><td class="l">'+lvName(t)+'</td><td>'+prev+'</td><td>'+now+'</td><td>'+(prev+now)+'</td></tr>'}).join('');
+}
+function lvLast(){
+  const name=($lv('lv-name').value||'').trim(), type=(document.querySelector('input[name=lv-type]:checked')||{}).value;
+  const l=lvLoad().filter(r=>r.name===name&&r.type===type).sort((a,b)=>a.to<b.to?1:-1)[0]||{};
+  $lv('lv-lf').value=l.from||'';$lv('lv-lt').value=l.to||'';$lv('lv-ld').value=l.days||'';
+}
+function lvChange(e){
+  const id=e.target.id||e.target.name;if(!$lv('lv-name'))return;
+  if(id==='lv-name'){const nm=e.target.value.trim(),r=lvLoad().filter(x=>x.name===nm).pop(),ro=LV_ROSTER.find(x=>x[0]===nm);if(r){$lv('lv-pos').value=r.pos||'';$lv('lv-dept').value=r.dept||'';}else if(ro){$lv('lv-pos').value=ro[1];}lvLast()}
+  if(id==='lv-type')lvLast();
+  if(id==='lv-from'||id==='lv-to'){if($lv('lv-from').value&&!$lv('lv-to').value)$lv('lv-to').value=$lv('lv-from').value;$lv('lv-days').value=lvDays($lv('lv-from').value,$lv('lv-to').value)||''}
+  if(String(id).indexOf('lv-')===0||id==='lv-type')lvStats();
+}
+function lvSubmit(pr){
+  const g=id=>$lv(id).value.trim(), type=document.querySelector('input[name=lv-type]:checked').value;
+  const r={id:'l'+Date.now(),name:g('lv-name'),pos:g('lv-pos'),dept:g('lv-dept'),written:g('lv-written'),type,reason:g('lv-reason'),from:g('lv-from'),to:g('lv-to'),days:+g('lv-days'),lf:g('lv-lf'),lt:g('lv-lt'),ld:g('lv-ld'),contact:g('lv-contact')};
+  if(!r.name||!r.from||!r.to||!(r.days>0)||r.to<r.from){showToast('กรุณากรอก ชื่อ-สกุล วันที่ลา และจำนวนวัน ให้ครบถ้วนและถูกต้อง');return}
+  const a=lvLoad();a.push(r);
+  if(!lvSave(a)){showToast('บันทึกไม่สำเร็จ (เบราว์เซอร์ไม่อนุญาตให้เก็บข้อมูล)');return}
+  lvFYsel=lvFY(r.from);lvPerson=r.name;showToast('บันทึกใบลาเรียบร้อย');lvShow('register');if(pr)lvPrint(lvLeaveHtml(r),LV_LFCSS);
+}
+
+// ===== พิมพ์ใบลาตามแบบ "ใบลาป่วย ลาคลอดบุตร ลากิจส่วนตัว" =====
+const LV_TM=['มกราคม','กุมภาพันธ์','มีนาคม','เมษายน','พฤษภาคม','มิถุนายน','กรกฎาคม','สิงหาคม','กันยายน','ตุลาคม','พฤศจิกายน','ธันวาคม'];
+const lvThL=d=>{if(!d)return '';const x=lvD(d);return x.getDate()+' '+LV_TM[x.getMonth()]+' '+(x.getFullYear()+543)};
+const LV_LFCSS='@page{size:A4 portrait;margin:10mm 16mm}body{font-family:"TH SarabunPSK","TH Sarabun New","Sarabun",Tahoma,sans-serif;font-size:15pt;line-height:1.4}.lf table{border-collapse:collapse;width:100%}.lf td,.lf th{border:0;padding:0;text-align:left;vertical-align:top}.lf .u{display:inline-block;border-bottom:1px dotted #000;padding:0 4px;text-align:center;min-height:1.2em}.lf .st td,.lf .st th{border:1px solid #000;text-align:center;padding:2px 3px;vertical-align:middle;font-size:13pt;line-height:1.2}.lf .ck{font-family:"Segoe UI Symbol","DejaVu Sans",Arial,sans-serif;font-size:.95em}.lf .c{text-align:center}';
+function lvFormRec(){
+  const g=id=>$lv(id).value.trim(), t=document.querySelector('input[name=lv-type]:checked').value;
+  return {name:g('lv-name'),pos:g('lv-pos'),dept:g('lv-dept'),written:g('lv-written'),type:t,reason:g('lv-reason'),from:g('lv-from'),to:g('lv-to'),days:+g('lv-days'),lf:g('lv-lf'),lt:g('lv-lt'),ld:g('lv-ld'),contact:g('lv-contact')};
+}
+function lvLeaveHtml(r){
+  const T3=['ป่วย','กิจส่วนตัว','คลอดบุตร'], dots=n=>'&nbsp;'.repeat(n);
+  const u=(t,w)=>'<span class="u" style="min-width:'+w+'">'+(t===''||t==null?'&nbsp;':lvEsc(t))+'</span>';
+  const ck=(t,on)=>'<span class="ck">'+(on===t?'&#9745;':'&#9744;')+'</span> '+lvName(t).replace('ลา','');
+  const w=r.written?lvD(r.written):null;
+  const fy=lvFY(r.from||r.written||lvToday());
+  const old=lvLoad().filter(x=>x.name===r.name&&lvFY(x.from)===fy&&x.id!==r.id);
+  const nowD=+r.days||0;
+  const st=T3.map(t=>{const p=+old.filter(x=>x.type===t).reduce((a,x)=>a+(+x.days||0),0).toFixed(2), n=t===r.type?nowD:0;
+    return '<tr><td style="text-align:left!important">'+lvName(t)+'</td><td>'+(p||'')+'</td><td>'+(n||'')+'</td><td>'+((p+n)||'')+'</td></tr>'}).join('');
+  const other=T3.indexOf(r.type)<0;
+  const lastOn=r.lf?r.type:'';
+  return '<div class="lf">'
+   +'<div class="c" style="font-weight:700;font-size:18pt">ใบลาป่วย&nbsp; ลาคลอดบุตร&nbsp; ลากิจส่วนตัว</div>'
+   +'<div style="text-align:right;margin-top:6px;padding-right:40px">เขียนที่ โรงพยาบาลส่งเสริมสุขภาพตำบลบ้านนายอ</div>'
+   +'<div style="text-align:right;padding-right:20px">วันที่ '+u(w?w.getDate():'','50px')+' เดือน '+u(w?LV_TM[w.getMonth()]:'','130px')+' พ.ศ. '+u(w?w.getFullYear()+543:'','70px')+'</div>'
+   +'<div style="margin-top:6px">เรื่อง&nbsp; ขออนุญาตลา'+u(lvName(r.type).replace(/^ลา/,''),'190px')+'</div>'
+   +'<div>เรียน&nbsp; นายกองค์การบริหารส่วนจังหวัดสกลนคร</div>'
+   +'<div style="margin-top:8px;text-indent:2.5em">ข้าพเจ้า'+u(r.name,'310px')+' ตำแหน่ง'+u(r.pos,'230px')+'</div>'
+   +'<div>สังกัด'+u(r.dept,'560px')+'</div>'
+   +'<table style="margin-top:8px"><tr><td style="width:14%"></td><td style="width:22%">'+ck('ป่วย',r.type)+'</td><td>เนื่องจาก '+u(r.type==='ป่วย'?r.reason:'','330px')+'</td></tr>'
+   +'<tr><td>ขอลา</td><td>'+ck('กิจส่วนตัว',r.type)+'</td><td>เนื่องจาก '+u(r.type==='กิจส่วนตัว'?r.reason:'','330px')+'</td></tr>'
+   +'<tr><td></td><td>'+ck('คลอดบุตร',r.type)+'</td><td>'+(r.type==='คลอดบุตร'&&r.reason?'เนื่องจาก '+u(r.reason,'330px'):'')+'</td></tr>'
+   +(other?'<tr><td></td><td><span class="ck">&#9745;</span> '+lvName(r.type).replace(/^ลา/,'')+'</td><td>เนื่องจาก '+u(r.reason,'330px')+'</td></tr>':'')+'</table>'
+   +'<div style="margin-top:4px">ตั้งแต่วันที่ '+u(lvThL(r.from),'210px')+' ถึงวันที่ '+u(lvThL(r.to),'210px')+' มีกำหนด '+u(nowD||'','50px')+' วัน</div>'
+   +'<div>ข้าพเจ้าได้ลา '+ck('ป่วย',lastOn)+' &nbsp;'+ck('กิจส่วนตัว',lastOn)+' &nbsp;'+ck('คลอดบุตร',lastOn)+' ครั้งสุดท้ายตั้งแต่วันที่ '+u(lvThL(r.lf),'200px')+'</div>'
+   +'<div>ถึงวันที่ '+u(lvThL(r.lt),'200px')+' มีกำหนด '+u(r.ld||'','45px')+' วัน ในระหว่างลาจะติดต่อข้าพเจ้าได้ที่ '+u(r.contact,'230px')+'</div>'
+   +'<table style="margin-top:12px"><tr><td style="width:50%;padding-right:10px">'
+   +'<div style="text-decoration:underline;font-weight:700">สถิติการลาในปีงบประมาณนี้</div>'
+   +'<table class="st"><thead><tr><th>ประเภท<br>การลา</th><th>ลามาแล้ว<br>(วันทำการ)</th><th>ลาครั้งนี้<br>(วันทำการ)</th><th>รวมเป็น<br>(วันทำการ)</th></tr></thead><tbody>'+st+'</tbody></table>'
+   +'<div class="c" style="margin-top:12px;font-size:14pt;line-height:1.3">(ลงชื่อ) ................................................. เจ้าหน้าที่ตรวจสอบ<br>( นางจินตหรา ภูสำรอง )<br>ตำแหน่ง นักวิชาการสาธารณสุขชำนาญการ<br>หัวหน้ากลุ่มงานบริหาร<br>วันที่ ........../............../..............</div>'
+   +'</td><td style="width:50%;font-size:14pt;line-height:1.3">'
+   +'<div class="c">ขอแสดงความนับถือ<br><br>(ลงชื่อ) '+u('','190px')+'<br>( '+u(r.name,'190px')+' )</div>'
+   +'<div style="margin-top:8px;font-weight:700;text-align:center">ความเห็นผู้บังคับบัญชา</div>'
+   +'<div>'+('.'.repeat(52)+'<br>').repeat(3)+'</div>'
+   +'<div class="c" style="margin-top:6px">(ลงชื่อ) ..............................................<br>( นายตะวัน กุดวงค์แก้ว )<br>ตำแหน่ง ผอ.รพ.สต.บ้านนายอ<br>วันที่ ........../............../..............</div>'
+   +'<div style="margin-top:8px;font-weight:700;text-align:center">คำสั่ง</div>'
+   +'<div class="c"><span class="ck">&#9744;</span> อนุญาต &nbsp;&nbsp;&nbsp; <span class="ck">&#9744;</span> ไม่อนุญาต</div>'
+   +'<div class="c" style="margin-top:6px">(ลงชื่อ) ..............................................<br>( นายตะวัน กุดวงค์แก้ว )<br>ตำแหน่ง รักษาการในตำแหน่ง ผอ.รพ.สต.บ้านนายอ<br>ปฏิบัติราชการแทน นายกองค์การบริหารส่วนจังหวัดสกลนคร<br>ตามคำสั่งองค์การบริหารส่วนจังหวัดสกลนครที่ 829/2568<br>ลงวันที่ 11 เม.ย. 2568<br>วันที่ ........../............../..............</div>'
+   +'</td></tr></table></div>';
+}
+function lvPrintForm(){const r=lvFormRec();if(!r.name){showToast('กรุณากรอกชื่อ-สกุลก่อนพิมพ์ใบลา');return}lvPrint(lvLeaveHtml(r),LV_LFCSS)}
+function lvPrintRec(id){const r=lvLoad().find(x=>x.id===id);if(r)lvPrint(lvLeaveHtml(r),LV_LFCSS)}
+function lvDel(id){if(confirm('ลบรายการลานี้?')){lvSave(lvLoad().filter(r=>r.id!==id));lvShow(lvView)}}
 
         // AI Chatbot Toggle
         function toggleAIChat() {
