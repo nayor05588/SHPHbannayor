@@ -1097,13 +1097,8 @@ main:has(#tab-admin:not(.hidden)){background:linear-gradient(180deg,#e0f2fe 0,#f
         const MODS=[
         {n:'2.1',t:'ระบบจัดการการลา',i:'fa-user-injured',c:'blue',g:[
           ['งานการลา',['เขียนใบลา','ทะเบียนคุมการลา','สรุปการลา']]]},
-        {n:'2.2',t:'การขออนุญาตใช้รถยนต์ราชการ',i:'fa-people-roof',c:'emerald',g:[
-          ['ทะเบียนชุมชน',['ครัวเรือนและประชากรในเขต (Type 1–5)','แผนที่หมู่บ้าน/พิกัดบ้าน']],
-          ['เยี่ยมบ้าน (บันทึกผลและภาพ)',['ผู้สูงอายุ','ติดเตียง','หลังคลอด','ผู้ป่วยเรื้อรัง']],
-          ['เชิงรุก',['คัดกรองกลุ่มเสี่ยง','ติดตามกลุ่มเป้าหมาย']],
-          ['อสม.',['ทะเบียนและกิจกรรม อสม.','ค่าป่วยการ']],
-          ['ควบคุมโรคและอนามัย',['ระบาดวิทยา (แจ้งเหตุ รง.506)','อนามัยสิ่งแวดล้อม','คุ้มครองผู้บริโภค']],
-          ['รายงาน',['รายงานตามแบบ สสจ./สสอ.']]]},
+        {n:'2.2',t:'การขออนุญาตใช้รถยนต์ราชการ',d:'ขออนุญาตใช้รถ (พิมพ์แบบ 3) และรายงานการขออนุญาตใช้รถรายครั้ง',i:'fa-car',c:'emerald',g:[
+          ['งานขอใช้รถยนต์ราชการ',['ขออนุญาตใช้รถ','รายงานการขออนุญาตใช้รถ']]]},
         {n:'2.3',t:'ข้อมูลสารสนเทศ (KPI)',i:'fa-chart-line',c:'violet',g:[
           ['ตัวชี้วัด',['แยกมิติ: กระทรวง / จังหวัด / อำเภอ / ตำบล','ดึงข้อมูลทุกโมดูลคำนวณอัตโนมัติ (ตัวตั้ง/ตัวหาร/ร้อยละ) เทียบเป้าหมาย']],
           ['แดชบอร์ดผู้บริหาร',['สถานะสีเขียว/เหลือง/แดง','แนวโน้มรายเดือน/ไตรมาส/ปี']],
@@ -1191,6 +1186,7 @@ main:has(#tab-admin:not(.hidden)){background:linear-gradient(180deg,#e0f2fe 0,#f
                 +g[1].map(x=>'<li><span class="li-ic"><i class="fa-solid '+iconFor(x,m.i)+'"></i></span><span class="tx">'+x+'</span></li>').join('')
                 +'</ul></section>').join('')+'</div>';
             if(m.n==='2.1') box.querySelectorAll('li').forEach((li,i)=>{li.style.cursor='pointer';li.title='คลิกเพื่อเปิด';li.onclick=()=>openLeave(['form','register','summary'][i]);});
+            if(m.n==='2.2') box.querySelectorAll('li').forEach((li,i)=>{li.style.cursor='pointer';li.title='คลิกเพื่อเปิด';li.onclick=()=>openCar(['form','report'][i]);});
             if(scroll && window.innerWidth<1024) box.scrollIntoView({behavior:'smooth',block:'start'});
         }
         (function(){
@@ -1553,6 +1549,195 @@ function lvLeaveHtml(r){
 function lvPrintForm(){const r=lvFormRec();if(!r.name){showToast('กรุณากรอกชื่อ-สกุลก่อนพิมพ์ใบลา');return}lvPrint(lvLeaveHtml(r),LV_LFCSS)}
 function lvPrintRec(id){const r=lvLoad().find(x=>x.id===id);if(r)lvPrint(lvLeaveHtml(r),LV_LFCSS)}
 function lvDel(id){if(confirm('ลบรายการลานี้?')){lvSave(lvLoad().filter(r=>r.id!==id));lvShow(lvView)}}
+
+
+// ===== ขออนุญาตใช้รถยนต์ราชการ (ขออนุญาตใช้รถ / รายงานการขออนุญาตใช้รถ) =====
+const CR_KEY='rpst_carreq', CR_ST=['รออนุมัติ','อนุญาต','ไม่อนุญาต'];
+const CR_DEF={plate:'บษ 1663 สกลนคร',driver:'นายวีระชัย วรรณสังข์'};
+const CR_HEAD='นางทิตยา กุดวงค์แก้ว', CR_DIR='นายตะวัน กุดวงค์แก้ว';
+let crView='form', crFYsel=null, crMon='*';
+function crLoad(){try{return JSON.parse(localStorage.getItem(CR_KEY)||'[]')}catch(e){return []}}
+function crSave(a){try{localStorage.setItem(CR_KEY,JSON.stringify(a));return true}catch(e){return false}}
+const crT=t=>t?String(t).replace(':','.'):'';
+const crGo=(d,t)=>d?lvTH(d)+(t?' '+crT(t)+' น.':''):'-';
+
+function crEnsure(){
+  if($lv('cr-modal'))return;
+  lvEnsure(); // ใช้สไตล์ร่วมกับโมดูลการลา
+  const st=document.createElement('style');
+  st.textContent=`#cr-modal{position:fixed;inset:0;background:rgba(15,23,42,.55);z-index:80;display:none;align-items:flex-start;justify-content:center;padding:16px;overflow:auto}
+  #cr-modal.on{display:flex}#cr-modal .lv-box{max-width:1100px}#cr-body{padding:18px}
+  #cr-body label{display:flex;flex-direction:column;gap:4px;font-size:13px;color:#475569;font-weight:600}
+  #cr-body input,#cr-body textarea,#cr-body select{border:1px solid #cbd5e1;border-radius:8px;padding:8px 10px;font-size:14px;font-weight:400;color:#0f172a;background:#fff;width:100%}
+  #cr-body select.cr-st{width:auto;padding:4px 6px;font-size:12px;font-weight:600}
+  #cr-body .lv-t{font-size:12.5px}#cr-body .lv-t td{vertical-align:top}`;
+  document.head.appendChild(st);
+  const m=document.createElement('div');m.id='cr-modal';
+  m.innerHTML='<div class="lv-box"><div class="lv-top"><b id="cr-title"></b>'
+    +[['form','ขออนุญาตใช้รถ'],['report','รายงานการขออนุญาตใช้รถ']].map(v=>'<button type="button" class="lv-tab" id="cr-tab-'+v[0]+'" onclick="crShow(\''+v[0]+'\')">'+v[1]+'</button>').join('')
+    +'<button type="button" class="lv-x" onclick="crClose()">✕</button></div><div id="cr-body" oninput="crChange(event)" onchange="crChange(event)"></div></div>';
+  document.body.appendChild(m);
+  m.addEventListener('click',e=>{if(e.target===m)crClose()});
+}
+function openCar(v){crEnsure();$lv('cr-modal').classList.add('on');crShow(v||'form')}
+function crClose(){$lv('cr-modal').classList.remove('on')}
+
+function crFYopts(recs){
+  const set=new Set(recs.map(r=>lvFY(r.d1)));set.add(lvFY(lvToday()));
+  const a=[...set].sort((x,y)=>y-x);if(!crFYsel||!set.has(crFYsel))crFYsel=lvFY(lvToday());
+  const mo=LV_MON.map((m,i)=>'<option value="'+i+'"'+(crMon===i?' selected':'')+'>'+m+' '+(i<3?crFYsel-1:crFYsel)+'</option>').join('');
+  return '<label>ปีงบประมาณ (1 ต.ค. – 30 ก.ย.)<select onchange="crFYsel=+this.value;crShow(\'report\')">'+a.map(y=>'<option value="'+y+'"'+(y===crFYsel?' selected':'')+'>พ.ศ. '+y+'</option>').join('')+'</select></label>'
+    +'<label>เดือน<select onchange="crMon=this.value===\'*\'?\'*\':+this.value;crShow(\'report\')"><option value="*"'+(crMon==='*'?' selected':'')+'>ทั้งปีงบประมาณ</option>'+mo+'</select></label>';
+}
+function crShow(v){
+  crView=v;const recs=crLoad();
+  ['form','report'].forEach(k=>$lv('cr-tab-'+k).classList.toggle('on',k===v));
+  $lv('cr-title').textContent={form:'ใบขออนุญาตใช้รถยนต์ราชการส่วนกลาง (แบบ 3)',report:'รายงานการขออนุญาตใช้รถ'}[v];
+  if(v==='form'){
+    const names=[...new Set(LV_ROSTER.map(x=>x[0]).concat(recs.map(r=>r.name)))];
+    $lv('cr-body').innerHTML='<datalist id="cr-names">'+names.map(n=>'<option value="'+lvEsc(n)+'">').join('')+'</datalist>'
+    +'<div class="lv-note">เรียน ผู้อำนวยการโรงพยาบาลส่งเสริมสุขภาพตำบลบ้านนายอ · พิมพ์ตามแบบ 3 (ใบขออนุญาตใช้รถยนต์ราชการส่วนกลาง) · ลงนามด้วยมือหลังพิมพ์</div>'
+    +'<div class="lv-g"><label>วันที่เขียนใบขออนุญาต<input type="date" id="cr-written" value="'+lvToday()+'"></label>'
+    +'<label>ชื่อ-สกุล (ข้าพเจ้า)<input id="cr-name" list="cr-names" placeholder="เช่น นางสมศรี ใจดี" autocomplete="off"></label>'
+    +'<label>ตำแหน่ง<input id="cr-pos"></label></div>'
+    +'<label style="margin-bottom:12px">ขออนุญาตใช้รถยนต์ไปที่ (สถานที่)<input id="cr-dest" placeholder="เช่น โรงพยาบาลสกลนคร / สสอ.ภูพาน"></label>'
+    +'<label style="margin-bottom:12px">เพื่อติดต่อราชการในเรื่อง<textarea id="cr-purpose" rows="2"></textarea></label>'
+    +'<div class="lv-g"><label>ในท้องที่จังหวัด<input id="cr-prov" value="สกลนคร"></label><label>มีคนนั่ง (คน)<input type="number" id="cr-pax" min="1" step="1" value="1"></label></div>'
+    +'<div class="lv-sec">วันเวลาเดินทาง</div>'
+    +'<div class="lv-g"><label>ในวันที่ (ไป)<input type="date" id="cr-d1"></label><label>เวลา (ไป)<input type="time" id="cr-t1"></label>'
+    +'<label>กลับวันที่<input type="date" id="cr-d2"></label><label>เวลา (กลับ)<input type="time" id="cr-t2"></label></div>'
+    +'<div class="lv-sec">รถและพนักงานขับรถ</div>'
+    +'<div class="lv-g"><label>หมายเลขทะเบียนรถยนต์ราชการส่วนกลาง<input id="cr-plate" value="'+lvEsc(CR_DEF.plate)+'"></label>'
+    +'<label>พนักงานขับรถยนต์ (ผู้ควบคุมยานพาหนะ)<input id="cr-driver" value="'+lvEsc(CR_DEF.driver)+'"></label></div>'
+    +'<div style="display:flex;gap:8px;flex-wrap:wrap"><button type="button" class="lv-btn" onclick="crSubmit()">บันทึกคำขอ</button>'
+    +'<button type="button" class="lv-btn" style="background:#16a34a" onclick="crSubmit(true)">🖨 บันทึกและพิมพ์แบบ 3</button>'
+    +'<button type="button" class="lv-btn" style="background:#64748b" onclick="crPrintForm()">พิมพ์แบบ 3 (ไม่บันทึก)</button></div>';
+    return;
+  }
+  const rs=crRows(recs);
+  $lv('cr-body').innerHTML='<div class="lv-g" style="align-items:end;max-width:560px">'+crFYopts(recs)+'</div>'
+    +'<div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px;align-items:center"><b style="margin-right:auto;font-size:14px">'+crSummary(rs)+'</b>'
+    +'<button class="lv-btn" style="margin:0;padding:6px 14px;font-size:13px" onclick="crPrint()">🖨 พิมพ์ / บันทึก PDF</button>'
+    +'<button class="lv-btn" style="margin:0;padding:6px 14px;font-size:13px;background:#16a34a" onclick="crXls()">⬇ ดาวน์โหลด Excel</button></div>'
+    +'<div style="font-weight:700;text-align:center;margin-bottom:8px">'+crTitle()+'</div>'
+    +'<div class="lv-wrap">'+crTable(rs,false)+'</div>'
+    +'<div style="font-size:12px;color:#64748b;margin-top:8px">ดึงรายการจากใบขออนุญาตที่บันทึกในหน้า "ขออนุญาตใช้รถ" อัตโนมัติ · เลือกผลการอนุมัติ (อนุญาต/ไม่อนุญาต) ได้ในช่องท้ายตาราง ซึ่งจะแสดงเครื่องหมายในช่อง "คำสั่ง" เมื่อพิมพ์แบบ 3 ซ้ำ</div>';
+}
+function crRows(recs){
+  return recs.filter(r=>lvFY(r.d1)===crFYsel&&(crMon==='*'||lvMI(r.d1)===crMon))
+    .sort((a,b)=>(a.d1+(a.t1||''))<(b.d1+(b.t1||''))?-1:1);
+}
+function crSummary(rs){
+  const n=s=>rs.filter(r=>r.status===s).length;
+  return 'รวม '+rs.length+' ครั้ง · อนุญาต '+n('อนุญาต')+' · ไม่อนุญาต '+n('ไม่อนุญาต')+' · รออนุมัติ '+n('รออนุมัติ');
+}
+function crTitle(){
+  let t='รายงานการขออนุญาตใช้รถยนต์ราชการส่วนกลาง ประจำปีงบประมาณ '+crFYsel;
+  if(crMon!=='*')t+=' เดือน'+LV_MON[crMon]+' '+(crMon<3?crFYsel-1:crFYsel);
+  return t;
+}
+function crTable(rs,pr){
+  const H=['ที่','วันที่ขอ','ผู้ขอใช้รถ','สถานที่ที่ไป','เรื่อง (เพื่อติดต่อราชการ)','จังหวัด','ผู้โดยสาร<br>(คน)','ไป<br>(วัน-เวลา)','กลับ<br>(วัน-เวลา)','ทะเบียนรถ','พนักงานขับรถ','ผลการอนุมัติ'];
+  let h='<table class="lv-t"><thead><tr>'+H.map(x=>'<th>'+x+'</th>').join('')+(pr?'':'<th style="border:0;background:none"></th>')+'</tr></thead><tbody>';
+  if(!rs.length)h+='<tr><td colspan="'+(pr?12:13)+'" class="lv-empty">ยังไม่มีรายการขออนุญาตใช้รถในช่วงที่เลือก</td></tr>';
+  rs.forEach((r,i)=>{
+    h+='<tr><td>'+(i+1)+'</td><td>'+lvTH(r.written)+'</td><td class="l">'+lvEsc(r.name)+(r.pos?'<br><span style="color:#64748b">'+lvEsc(r.pos)+'</span>':'')+'</td>'
+     +'<td class="l">'+lvEsc(r.dest)+'</td><td class="l">'+lvEsc(r.purpose)+'</td><td>'+lvEsc(r.prov)+'</td><td>'+(r.pax||'')+'</td>'
+     +'<td>'+crGo(r.d1,r.t1)+'</td><td>'+crGo(r.d2,r.t2)+'</td><td>'+lvEsc(r.plate)+'</td><td class="l">'+lvEsc(r.driver)+'</td>'
+     +'<td>'+(pr?lvEsc(r.status):'<select class="cr-st" onchange="crSetSt(\''+r.id+'\',this.value)">'+CR_ST.map(s=>'<option'+(s===r.status?' selected':'')+'>'+s+'</option>').join('')+'</select>')+'</td>'
+     +(pr?'':'<td style="border:0;white-space:nowrap"><button type="button" class="lv-del" style="color:#0284c7" title="พิมพ์แบบ 3" onclick="crPrintRec(\''+r.id+'\')">🖨</button><button type="button" class="lv-del" title="ลบ" onclick="crDel(\''+r.id+'\')">🗑</button></td>')+'</tr>';
+  });
+  return h+'</tbody></table>';
+}
+function crSigHtml(){
+  return '<div style="display:flex;justify-content:space-around;flex-wrap:wrap;gap:24px;margin-top:28px;text-align:center;font-size:14px;line-height:1.7">'
+   +'<div>(ลงชื่อ).........................................ผู้จัดทำรายงาน<br>( .......................................... )</div>'
+   +'<div>(ลงชื่อ).........................................<br>( '+CR_DIR+' )<br>ผู้อำนวยการโรงพยาบาลส่งเสริมสุขภาพตำบลบ้านนายอ</div></div>';
+}
+function crDocHtml(){
+  const rs=crRows(crLoad());
+  return '<h3 style="text-align:center;margin:0">'+crTitle()+'</h3><div style="text-align:center">โรงพยาบาลส่งเสริมสุขภาพตำบลบ้านนายอ อำเภอภูพาน จังหวัดสกลนคร</div>'
+    +'<div style="margin:6px 0">'+crSummary(rs)+'</div>'+crTable(rs,true)+crSigHtml();
+}
+function crPrint(){lvPrint(crDocHtml(),'@page{size:A4 landscape;margin:10mm}body{font-size:12px}td.l{text-align:left}')}
+
+function crChange(e){
+  const id=e.target.id;if(!$lv('cr-name')||!id)return;
+  if(id==='cr-name'){
+    const nm=e.target.value.trim(),r=crLoad().filter(x=>x.name===nm).pop(),ro=LV_ROSTER.find(x=>x[0]===nm);
+    if(r)$lv('cr-pos').value=r.pos||'';else if(ro)$lv('cr-pos').value=ro[1];
+  }
+  if(id==='cr-d1'&&$lv('cr-d1').value&&!$lv('cr-d2').value)$lv('cr-d2').value=$lv('cr-d1').value;
+}
+function crFormRec(){
+  const g=id=>$lv(id).value.trim();
+  return {name:g('cr-name'),pos:g('cr-pos'),written:g('cr-written'),dest:g('cr-dest'),purpose:g('cr-purpose'),prov:g('cr-prov'),pax:g('cr-pax'),
+    d1:g('cr-d1'),t1:g('cr-t1'),d2:g('cr-d2')||g('cr-d1'),t2:g('cr-t2'),plate:g('cr-plate'),driver:g('cr-driver'),status:'รออนุมัติ'};
+}
+function crSubmit(pr){
+  const r=crFormRec();r.id='c'+Date.now();
+  if(!r.name||!r.dest||!r.purpose||!r.d1||r.d2<r.d1){showToast('กรุณากรอก ชื่อ-สกุล สถานที่ เรื่อง และวันเดินทางให้ครบถ้วนและถูกต้อง');return}
+  const a=crLoad();a.push(r);
+  if(!crSave(a)){showToast('บันทึกไม่สำเร็จ (เบราว์เซอร์ไม่อนุญาตให้เก็บข้อมูล)');return}
+  crFYsel=lvFY(r.d1);crMon='*';showToast('บันทึกคำขอใช้รถเรียบร้อย');crShow('report');
+  if(pr)crPrintDoc(r);
+}
+function crPrintForm(){const r=crFormRec();if(!r.name){showToast('กรุณากรอกชื่อ-สกุลก่อนพิมพ์แบบ 3');return}crPrintDoc(r)}
+function crPrintRec(id){const r=crLoad().find(x=>x.id===id);if(r)crPrintDoc(r)}
+function crSetSt(id,v){const a=crLoad(),r=a.find(x=>x.id===id);if(r){r.status=v;crSave(a);crShow('report')}}
+function crDel(id){if(confirm('ลบรายการขอใช้รถนี้?')){crSave(crLoad().filter(r=>r.id!==id));crShow('report')}}
+
+// ----- พิมพ์ "แบบ 3 ใบขออนุญาตใช้รถยนต์ราชการส่วนกลาง" -----
+const CR_CSS='@page{size:A4 portrait;margin:14mm 20mm}body{font-family:"TH SarabunPSK","TH Sarabun New","Sarabun",Tahoma,sans-serif;font-size:16pt;line-height:1.45}.cf .u{display:inline-block;border-bottom:1px dotted #000;padding:0 4px;text-align:center;min-height:1.2em}.cf .ub{flex:1;border-bottom:1px dotted #000;padding:0 4px;min-height:1.3em}.cf .fl{display:flex;gap:6px;align-items:flex-end}.cf .ck{font-family:"Segoe UI Symbol","DejaVu Sans",Arial,sans-serif}.cf .c{text-align:center}.cf .sg{margin-left:40%;text-align:center;margin-top:16px}';
+function crFormHtml(r){
+  const u=(t,w)=>'<span class="u" style="min-width:'+w+'">'+(t===''||t==null?'&nbsp;':lvEsc(t))+'</span>';
+  const fl=(l,t)=>'<div class="fl"><span>'+l+'</span><span class="ub">'+(t?lvEsc(t):'&nbsp;')+'</span></div>';
+  const P=d=>{if(!d)return {d:'',m:'',y:''};const x=lvD(d);return {d:x.getDate(),m:LV_TM[x.getMonth()],y:x.getFullYear()+543}};
+  const w=P(r.written),a=P(r.d1),b=P(r.d2), ok=s=>'<span class="ck">'+(r.status===s?'&#9745;':'&#9744;')+'</span>';
+  const dl=(lab,p,t)=>'<div style="margin-top:2px">'+lab+' '+u(p.d,'46px')+' เดือน '+u(p.m,'120px')+' พ.ศ. '+u(p.y,'64px')+' เวลา '+u(crT(t),'70px')+' น.</div>';
+  return '<div class="cf">'
+   +'<div style="text-align:right;font-weight:700">แบบ 3</div>'
+   +'<div class="c" style="font-weight:700;font-size:20pt">ใบขออนุญาตใช้รถยนต์ราชการส่วนกลาง</div>'
+   +'<div style="text-align:right;margin-top:8px">วันที่ '+u(w.d,'46px')+' เดือน '+u(w.m,'120px')+' พ.ศ. '+u(w.y,'64px')+'</div>'
+   +'<div style="margin-top:6px"><b>เรียน</b>&nbsp; ผู้อำนวยการโรงพยาบาลส่งเสริมสุขภาพตำบลบ้านนายอ</div>'
+   +'<div class="fl" style="margin-top:6px"><span style="padding-left:2.5em">ข้าพเจ้า</span><span class="ub">'+lvEsc(r.name)+'</span><span>ตำแหน่ง</span><span class="ub" style="flex:.8">'+lvEsc(r.pos)+'</span></div>'
+   +fl('ขออนุญาตใช้รถยนต์ไปที่',r.dest)
+   +fl('เพื่อติดต่อราชการในเรื่อง',r.purpose)
+   +'<div class="fl"><span>ในท้องที่จังหวัด</span><span class="ub">'+lvEsc(r.prov)+'</span><span>มีคนนั่ง</span><span class="ub" style="flex:.5;text-align:center">'+lvEsc(r.pax)+'</span><span>คน</span></div>'
+   +dl('ในวันที่',a,r.t1)+dl('กลับวันที่',b,r.t2)
+   +'<div class="sg" style="margin-top:22px">(ลงชื่อ)............................................ผู้ขออนุญาต<br>( '+(r.name?lvEsc(r.name):'..............................................')+' )</div>'
+   +'<div class="sg" style="margin-top:10px">(ลงชื่อ)............................................หัวหน้าฝ่ายงานบริหาร<br>( '+CR_HEAD+' )</div>'
+   +'<div style="margin-top:14px">ใช้รถยนต์ราชการส่วนกลางหมายเลขทะเบียน '+u(r.plate,'240px')+'</div>'
+   +'<div>พนักงานขับรถยนต์ชื่อ '+u(r.driver,'300px')+'</div>'
+   +'<div class="sg" style="margin-top:12px">(ลงชื่อ)............................................ผู้ควบคุมยานพาหนะ<br>( '+(r.driver?lvEsc(r.driver):'..............................................')+' )<br>พนักงานขับรถ</div>'
+   +'<div style="margin-top:14px;font-weight:700">คำสั่ง &nbsp; ( '+ok('อนุญาต')+' ) อนุญาต &nbsp; ( '+ok('ไม่อนุญาต')+' ) ไม่อนุญาต</div>'
+   +'<div class="sg" style="margin-left:12%;text-align:center;margin-top:14px">(ลงชื่อ)............................................<br>( '+CR_DIR+' )<br>ตำแหน่ง ผอ.รพ.สต.บ้านนายอ<br>............../......................./.........................</div>'
+   +'</div>';
+}
+function crPrintDoc(r){lvPrint(crFormHtml(r),CR_CSS)}
+
+// ----- ส่งออก Excel รายงาน -----
+async function crXls(){
+  try{await lvLoadXJ()}catch(e){showToast('โหลดตัวสร้าง Excel ไม่ได้ กรุณาใช้ปุ่มพิมพ์ / PDF แทน');return}
+  const rs=crRows(crLoad()), wb=new ExcelJS.Workbook();
+  const ws=wb.addWorksheet('ปีงบ '+crFYsel,{pageSetup:{paperSize:9,orientation:'landscape',fitToPage:true,fitToWidth:1,fitToHeight:0,margins:{left:.4,right:.4,top:.6,bottom:.6,header:.3,footer:.3}}});
+  const F={name:'TH Sarabun New',size:14}, th={style:'thin'}, B={top:th,left:th,bottom:th,right:th};
+  const C={horizontal:'center',vertical:'middle',wrapText:true}, L={horizontal:'left',vertical:'middle',wrapText:true};
+  [5,11,24,26,34,10,9,18,18,16,22,13].forEach((w,i)=>ws.getColumn(i+1).width=w);
+  const put=(a,v,al)=>{const c=ws.getCell(a);c.value=v;c.font=F;c.alignment=al||C;return c};
+  ws.mergeCells('A1:L1');put('A1',crTitle());ws.getRow(1).font=Object.assign({},F,{bold:true,size:16});ws.getRow(1).height=30;
+  ws.mergeCells('A2:L2');put('A2','โรงพยาบาลส่งเสริมสุขภาพตำบลบ้านนายอ  อำเภอภูพาน  จังหวัดสกลนคร   |   '+crSummary(rs));
+  ['ที่','วันที่ขอ','ผู้ขอใช้รถ','สถานที่ที่ไป','เรื่อง (เพื่อติดต่อราชการ)','จังหวัด','ผู้โดยสาร (คน)','ไป (วัน-เวลา)','กลับ (วัน-เวลา)','ทะเบียนรถ','พนักงานขับรถ','ผลการอนุมัติ'].forEach((t,i)=>put(String.fromCharCode(65+i)+'4',t));
+  ws.getRow(4).height=34;
+  rs.forEach((r,i)=>{
+    const R=5+i, v=[i+1,lvTH(r.written),r.name+(r.pos?' ('+r.pos+')':''),r.dest,r.purpose,r.prov,r.pax?+r.pax:'',crGo(r.d1,r.t1),crGo(r.d2,r.t2),r.plate,r.driver,r.status];
+    v.forEach((x,k)=>put(String.fromCharCode(65+k)+R,x,[2,3,4,10].indexOf(k)>=0?L:C));
+  });
+  for(let r=4;r<=4+Math.max(rs.length,1);r++)for(let c=1;c<=12;c++){const x=ws.getCell(r,c);x.border=B;if(!x.font||!x.font.name)x.font=F}
+  const buf=await wb.xlsx.writeBuffer(), a=document.createElement('a');
+  a.href=URL.createObjectURL(new Blob([buf],{type:'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'}));
+  a.download='รายงานขออนุญาตใช้รถ_ปีงบ'+crFYsel+(crMon==='*'?'':'_'+LV_AB[crMon])+'.xlsx';document.body.appendChild(a);a.click();a.remove();
+}
 
         // AI Chatbot Toggle
         function toggleAIChat() {
