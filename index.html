@@ -148,14 +148,6 @@ main:has(#tab-admin:not(.hidden)){background:linear-gradient(180deg,#e0f2fe 0,#f
 .mod-group li .li-ic{flex:none;width:1.75rem;height:1.75rem;border-radius:.55rem;display:grid;place-items:center;font-size:.75rem;color:var(--mc);background:color-mix(in srgb,var(--mc) 10%,#fff)}
 .mod-group li .tx{padding-top:.2rem}
 
-/* Data-flow panel */
-#tab-admin .adm-flow{position:relative;overflow:hidden;border-radius:1.25rem;padding:1.25rem;color:#fff;background:linear-gradient(135deg,var(--sea-950),var(--sea-800))}
-#tab-admin .adm-flow-title{display:flex;align-items:center;gap:.5rem;margin-bottom:.9rem;font-family:'Anuphan',sans-serif;font-weight:600;font-size:.95rem;color:var(--sea-300)}
-.mod-flow{display:flex;flex-wrap:wrap;align-items:center;gap:.5rem}
-.mod-flow+.mod-flow{margin-top:.65rem}
-.mod-flow .st{background:rgba(255,255,255,.09);border:1px solid rgba(255,255,255,.18);color:#eef9fe;padding:.35rem .8rem;border-radius:999px;font-size:.8125rem;font-weight:500}
-.mod-flow .ar{color:var(--sea-300);font-size:.8125rem}
-
 /* Calendar */
 #tab-admin .cal-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,22rem),1fr));gap:.9rem}
 .ev-card{position:relative;display:flex;align-items:flex-start;gap:.9rem;padding:1rem;border-radius:1.1rem;background:#fff;border:1px solid var(--sea-line);transition:box-shadow .18s,border-color .18s}
@@ -924,7 +916,7 @@ button[onclick="toggleAIChat()"].w-14::before{content:"";position:absolute;inset
 
             <!-- Admin Sub-navigation Tabs -->
             <div class="adm-nav" role="tablist">
-                <button type="button" onclick="switchAdminSub('modules')" id="sub-btn-modules" class="admin-sub-btn adm-tab is-active"><i class="fa-solid fa-grip"></i>ระบบงานหลัก 9 หมวด</button>
+                <button type="button" onclick="switchAdminSub('modules')" id="sub-btn-modules" class="admin-sub-btn adm-tab is-active"><i class="fa-solid fa-grip"></i>ระบบจัดการภายใน รพ.สต.</button>
                 <button type="button" onclick="switchAdminSub('calendar')" id="sub-btn-calendar" class="admin-sub-btn adm-tab"><i class="fa-solid fa-calendar-days"></i>ปฏิทินงานองค์กร</button>
                 <button type="button" onclick="switchAdminSub('doc')" id="sub-btn-doc" class="admin-sub-btn adm-tab"><i class="fa-solid fa-folder-open"></i>คลังคำสั่ง/หนังสือเวียน</button>
             </div>
@@ -933,17 +925,12 @@ button[onclick="toggleAIChat()"].w-14::before{content:"";position:absolute;inset
             <div id="admin-sub-modules" class="admin-sub-content space-y-6">
                 <div class="adm-sec-head">
                     <div>
-                        <h3><span class="hi"><i class="fa-solid fa-grip"></i></span>ระบบงานหลักของ รพ.สต. (9 หมวด)</h3>
+                        <h3><span class="hi"><i class="fa-solid fa-grip"></i></span>ระบบจัดการภายใน รพ.สต.</h3>
                         <p>เลือกหมวดเพื่อดูรายละเอียดงานย่อย ข้อมูลทุกหมวดเชื่อมโยงกันเป็นศูนย์กลางเดียว</p>
                     </div>
                 </div>
                 <div id="mod-grid" class="grid grid-cols-2 lg:grid-cols-4 gap-4"></div>
                 <div id="mod-detail"></div>
-                <div class="adm-flow">
-                    <div class="adm-flow-title"><i class="fa-solid fa-diagram-project"></i>การไหลของข้อมูลระหว่างหมวด</div>
-                    <div class="mod-flow"><span class="st">2.1 บริการผู้ป่วย</span><span class="ar">+</span><span class="st">2.2 งานชุมชน</span><i class="fa-solid fa-arrow-right ar"></i><span class="st">2.3 KPI</span><i class="fa-solid fa-arrow-right ar"></i><span class="st">2.4 แผนงาน</span><i class="fa-solid fa-arrow-right ar"></i><span class="st">2.7 คุมงบตามโครงการ</span></div>
-                    <div class="mod-flow"><span class="st">2.1 ใบสั่งยา</span><i class="fa-solid fa-arrow-right ar"></i><span class="st">2.8 ตัดจ่ายคลังยาอัตโนมัติ</span></div>
-                </div>
             </div>
 
             <!-- SUB-SECTION 1: CALENDAR -->
@@ -1456,7 +1443,7 @@ function lvShow(v,keep){
   $lv('lv-body').innerHTML=h;
 }
 // ----- สรุปการลา ตามแบบฟอร์ม Excel (บัญชีสรุปวันลา) -----
-const LV_ROSTER=[['นายตะวัน กุดวงค์แก้ว','ผอ.รพ.สต.บ้านนายอ'],['นางสาวพรรณกาญจน์ ไวแสน','พยาบาลวิชาชีพชำนาญการ'],['นางสาวศิริมุกดา โพธิสิม','เจ้าพนักงานสาธารณสุขชำนาญงาน'],['นางสาวธันยชนก วรรณหนองคู','เจ้าพนักงานทันตสาธารณสุขปฏิบัติงาน'],['นางจินตหรา ภูสำรอง','นักวิชาการสาธารณสุขชำนาญการ'],['นางสาวชไมพร มุงคุณ','แพทย์แผนไทยปฏิบัติการ'],['นางสาวสุปรียา วงศ์เจริญ','นักวิชาการสาธารณสุข'],['นางสาวลำใย ปราศรัยงาม','พนักงานช่วยการพยาบาล'],['นางสาวจุฑามาศ ประกอบแก้ว','พนักงานช่วยการพยาบาล'],['นายวีระชัย วรรณสังข์','พนักงานบริการ'],['นางสาวโนรา คณานันท์','เจ้าพนักงานการเงินและบัญชี']];
+const LV_ROSTER=[['นายตะวัน กุดวงค์แก้ว','ผอ.รพ.สต.บ้านนายอ'],['นางสาวพรรณกาญจน์ ไวแสน','พยาบาลวิชาชีพชำนาญการ'],['นางสาวศิริมุกดา โพธิสิม','เจ้าพนักงานสาธารณสุขชำนาญงาน'],['นางสาวธันยชนก วรรณหนองคู','เจ้าพนักงานทันตสาธารณสุขปฏิบัติงาน'],['นางจินตหรา ภูสำรอง','นักวิชาการสาธารณสุขชำนาญการ'],['นางสาวชไมพร มุงคุณ','แพทย์แผนไทยปฏิบัติการ'],['นางสาวสุปรียา วงศ์เจริญ','นักวิชาการสาธารณสุข'],['นางสาวลำใย ปราศรัยงาม','พนักงานช่วยการพยาบาล'],['นางสาวจุฑามาศ ประกอบแก้ว','พนักงานผู้ช่วยเหลือคนไข้'],['นายวีระชัย วรรณสังข์','พนักงานบริการ'],['นางสาวโนรา คณานันท์','เจ้าพนักงานการเงินและบัญชี']];
 const LV_MON=['ตุลาคม','พฤศจิกายน','ธันวาคม','มกราคม','กุมภาพันธ์','มีนาคม','เมษายน','พฤษภาคม','มิถุนายน','กรกฎาคม','สิงหาคม','กันยายน'];
 let lvM1=0,lvM2=11;
 const lvMI=d=>(lvD(d).getMonth()+3)%12;
@@ -1572,7 +1559,7 @@ function lvSetPosNo(n,v){const m=lvPosNo();m[n]=v.trim();try{localStorage.setIte
 function lvPeople(recs){return [...new Set(LV_ROSTER.map(x=>x[0]).concat(recs.map(r=>r.name)))]}
 function lvInfo(name,recs){
   const rs=recs.filter(r=>r.name===name), l=rs[rs.length-1]||{}, ro=LV_ROSTER.find(x=>x[0]===name);
-  return {pos:l.pos||(ro&&ro[1])||'',dept:l.dept||'รพ.สต.บ้านนายอ',no:lvPosNo()[name]||''};
+  return {pos:(ro&&ro[1])||l.pos||'',dept:l.dept||'รพ.สต.บ้านนายอ',no:lvPosNo()[name]||''};
 }
 function lvRegRows(name,recs){return recs.filter(r=>r.name===name&&lvFY(r.from)===lvFYsel).sort((a,b)=>a.from<b.from?-1:a.from>b.from?1:0)}
 function lvRegCells(r){
@@ -1664,7 +1651,7 @@ function lvLast(){
 }
 function lvChange(e){
   const id=e.target.id||e.target.name;if(!$lv('lv-name'))return;
-  if(id==='lv-name'){const nm=e.target.value.trim(),r=lvLoad().filter(x=>x.name===nm).pop(),ro=LV_ROSTER.find(x=>x[0]===nm);if(r){$lv('lv-pos').value=r.pos||'';$lv('lv-dept').value=r.dept||'';}else if(ro){$lv('lv-pos').value=ro[1];}lvLast()}
+  if(id==='lv-name'){const nm=e.target.value.trim(),r=lvLoad().filter(x=>x.name===nm).pop(),ro=LV_ROSTER.find(x=>x[0]===nm);if(r){$lv('lv-pos').value=(ro&&ro[1])||r.pos||'';$lv('lv-dept').value=r.dept||'';}else if(ro){$lv('lv-pos').value=ro[1];}lvLast()}
   if(id==='lv-type')lvLast();
   if(id==='lv-from'||id==='lv-to'){if($lv('lv-from').value&&!$lv('lv-to').value)$lv('lv-to').value=$lv('lv-from').value;$lv('lv-days').value=lvDays($lv('lv-from').value,$lv('lv-to').value)||''}
   if(String(id).indexOf('lv-')===0||id==='lv-type')lvStats();
