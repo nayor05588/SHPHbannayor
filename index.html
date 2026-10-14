@@ -336,6 +336,26 @@ button[onclick="toggleAIChat()"].w-14::before{content:"";position:absolute;inset
 #doc-modal>div{border:1px solid var(--line);border-radius:1.5rem;box-shadow:0 40px 80px -30px rgba(10,42,107,.55)}
 #doc-modal{background:rgba(10,37,64,.55)}
 #doc-modal h4{font-family:'Anuphan',sans-serif;color:var(--ink)}
+
+/* KPI dashboard & modal */
+#kp-modal{position:fixed;inset:0;background:rgba(10,37,64,.55);z-index:80;display:none;align-items:flex-start;justify-content:center;padding:16px;overflow:auto}#kp-modal.on{display:flex}
+.kp-box{background:#fff;border-radius:1.5rem;width:100%;max-width:980px;border:1px solid #D6E4F7;box-shadow:0 40px 80px -30px rgba(10,42,107,.55)}
+.kp-top{position:sticky;top:0;z-index:2;display:flex;align-items:center;gap:.6rem;padding:.9rem 1.1rem;background:#fff;border-bottom:1px solid #D6E4F7;border-radius:1.5rem 1.5rem 0 0}
+.kp-top h3{font-family:'Anuphan',sans-serif;font-weight:700;font-size:1.05rem;margin-right:auto;color:#0A2540}.kp-x{width:2.3rem;height:2.3rem;border-radius:50%;background:#F4F8FF;color:#38506F}
+.kp-body{padding:1.1rem}.kp-body label{font-size:.875rem;font-weight:600;color:#38506F;display:block;margin-bottom:.2rem}
+.kp-body :is(select,input[type=text],input[type=number],textarea){border:1px solid #CBDDF5;border-radius:.75rem;padding:.55rem .8rem;font-size:.95rem;background:#fff;width:100%}
+.kp-row{display:flex;flex-wrap:wrap;gap:.75rem;align-items:flex-end;margin-bottom:.9rem}.kp-row>div{flex:1;min-width:8.5rem}
+.kp-btn{padding:.6rem 1.1rem;border-radius:.85rem;background:linear-gradient(135deg,#1F6FEB,#2F9BFF);color:#fff;font-weight:600;font-size:.9rem}.kp-btn.ln{background:#fff;color:#1457D6;border:1px solid #CBDDF5}.kp-btn.dg{background:#fff;color:#B3261E;border:1px solid #F3C4C1}
+.kp-note{font-size:.875rem;color:#4B6283}.kp-banner{padding:.7rem 1rem;border-radius:1rem;background:#FFF6DD;color:#6B4A00;font-size:.9rem;margin-bottom:1rem}
+.kp-card{border:1px solid #D6E4F7;border-radius:1.1rem;padding:1rem;margin-bottom:1rem;background:#F9FBFF}
+.kp-tbw{overflow-x:auto;border:1px solid #D6E4F7;border-radius:1rem;margin-bottom:1rem}.kp-tb{width:100%;border-collapse:collapse;font-size:.9rem}.kp-tb th{background:#F4F8FF;text-align:left;padding:.55rem .7rem;color:#38506F;white-space:nowrap}.kp-tb td{padding:.55rem .7rem;border-top:1px solid #EAF2FF;vertical-align:middle}
+.kp-bd{display:inline-block;padding:.1rem .6rem;border-radius:999px;font-size:.8125rem;font-weight:600;white-space:nowrap}.kp-g{background:#DCF5E6;color:#0B6B3A}.kp-a{background:#FFF1CF;color:#8A5A00}.kp-r{background:#FFE1E1;color:#B3261E}.kp-n{background:#EEF2F7;color:#4B6283}
+.kp-exec{margin-top:1.5rem;border-top:1px solid #D6E4F7;padding-top:1.25rem}.kp-head{display:flex;flex-wrap:wrap;gap:.75rem;align-items:center;justify-content:space-between;margin-bottom:1rem}
+.kp-head h4{font-family:'Anuphan',sans-serif;font-weight:700;font-size:1.1rem;color:#0A2540}.kp-head select{border:1px solid #CBDDF5;border-radius:.75rem;padding:.45rem .8rem;background:#fff}
+.kp-tiles{display:grid;grid-template-columns:repeat(auto-fit,minmax(9.5rem,1fr));gap:.7rem;margin-bottom:1.1rem}.kp-tile{border:1px solid #D6E4F7;border-radius:1rem;padding:.8rem 1rem;background:#fff}
+.kp-tile b{display:block;font-family:'Anuphan',sans-serif;font-size:1.7rem;line-height:1.2;color:#0A2540}.kp-tile span{font-size:.8125rem;color:#4B6283}
+.kp-gr{display:grid;grid-template-columns:minmax(8rem,14rem) 1fr;gap:.4rem .8rem;align-items:center;margin:.55rem 0;font-size:.9rem}.kp-seg{display:flex;height:.9rem;border-radius:999px;overflow:hidden;background:#E3EEFF}.kp-seg i{display:block;height:100%}
+.kp-gr small{grid-column:2;color:#4B6283;font-size:.8125rem;margin-top:-.2rem}.kp-sh{font-family:'Anuphan',sans-serif;font-weight:600;color:#0A2540;margin:1.2rem 0 .5rem}
 </style>
 </head>
 <body class="site antialiased selection:bg-aiBlue-500 selection:text-white">
@@ -1212,11 +1232,9 @@ button[onclick="toggleAIChat()"].w-14::before{content:"";position:absolute;inset
           ['งานการลา',['เขียนใบลา','ทะเบียนคุมการลา','สรุปการลา']]]},
         {n:'2.2',t:'การขออนุญาตใช้รถยนต์ราชการ',d:'ขออนุญาตใช้รถ (พิมพ์แบบ 3) และรายงานการขออนุญาตใช้รถรายครั้ง',i:'fa-car',c:'emerald',g:[
           ['งานขอใช้รถยนต์ราชการ',['ขออนุญาตใช้รถ','รายงานการขออนุญาตใช้รถ']]]},
-        {n:'2.3',t:'ข้อมูลสารสนเทศ (KPI)',i:'fa-chart-line',c:'violet',g:[
-          ['ตัวชี้วัด',['แยกมิติ: กระทรวง / จังหวัด / อำเภอ / ตำบล','ดึงข้อมูลทุกโมดูลคำนวณอัตโนมัติ (ตัวตั้ง/ตัวหาร/ร้อยละ) เทียบเป้าหมาย']],
-          ['แดชบอร์ดผู้บริหาร',['สถานะสีเขียว/เหลือง/แดง','แนวโน้มรายเดือน/ไตรมาส/ปี']],
-          ['Data Quality',['ข้อมูลขาด','ข้อมูลซ้ำ','ผิดรูปแบบ']],
-          ['ส่งออก',['Excel','PDF']]]},
+        {n:'2.3',t:'ผลงานตามตัวชี้วัด ปีงบ 2570',d:'บันทึกผลงาน 3 กลุ่ม พร้อมแดชบอร์ดผู้บริหาร',i:'fa-chart-line',c:'violet',g:[
+          ['ผลงานตามตัวชี้วัด',['1. ผลงานตามตัวชี้วัด (ดึงข้อมูลไม่ได้)','2. ผลงานตามตัวชี้วัด (ดึงข้อมูลได้)','3. ผลงานตามตัวชี้วัด แพทย์แผนไทย']],
+          ['แดชบอร์ดผู้บริหาร',['แดชบอร์ดผู้บริหาร ผลงานตามตัวชี้วัด ปีงบ 2570']]]},
         {n:'2.4',t:'งานแผนและยุทธศาสตร์',i:'fa-bullseye',c:'amber',g:[
           ['วิเคราะห์',['ปัญหาสุขภาพชุมชน (จากข้อ 2.2–2.3)']],
           ['แผนปฏิบัติการประจำปี',['ยุทธศาสตร์','โครงการ','กิจกรรม','ผู้รับผิดชอบ','งบประมาณ','ตัวชี้วัด']],
@@ -1242,11 +1260,10 @@ button[onclick="toggleAIChat()"].w-14::before{content:"";position:absolute;inset
           ['คลังยา: ทะเบียน',['บัญชียา','ล็อต/วันหมดอายุ','ราคาทุน/ราคาขาย']],
           ['คลังยา: เคลื่อนไหว',['รับเข้า–จ่ายออก','ตัดจ่ายอัตโนมัติจากใบสั่งยา','Stock card','จุดสั่งซื้อ (Reorder point)','แจ้งเตือนยาใกล้หมดอายุ/ใกล้หมด']],
           ['คลังยา: อื่นๆ',['เบิกจาก รพช./คลังจังหวัด','ยาควบคุมพิเศษ','ตรวจนับสต็อกประจำเดือน/ปี']]]},
-        {n:'2.9',t:'ประเมินความสะอาด รพ.สต.',i:'fa-broom',c:'teal',g:[
-          ['แบบประเมิน',['เกณฑ์/หัวข้อประเมินความสะอาด','กำหนดรอบการประเมิน (รายวัน/สัปดาห์/เดือน)']],
-          ['พื้นที่ประเมิน',['ห้องตรวจ/ห้องฉีดยา','ห้องน้ำ','ห้องยา','บริเวณภายนอกอาคาร']],
-          ['บันทึกผล',['ให้คะแนนรายพื้นที่','แนบภาพถ่าย','ผู้ประเมิน/วันที่ประเมิน']],
-          ['ติดตามและรายงาน',['สรุปผลคะแนนรายเดือน/ปี','แจ้งเตือนจุดที่ต้องแก้ไข','ส่งออกรายงาน']]]}
+        {n:'2.9',t:'ประเมินความสะอาด รพ.สต.',d:'แบบประเมินตามโซน และ Dashboard รายเดือน/รายปี/รายบุคคล',i:'fa-broom',c:'teal',g:[
+          ['แบบประเมิน',['แบบประเมินความสะอาด ตามโซนรับผิดชอบ']],
+          ['Dashboard และรายงาน',['Dashboard ผลการประเมิน รายเดือน/รายปี','รายงานรายบุคคล ตามโซนที่รับผิดชอบ']],
+          ['ตั้งค่า',['กำหนดผู้รับผิดชอบแต่ละโซน']]]}
         ];
         const ICONS=[
           [/คุมงบ/,'fa-wallet'],[/เสนอ/,'fa-paper-plane'],[/สปสช/,'fa-building-columns'],[/ตัดจ่าย/,'fa-right-left'],[/แจ้งเตือนยา/,'fa-bell'],[/506|ระบาด|ควบคุมโรค/,'fa-virus'],
@@ -1300,6 +1317,8 @@ button[onclick="toggleAIChat()"].w-14::before{content:"";position:absolute;inset
                 +'</ul></section>').join('')+'</div>';
             if(m.n==='2.1') box.querySelectorAll('li').forEach((li,i)=>{li.style.cursor='pointer';li.title='คลิกเพื่อเปิด';li.onclick=()=>openLeave(['form','register','summary'][i]);});
             if(m.n==='2.2') box.querySelectorAll('li').forEach((li,i)=>{li.style.cursor='pointer';li.title='คลิกเพื่อเปิด';li.onclick=()=>openCar(['form','report'][i]);});
+            if(m.n==='2.3'){box.querySelectorAll('li').forEach((li,i)=>{li.style.cursor='pointer';li.title='คลิกเพื่อเปิด';li.onclick=()=>{if(i<3)kpOpen(i+1);else{const e=document.getElementById('kpi-exec');if(e)e.scrollIntoView({behavior:'smooth'});}};});box.insertAdjacentHTML('beforeend','<div id="kpi-exec"></div>');if(window.kpRenderExec)kpRenderExec();}
+            if(m.n==='2.9') box.querySelectorAll('li').forEach((li,i)=>{li.style.cursor='pointer';li.title='คลิกเพื่อเปิด';li.onclick=()=>openClean(['form','dash','person','zones'][i]);});
             if(scroll && window.innerWidth<1024) box.scrollIntoView({behavior:'smooth',block:'start'});
         }
         (function(){
@@ -2343,6 +2362,270 @@ function hashPw(user,pw){
     }
     function delDoc(id){ if(confirm('ลบเอกสารนี้?')) Promise.all([DB.remove('documents/'+id),DB.remove('docfiles/'+id)]).catch(e=>showToast('ลบไม่สำเร็จ: '+e.message)); }
     document.addEventListener('keydown',e=>{ if(e.key==='Escape') closeDocForm(); });
+
+    // ===== ประเมินความสะอาด รพ.สต. (/cleanEval, /cleanZones) =====
+    const CL_ZONES={D:'โซน D',N:'โซน N',P:'โซน P'};
+    const CL_ITEMS=[['1','D','ห้องน้ำผู้รับบริการ (ด้านล่าง)'],['2','D','ลานหน้าห้องประชุม'],['3','D','ห้องประชุม'],['4','D','อาคารชั้นบน รพ.สต.'],['5','D','ศูนย์ปันสุข (ห้องเก็บของ)'],
+      ['6','N','โรงอาหาร'],['7','N','ห้องซักล้าง'],['8-9','N','ห้องน้ำชายและลานด้านหลัง'],['10','N','ห้องอาหาร'],['11','N','ห้องแพทย์แผนไทย'],['12','N','ห้อง ER'],['13','N','ห้อง Office'],['14','N','ห้องตรวจโรค'],
+      ['15-16','P','ห้องน้ำหญิงและลานด้านหน้า'],['17','P','ห้อง ANC'],['18','P','ห้อง LAP'],['19','P','ห้องทันตกรรม'],['20','P','ลาน OPD'],['21','P','ระเบียงบันได']];
+    const CL_BE=new Date().getFullYear()+543;
+    let clData={}, clZones={}, clTab='form', clF={mode:'month',y:CL_BE,m:new Date().getMonth()+1,p:''};
+    const clMean=a=>a.length?a.reduce((t,x)=>t+x,0)/a.length:null;
+    const clFmt=v=>v==null?'-':v.toFixed(2);
+    const clMe=()=>{try{return getSession().user}catch(e){return null}};
+    const clUsers=()=>{try{return loadUsers()}catch(e){return []}};
+    const clName=u=>{const x=clUsers().find(a=>a.u===u);return x?x.name:u};
+    const CL_DEFAULT_ZONES={D:['วีระชัย'],N:['ลำใย'],P:['จุฑามาศ']}; // ตามไฟล์ โซน (ทำความสะอาด)
+    function clZoneUsers(z){if(!Object.keys(clZones).length)return CL_DEFAULT_ZONES[z]||[];try{return JSON.parse(clZones[z]||'[]')}catch(e){return []}}
+    const clZonesOf=u=>Object.keys(CL_ZONES).filter(z=>clZoneUsers(z).indexOf(u)>=0);
+    function clLevel(v){if(v==null)return ['ไม่มีข้อมูล','n'];return v>=4.5?['ดีมาก','g']:v>=3.5?['ดี','b']:v>=2.5?['พอใช้','a']:['ต้องปรับปรุง','r'];}
+    const clBadge=v=>{const l=clLevel(v);return '<span class="cl-bd cl-'+l[1]+'">'+l[0]+'</span>'};
+    function clRecs(){return Object.entries(clData).map(([id,v])=>Object.assign({id},v)).filter(r=>r.y===+clF.y&&(clF.mode==='year'||r.m===+clF.m));}
+    function clVals(r,zs){return CL_ITEMS.filter(i=>zs.indexOf(i[1])>=0).map(i=>+(r.s||{})[i[0]]).filter(x=>x>0);}
+    function clEnsure(){
+        if(document.getElementById('cl-modal'))return;
+        const st=document.createElement('style');
+        st.textContent=`#cl-modal{position:fixed;inset:0;background:rgba(10,37,64,.55);z-index:80;display:none;align-items:flex-start;justify-content:center;padding:16px;overflow:auto}#cl-modal.on{display:flex}
+.cl-box{background:#fff;border-radius:1.5rem;width:100%;max-width:980px;box-shadow:0 40px 80px -30px rgba(10,42,107,.55);border:1px solid #D6E4F7}
+.cl-top{position:sticky;top:0;z-index:2;display:flex;flex-wrap:wrap;align-items:center;gap:.5rem;padding:.9rem 1.1rem;background:#fff;border-bottom:1px solid #D6E4F7;border-radius:1.5rem 1.5rem 0 0}
+.cl-top h3{font-family:'Anuphan',sans-serif;font-weight:700;font-size:1.1rem;margin-right:auto;color:#0A2540}
+.cl-tab{padding:.45rem .95rem;border-radius:999px;font-size:.9rem;font-weight:500;background:#F4F8FF;color:#38506F;border:1px solid #D6E4F7}.cl-tab.on{background:#0A2540;color:#fff;border-color:#0A2540}
+.cl-x{width:2.3rem;height:2.3rem;border-radius:50%;background:#F4F8FF;color:#38506F}
+.cl-body{padding:1.1rem}.cl-body label,.cl-lbl{font-size:.875rem;font-weight:600;color:#38506F}
+.cl-body select,.cl-body textarea,.cl-body input[type=text]{border:1px solid #CBDDF5;border-radius:.75rem;padding:.55rem .8rem;font-size:.95rem;background:#fff;width:100%}
+.cl-row{display:flex;flex-wrap:wrap;gap:.75rem;align-items:flex-end;margin-bottom:1rem}.cl-row>div{min-width:9rem;flex:1}
+.cl-zone{border:1px solid #D6E4F7;border-radius:1.1rem;margin-bottom:1rem;overflow:hidden}.cl-zone>h4{padding:.6rem 1rem;background:#E3EEFF;color:#0B3A8F;font-family:'Anuphan',sans-serif;font-weight:600}
+.cl-item{display:flex;flex-wrap:wrap;align-items:center;gap:.5rem;justify-content:space-between;padding:.7rem 1rem;border-top:1px solid #EAF2FF}.cl-item span.t{font-size:.95rem;color:#0A2540}
+.cl-sc{display:flex;gap:.35rem}.cl-sc label{position:relative;cursor:pointer}.cl-sc input{position:absolute;opacity:0}.cl-sc b{display:grid;place-items:center;width:2.5rem;height:2.5rem;border-radius:.75rem;border:1px solid #CBDDF5;font-weight:600;color:#38506F;background:#fff}
+.cl-sc input:checked+b{background:#1F6FEB;border-color:#1F6FEB;color:#fff}.cl-sc input:focus-visible+b{outline:3px solid #6BA9FF;outline-offset:2px}
+.cl-btn{padding:.7rem 1.3rem;border-radius:.9rem;background:linear-gradient(135deg,#1F6FEB,#2F9BFF);color:#fff;font-weight:600}
+.cl-kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(10rem,1fr));gap:.75rem;margin-bottom:1rem}.cl-kpi{border:1px solid #D6E4F7;border-radius:1rem;padding:.8rem 1rem;background:#F4F8FF}
+.cl-kpi b{display:block;font-family:'Anuphan',sans-serif;font-size:1.6rem;color:#0A2540;line-height:1.2}.cl-kpi span{font-size:.8125rem;color:#4B6283}
+.cl-bar{display:grid;grid-template-columns:5.5rem 1fr 7.5rem;align-items:center;gap:.6rem;margin:.45rem 0;font-size:.9rem}.cl-bar i{display:block;height:.8rem;border-radius:999px;background:#E3EEFF;overflow:hidden}.cl-bar i u{display:block;height:100%;background:linear-gradient(90deg,#1F6FEB,#22C7F0);border-radius:999px}
+.cl-tb{width:100%;border-collapse:collapse;font-size:.9rem}.cl-tb th{background:#F4F8FF;text-align:left;padding:.55rem .7rem;color:#38506F}.cl-tb td{padding:.55rem .7rem;border-top:1px solid #EAF2FF}.cl-wrap{overflow-x:auto;border:1px solid #D6E4F7;border-radius:1rem;margin-bottom:1rem}
+.cl-bd{display:inline-block;padding:.1rem .6rem;border-radius:999px;font-size:.8125rem;font-weight:600}.cl-g{background:#DCF5E6;color:#0B6B3A}.cl-b{background:#E3EEFF;color:#1457D6}.cl-a{background:#FFF1CF;color:#8A5A00}.cl-r{background:#FFE1E1;color:#B3261E}.cl-n{background:#EEF2F7;color:#4B6283}
+.cl-plan{border:1px solid #D6E4F7;border-radius:1.1rem;margin-bottom:1rem;background:#fff}.cl-plan>summary{cursor:pointer;padding:.7rem 1rem;font-family:'Anuphan',sans-serif;font-weight:600;color:#0A2540}
+.cl-plan svg{display:block;width:100%;height:auto;padding:0 .5rem}.cl-rm{stroke-width:1.5;transition:stroke .15s}.cl-rm.hi{stroke:#E5484D!important;stroke-width:4}
+.cl-zc{display:flex;flex-wrap:wrap;gap:.5rem;padding:.6rem 1rem 1rem}.cl-zc span{font-size:.875rem;padding:.25rem .7rem;border-radius:999px;border:1px solid #D6E4F7;background:#F4F8FF;color:#0A2540}
+.cl-h{font-family:'Anuphan',sans-serif;font-weight:600;color:#0A2540;margin:1.1rem 0 .5rem}.cl-note{font-size:.875rem;color:#4B6283}`;
+        document.head.appendChild(st);
+        const d=document.createElement('div'); d.id='cl-modal'; d.setAttribute('role','dialog'); d.setAttribute('aria-modal','true');
+        d.onclick=e=>{if(e.target===d)closeClean()};
+        d.innerHTML='<div class="cl-box"><div class="cl-top"><h3><i class="fa-solid fa-broom" style="color:#1F6FEB;margin-right:.5rem"></i>ประเมินความสะอาด รพ.สต.</h3><div id="cl-tabs" style="display:flex;flex-wrap:wrap;gap:.4rem"></div><button type="button" class="cl-x" aria-label="ปิด" onclick="closeClean()"><i class="fa-solid fa-xmark"></i></button></div><div id="cl-body" class="cl-body"></div></div>';
+        document.body.appendChild(d);
+    }
+    function openClean(t){
+        if(t==='zones'&&!(clMe()&&clMe().role==='admin')){showToast('เฉพาะผู้ดูแลระบบเท่านั้นที่กำหนดผู้รับผิดชอบโซนได้');return;}
+        clEnsure(); clTab=t==='person'?'dash':t; if(t==='person'){clF.mode='year'; const u=clMe(); if(u&&clZonesOf(u.u).length)clF.p=u.u;}
+        document.getElementById('cl-modal').classList.add('on'); clShow();
+    }
+    function closeClean(){const m=document.getElementById('cl-modal'); if(m)m.classList.remove('on');}
+    function clSetTab(t){clTab=t;clShow();}
+    function clShow(){
+        const tabs=[['form','แบบประเมิน'],['dash','Dashboard']]; if(clMe()&&clMe().role==='admin')tabs.push(['zones','ผู้รับผิดชอบโซน']);
+        document.getElementById('cl-tabs').innerHTML=tabs.map(x=>'<button type="button" class="cl-tab'+(clTab===x[0]?' on':'')+'" onclick="clSetTab(\''+x[0]+'\')">'+x[1]+'</button>').join('');
+        document.getElementById('cl-body').innerHTML=clTab==='form'?clFormHtml():clTab==='dash'?clDashHtml():clZonesHtml();
+    }
+    function clRerender(){ const m=document.getElementById('cl-modal'); if(m&&m.classList.contains('on')&&clTab!=='form')clShow(); const sd=document.getElementById('stat-clean'); if(sd)sd.textContent=Object.keys(clData).length; }
+    const clYears=()=>{const s={};s[CL_BE]=1;Object.values(clData).forEach(v=>{if(v.y)s[v.y]=1});return Object.keys(s).map(Number).sort((a,b)=>b-a)};
+    const clMonthOpts=sel=>TH_M.map((n,i)=>'<option value="'+(i+1)+'"'+(+sel===i+1?' selected':'')+'>'+n+'</option>').join('');
+    const CL_COL={D:['#FFE3CF','#E8793B'],N:['#D6EBFF','#1F6FEB'],P:['#DDF5C8','#5FA22B']};
+    // [no., zone, label, x, y, w, h, vertical]
+    const CL_ROOMS=[['20','P','ลาน OPD',440,164,319,268],['5','D','ศูนย์ปันสุข',89,130,74,130],['7','N','ห้องซักล้าง',87,280,73,142],
+      ['8-9','N','ห้องน้ำชาย',309,280,75,75],['8-9','N','ลานด้านหลัง',270,206,39,150,1],['15-16','P','ห้องน้ำหญิง',309,206,75,75],['15-16','P','ลานหน้าห้องน้ำ',382,212,58,227,1],
+      ['11','N','ห้องแผนไทย',440,48,78,76],['12','N','ห้อง ER',518,48,78,76],['14','N','ห้องตรวจโรค',625,48,78,122],['13','N','ห้อง Office',478,124,118,46],
+      ['10','N','ห้องอาหาร',440,124,38,114,1],['19','P','ทันตกรรม',478,170,76,76],['18','P','ห้อง LAP',440,280,77,82],['17','P','ห้อง ANC',440,362,77,70],
+      ['21','P','ระเบียงบันได',662,231,78,122],['3','D','ห้องประชุม',440,433,229,158],['2','D','ลานหน้าห้องประชุม',669,433,91,158],
+      ['1','D','ห้องน้ำผู้รับบริการ',799,333,73,211,1],['4','D','อาคารชั้นบน รพ.สต.',51,474,322,116]];
+    function clPlanSvg(){
+        let g='<rect x="40" y="36" width="732" height="406" rx="10" fill="none" stroke="#9DB6D8" stroke-dasharray="6 5"/><text x="52" y="30" font-size="14" fill="#4B6283">อาคารชั้นล่าง</text>';
+        CL_ROOMS.forEach(r=>{const c=CL_COL[r[1]],cx=r[3]+r[5]/2,cy=r[4]+r[6]/2,v=r[7]?' style="writing-mode:vertical-rl"':'';
+            g+='<g><rect class="cl-rm" data-n="'+r[0]+'" x="'+r[3]+'" y="'+r[4]+'" width="'+r[5]+'" height="'+r[6]+'" rx="6" fill="'+c[0]+'" stroke="'+c[1]+'"><title>หมายเลข '+r[0]+' '+r[2]+' ('+CL_ZONES[r[1]]+')</title></rect>'
+              +'<text x="'+cx+'" y="'+(r[7]?r[4]+12:cy+(r[6]>90?28:20))+'" text-anchor="'+(r[7]?'middle':'middle')+'" font-size="'+(r[5]<45?12:13)+'" fill="#0A2540"'+v+' pointer-events="none">'+r[2]+'</text>'
+              +'<text x="'+(r[3]+r[5]-6)+'" y="'+(r[4]+r[6]-7)+'" text-anchor="end" font-size="15" font-weight="700" fill="'+c[1]+'" pointer-events="none">'+r[1]+'</text>'
+              +'<circle cx="'+(r[3]+14)+'" cy="'+(r[4]+14)+'" r="'+(r[0].length>2?15:12)+'" fill="#fff" stroke="'+c[1]+'" pointer-events="none"/><text x="'+(r[3]+14)+'" y="'+(r[4]+18.5)+'" text-anchor="middle" font-size="'+(r[0].length>2?10:12)+'" font-weight="600" fill="#0A2540" pointer-events="none">'+r[0]+'</text></g>';});
+        return '<svg viewBox="0 0 900 610" role="img" aria-label="แผนผังโซนรับผิดชอบและจุดประเมินความสะอาด">'+g+'</svg>';
+    }
+    function clPlanHtml(){
+        return '<details class="cl-plan" open><summary><i class="fa-solid fa-map-location-dot" style="color:#1F6FEB;margin-right:.4rem"></i>แผนผังโซนรับผิดชอบ (ใช้ดูตำแหน่งจุดประเมิน)</summary>'+clPlanSvg()
+          +'<div class="cl-zc">'+Object.keys(CL_ZONES).map(z=>'<span style="border-color:'+CL_COL[z][1]+'"><b style="color:'+CL_COL[z][1]+'">'+CL_ZONES[z]+'</b> ผู้รับผิดชอบ: '+(clZoneUsers(z).map(clName).map(escapeHTML).join(', ')||'ยังไม่กำหนด')+'</span>').join('')+'</div>'
+          +'<p class="cl-note" style="padding:0 1rem 1rem">ตัวเลขในวงกลมตรงกับ “หมายเลข” ในแบบประเมิน แตะที่ข้อประเมินเพื่อดูกรอบแดงบนแผนผัง (หมายเลข 6 โรงอาหาร ไม่ปรากฏในผังต้นฉบับ)</p></details>';
+    }
+    function clHi(n){document.querySelectorAll('.cl-rm').forEach(e=>e.classList.toggle('hi',e.getAttribute('data-n')===n));}
+    function clFormHtml(){
+        const me=clMe(); let h='<div class="cl-row"><div><label for="cl-m">เดือนที่ประเมิน</label><select id="cl-m">'+clMonthOpts(new Date().getMonth()+1)+'</select></div>'
+          +'<div><label for="cl-y">ปี พ.ศ.</label><select id="cl-y">'+clYears().map(y=>'<option>'+y+'</option>').join('')+'</select></div>'
+          +'<div><span class="cl-lbl">ผู้ประเมิน</span><p style="padding:.55rem 0">'+escapeHTML(me?me.name:'-')+'</p></div></div>'
+          +'<p class="cl-note" style="margin-bottom:1rem">ให้คะแนนแต่ละจุด 1–5 (5 = สะอาดมาก, 1 = ต้องปรับปรุงมาก) ต้องตอบครบทุกข้อ</p>'+clPlanHtml();
+        Object.keys(CL_ZONES).forEach(z=>{
+            h+='<section class="cl-zone"><h4>'+CL_ZONES[z]+'</h4>'+CL_ITEMS.filter(i=>i[1]===z).map(i=>
+              '<div class="cl-item" onfocusin="clHi(\''+i[0]+'\')" onclick="clHi(\''+i[0]+'\')"><span class="t">หมายเลข '+i[0]+' '+escapeHTML(i[2])+'</span><div class="cl-sc" role="radiogroup" aria-label="คะแนน '+escapeHTML(i[2])+'">'
+              +[1,2,3,4,5].map(v=>'<label><input type="radio" name="cs-'+i[0]+'" value="'+v+'"><b>'+v+'</b></label>').join('')+'</div></div>').join('')+'</section>';
+        });
+        return h+'<label for="cl-sug">ข้อเสนอแนะ เพื่อการปรับปรุง พัฒนางาน</label><textarea id="cl-sug" rows="3"></textarea><div style="text-align:right;margin-top:1rem"><button type="button" id="cl-save" class="cl-btn" onclick="clSave()"><i class="fa-solid fa-floppy-disk"></i> บันทึกผลการประเมิน</button></div>';
+    }
+    async function clSave(){
+        if(!rtdb){showToast('ยังไม่ได้เชื่อมต่อฐานข้อมูล');return;}
+        const sc={}; let miss=0;
+        CL_ITEMS.forEach(i=>{const c=document.querySelector('input[name="cs-'+i[0]+'"]:checked'); if(c)sc[i[0]]=+c.value; else miss++;});
+        if(miss){showToast('ยังไม่ได้ให้คะแนนอีก '+miss+' ข้อ');return;}
+        const me=clMe()||{name:'-',u:''}, m=+document.getElementById('cl-m').value, y=+document.getElementById('cl-y').value, btn=document.getElementById('cl-save');
+        btn.disabled=true;
+        try{ await DB.push('cleanEval',{y:y,m:m,s:sc,sug:document.getElementById('cl-sug').value.trim(),by:me.name,byU:me.u}); showToast('บันทึกผลการประเมินแล้ว'); clF.y=y;clF.m=m;clF.mode='month';clTab='dash';clShow(); }
+        catch(e){showToast('บันทึกไม่สำเร็จ: '+e.message);btn.disabled=false;}
+    }
+    function clSet(k,v){clF[k]=k==='mode'||k==='p'?v:+v;clShow();}
+    function clDashHtml(){
+        const zs=clF.p?clZonesOf(clF.p):Object.keys(CL_ZONES), recs=clRecs();
+        const all=[].concat(...recs.map(r=>clVals(r,zs))), avg=clMean(all);
+        const zAvg=zs.map(z=>[z,clMean([].concat(...recs.map(r=>clVals(r,[z]))))]), have=zAvg.filter(x=>x[1]!=null).sort((a,b)=>b[1]-a[1]);
+        const assigned=[...new Set([].concat(...Object.keys(CL_ZONES).map(clZoneUsers)))];
+        let h='<div class="cl-row"><div><label for="cl-fm">รูปแบบ</label><select id="cl-fm" onchange="clSet(\'mode\',this.value)"><option value="month"'+(clF.mode==='month'?' selected':'')+'>รายเดือน</option><option value="year"'+(clF.mode==='year'?' selected':'')+'>รายปี</option></select></div>'
+          +'<div><label for="cl-fy">ปี พ.ศ.</label><select id="cl-fy" onchange="clSet(\'y\',this.value)">'+clYears().map(y=>'<option'+(y===+clF.y?' selected':'')+'>'+y+'</option>').join('')+'</select></div>'
+          +(clF.mode==='month'?'<div><label for="cl-fmo">เดือน</label><select id="cl-fmo" onchange="clSet(\'m\',this.value)">'+clMonthOpts(clF.m)+'</select></div>':'')
+          +'<div><label for="cl-fp">รายบุคคล</label><select id="cl-fp" onchange="clSet(\'p\',this.value)"><option value="">ทุกคน (ภาพรวม)</option>'+assigned.map(u=>'<option value="'+escapeHTML(u)+'"'+(clF.p===u?' selected':'')+'>'+escapeHTML(clName(u))+' ('+clZonesOf(u).map(z=>z).join(',')+')</option>').join('')+'</select></div></div>';
+        h+='<div class="cl-kpis"><div class="cl-kpi"><b>'+clFmt(avg)+'</b><span>คะแนนเฉลี่ยรวม (เต็ม 5) '+clBadge(avg)+'</span></div><div class="cl-kpi"><b>'+recs.length+'</b><span>จำนวนครั้งที่ประเมิน</span></div>'
+          +'<div class="cl-kpi"><b>'+(have.length?CL_ZONES[have[0][0]]:'-')+'</b><span>โซนคะแนนสูงสุด '+(have.length?clFmt(have[0][1]):'')+'</span></div><div class="cl-kpi"><b>'+(have.length?CL_ZONES[have[have.length-1][0]]:'-')+'</b><span>โซนคะแนนต่ำสุด '+(have.length?clFmt(have[have.length-1][1]):'')+'</span></div></div>';
+        if(clF.p)h+='<p class="cl-note" style="margin-bottom:.5rem">รายงานของ <b>'+escapeHTML(clName(clF.p))+'</b> ผู้รับผิดชอบ '+zs.map(z=>CL_ZONES[z]).join(', ')+'</p>';
+        h+='<h4 class="cl-h">คะแนนเฉลี่ยรายโซน</h4>'+zAvg.map(x=>'<div class="cl-bar"><span>'+CL_ZONES[x[0]]+'</span><i><u style="width:'+(x[1]?x[1]/5*100:0)+'%"></u></i><span><b>'+clFmt(x[1])+'</b> '+clBadge(x[1])+'</span></div>').join('');
+        if(clF.mode==='year'){
+            const mv=TH_M.map((n,i)=>clMean([].concat(...recs.filter(r=>r.m===i+1).map(r=>clVals(r,zs)))));
+            h+='<h4 class="cl-h">แนวโน้มรายเดือน ปี '+clF.y+'</h4><svg viewBox="0 0 480 150" style="width:100%;max-height:220px" role="img" aria-label="กราฟคะแนนเฉลี่ยรายเดือน">'
+              +mv.map((v,i)=>{const x=10+i*39,hh=v?v/5*100:0;return '<rect x="'+x+'" y="'+(110-hh)+'" width="28" height="'+hh+'" rx="5" fill="'+(v==null?'#E3EEFF':v>=3.5?'#1F6FEB':'#E5484D')+'"/><text x="'+(x+14)+'" y="'+(104-hh)+'" font-size="10" text-anchor="middle" fill="#0A2540">'+(v?v.toFixed(1):'')+'</text><text x="'+(x+14)+'" y="128" font-size="10" text-anchor="middle" fill="#4B6283">'+TH_M[i]+'</text>'}).join('')+'</svg>'
+              +'<p class="cl-note">แท่งสีแดง = คะแนนเฉลี่ยต่ำกว่า 3.5 (ควรปรับปรุง)</p>';
+        }
+        h+='<h4 class="cl-h">คะแนนรายจุดประเมิน</h4><div class="cl-wrap"><table class="cl-tb"><tr><th>หมายเลข</th><th>จุดประเมิน</th><th>โซน</th><th>เฉลี่ย</th><th>ระดับ</th></tr>'
+          +CL_ITEMS.filter(i=>zs.indexOf(i[1])>=0).map(i=>{const v=clMean(recs.map(r=>+(r.s||{})[i[0]]).filter(x=>x>0));return '<tr><td>'+i[0]+'</td><td>'+escapeHTML(i[2])+'</td><td>'+i[1]+'</td><td>'+clFmt(v)+'</td><td>'+clBadge(v)+'</td></tr>'}).join('')+'</table></div>';
+        if(!clF.p){
+            h+='<h4 class="cl-h">รายงานรายบุคคลตามโซนที่รับผิดชอบ</h4>';
+            h+=assigned.length?'<div class="cl-wrap"><table class="cl-tb"><tr><th>ผู้รับผิดชอบ</th><th>โซน</th><th>เฉลี่ย</th><th>ระดับ</th></tr>'+assigned.map(u=>{const z=clZonesOf(u),v=clMean([].concat(...recs.map(r=>clVals(r,z))));return '<tr><td>'+escapeHTML(clName(u))+'</td><td>'+z.join(', ')+'</td><td>'+clFmt(v)+'</td><td>'+clBadge(v)+'</td></tr>'}).join('')+'</table></div>'
+              :'<p class="cl-note">ยังไม่ได้กำหนดผู้รับผิดชอบโซน (ผู้ดูแลระบบกำหนดได้ที่แท็บ “ผู้รับผิดชอบโซน”)</p>';
+        }
+        const sg=recs.filter(r=>r.sug).sort((a,b)=>(b.m||0)-(a.m||0));
+        h+='<h4 class="cl-h">ข้อเสนอแนะ</h4>'+(sg.length?'<ul style="padding-left:1.1rem;list-style:disc">'+sg.map(r=>'<li style="margin:.3rem 0">'+escapeHTML(r.sug)+' <span class="cl-note">('+TH_M[(r.m||1)-1]+' '+r.y+' โดย '+escapeHTML(r.by||'-')+')</span></li>').join('')+'</ul>':'<p class="cl-note">ไม่มีข้อเสนอแนะในช่วงนี้</p>');
+        return h;
+    }
+    function clZonesHtml(){
+        const us=clUsers();
+        return '<p class="cl-note" style="margin-bottom:1rem">เลือกผู้รับผิดชอบของแต่ละโซน (หนึ่งคนดูแลได้หลายโซน) แล้วกดบันทึก</p>'+Object.keys(CL_ZONES).map(z=>{
+            const cur=clZoneUsers(z);
+            return '<section class="cl-zone"><h4>'+CL_ZONES[z]+' <span class="cl-note">('+CL_ITEMS.filter(i=>i[1]===z).map(i=>i[0]).join(', ')+')</span></h4><div style="padding:.7rem 1rem;display:grid;grid-template-columns:repeat(auto-fill,minmax(15rem,1fr));gap:.4rem">'
+              +us.map(u=>'<label style="font-weight:400;display:flex;gap:.5rem;align-items:center"><input type="checkbox" data-z="'+z+'" value="'+escapeHTML(u.u)+'"'+(cur.indexOf(u.u)>=0?' checked':'')+'>'+escapeHTML(u.name)+'</label>').join('')+'</div></section>';
+        }).join('')+'<div style="text-align:right"><button type="button" class="cl-btn" onclick="clSaveZones()">บันทึกผู้รับผิดชอบ</button></div>';
+    }
+    async function clSaveZones(){
+        const o={}; Object.keys(CL_ZONES).forEach(z=>{o[z]=JSON.stringify([...document.querySelectorAll('#cl-body input[data-z="'+z+'"]:checked')].map(i=>i.value))});
+        try{await rtdb.ref('cleanZones').set(o);showToast('บันทึกผู้รับผิดชอบโซนแล้ว');}catch(e){showToast('บันทึกไม่สำเร็จ: '+e.message);}
+    }
+    if(rtdb){ DB.listen('cleanEval',d=>{clData=d||{};clRerender();},e=>showToast('อ่านผลประเมินไม่ได้: '+e.message)); DB.listen('cleanZones',d=>{clZones=d||{};clRerender();},()=>{}); }
+    document.addEventListener('keydown',e=>{ if(e.key==='Escape')closeClean(); });
+
+    // ===== ผลงานตามตัวชี้วัด ปีงบ 2570 (/kpiDefs, /kpiRes) =====
+    const KP_FY=2570, KP_GROUPS={1:'ผลงานตามตัวชี้วัด (ดึงข้อมูลไม่ได้)',2:'ผลงานตามตัวชี้วัด (ดึงข้อมูลได้)',3:'ผลงานตามตัวชี้วัด แพทย์แผนไทย'};
+    const KP_M=['ต.ค.','พ.ย.','ธ.ค.','ม.ค.','ก.พ.','มี.ค.','เม.ย.','พ.ค.','มิ.ย.','ก.ค.','ส.ค.','ก.ย.'];
+    const kpLbl=i=>KP_M[i-1]+' '+((i<=3?KP_FY-1:KP_FY)%100);
+    let kpDefs=[], kpRes=[], kpUp=null, kpG=1, kpRecId='', kpRecM=1;
+    const kpAdmin=()=>{try{return getSession().user.role==='admin'}catch(e){return false}};
+    const kpByG=g=>kpDefs.filter(d=>d.g===g);
+    const kpLatest=()=>kpRes.reduce((m,r)=>Math.max(m,r.i||0),0)||1;
+    const kpFmt=(v,d)=>v==null?'-':(Math.round(v*100)/100)+(d&&d.t==='pct'?' %':'');
+    function kpMonthly(d){const a=[];kpRes.forEach(r=>{if(r.k===d.id)a[r.i]=r});return a;}
+    function kpVal(d,r){if(!r)return null;if(d.t==='pct')return +r.den>0?+r.num/+r.den*100:null;return r.val===''||r.val==null?null:+r.val;}
+    function kpCum(d,up){const a=kpMonthly(d);
+        if(d.t==='pct'){let n=0,m=0;for(let i=1;i<=up;i++){const r=a[i];if(r&&+r.den>0){n+=+r.num;m+=+r.den;}}return m>0?n/m*100:null;}
+        for(let i=up;i>=1;i--){const v=kpVal(d,a[i]);if(v!=null)return v;}return null;}
+    function kpSt(d,v){if(v==null)return['ยังไม่มีข้อมูล','n'];const t=+d.target;
+        if(d.dir==='le')return v<=t?['ผ่านเกณฑ์','g']:v<=t*1.2?['ใกล้เกณฑ์','a']:['ต่ำกว่าเกณฑ์','r'];
+        return v>=t?['ผ่านเกณฑ์','g']:v>=t*.8?['ใกล้เกณฑ์','a']:['ต่ำกว่าเกณฑ์','r'];}
+    const kpBd=st=>'<span class="kp-bd kp-'+st[1]+'">'+st[0]+'</span>';
+    const kpTarget=d=>(d.dir==='le'?'ไม่เกิน ':'ไม่น้อยกว่า ')+kpFmt(+d.target,d);
+    function kpRenderExec(){
+        const el=document.getElementById('kpi-exec'); if(!el)return;
+        const up=kpUp||kpLatest(), rows=kpDefs.map(d=>{const v=kpCum(d,up);return {d:d,v:v,st:kpSt(d,v)}});
+        const cnt=k=>rows.filter(r=>r.st[1]===k).length, withData=rows.length-cnt('n');
+        const tiles=[['ตัวชี้วัดทั้งหมด',rows.length],['ผ่านเกณฑ์',cnt('g')],['ใกล้เกณฑ์',cnt('a')],['ต่ำกว่าเกณฑ์',cnt('r')],['ร้อยละที่ผ่านเกณฑ์',withData?Math.round(cnt('g')/withData*100)+' %':'-']];
+        let h='<section class="kp-exec"><div class="kp-head"><h4><i class="fa-solid fa-gauge-high" style="color:#1F6FEB;margin-right:.5rem"></i>แดชบอร์ดผู้บริหาร ผลงานตามตัวชี้วัด ปีงบ 2570</h4>'
+          +'<label class="kp-note">ข้อมูลสะสมถึงเดือน <select onchange="kpSetUp(this.value)">'+KP_M.map((n,i)=>'<option value="'+(i+1)+'"'+(up===i+1?' selected':'')+'>'+kpLbl(i+1)+'</option>').join('')+'</select></label></div>';
+        if(!rows.length)return el.innerHTML=h+'<p class="kp-note">ยังไม่มีตัวชี้วัด ผู้ดูแลระบบเพิ่มตัวชี้วัดได้โดยกดเมนู 1–3 ด้านบน แล้วบันทึกผลงานรายเดือนเพื่อให้แดชบอร์ดแสดงผล</p></section>';
+        h+='<div class="kp-tiles">'+tiles.map(t=>'<div class="kp-tile"><b>'+t[1]+'</b><span>'+t[0]+'</span></div>').join('')+'</div><h5 class="kp-sh">สถานะตามกลุ่มตัวชี้วัด</h5>';
+        const COL={g:'#2EAD6B',a:'#F0B429',r:'#E5484D',n:'#C9D6E8'};
+        [1,2,3].forEach(g=>{const rs=rows.filter(r=>r.d.g===g),n=rs.length||1,c=k=>rs.filter(r=>r.st[1]===k).length;
+            h+='<div class="kp-gr"><span>'+KP_GROUPS[g]+'</span><div class="kp-seg" role="img" aria-label="ผ่าน '+c('g')+' ใกล้เกณฑ์ '+c('a')+' ต่ำกว่า '+c('r')+' ไม่มีข้อมูล '+c('n')+'">'+['g','a','r','n'].map(k=>'<i style="width:'+c(k)/n*100+'%;background:'+COL[k]+'"></i>').join('')+'</div>'
+              +'<small>'+(rs.length?'ผ่านเกณฑ์ '+c('g')+' / ใกล้เกณฑ์ '+c('a')+' / ต่ำกว่าเกณฑ์ '+c('r')+' / ยังไม่มีข้อมูล '+c('n')+' (รวม '+rs.length+' ตัว)':'ยังไม่มีตัวชี้วัดในกลุ่มนี้')+'</small></div>';});
+        const ratio=r=>{const t=+r.d.target;return r.d.dir==='le'?t/(r.v||1e-9):r.v/(t||1e-9)};
+        const need=rows.filter(r=>r.st[1]==='r'||r.st[1]==='a').sort((a,b)=>ratio(a)-ratio(b)).slice(0,10);
+        h+='<h5 class="kp-sh">ตัวชี้วัดที่ควรเร่งรัด (สูงสุด 10 รายการ)</h5>'+(need.length?'<div class="kp-tbw"><table class="kp-tb"><tr><th>กลุ่ม</th><th>ตัวชี้วัด</th><th>เป้าหมาย</th><th>ผลงาน</th><th>สถานะ</th></tr>'
+          +need.map(r=>'<tr><td>'+r.d.g+'</td><td>'+escapeHTML(r.d.name)+'</td><td>'+kpTarget(r.d)+'</td><td><b>'+kpFmt(r.v,r.d)+'</b></td><td>'+kpBd(r.st)+'</td></tr>').join('')+'</table></div>':'<p class="kp-note">ไม่มีตัวชี้วัดที่ต่ำกว่าเกณฑ์ในช่วงนี้</p>');
+        const mt=KP_M.map((n,i)=>{let ok=0,all=0;kpDefs.forEach(d=>{const v=kpVal(d,kpMonthly(d)[i+1]);if(v!=null){all++;if(kpSt(d,v)[1]==='g')ok++;}});return all?ok/all*100:null;});
+        h+='<h5 class="kp-sh">สัดส่วนตัวชี้วัดที่ผ่านเกณฑ์รายเดือน (ผลของเดือนนั้น)</h5><svg viewBox="0 0 480 150" style="width:100%;max-height:220px" role="img" aria-label="กราฟสัดส่วนตัวชี้วัดที่ผ่านเกณฑ์รายเดือน">'
+          +mt.map((v,i)=>{const x=10+i*39,hh=v?v:0;return '<rect x="'+x+'" y="'+(110-hh)+'" width="28" height="'+hh+'" rx="5" fill="'+(v==null?'#E3EEFF':'#1F6FEB')+'"/><text x="'+(x+14)+'" y="'+(104-hh)+'" font-size="10" text-anchor="middle" fill="#0A2540">'+(v==null?'':Math.round(v))+'</text><text x="'+(x+14)+'" y="128" font-size="10" text-anchor="middle" fill="#4B6283">'+KP_M[i]+'</text>'}).join('')+'</svg>'
+          +'<p class="kp-note">เกณฑ์สถานะ: ผ่านเกณฑ์ = ถึงเป้าหมาย, ใกล้เกณฑ์ = ได้ตั้งแต่ 80% ของเป้า (ตัวชี้วัดที่ยิ่งต่ำยิ่งดี: เกินเป้าไม่เกิน 20%), นอกนั้นต่ำกว่าเกณฑ์ ตัวชี้วัดแบบร้อยละใช้ผลสะสมตั้งแต่ ต.ค.</p></section>';
+        el.innerHTML=h;
+    }
+    function kpSetUp(v){kpUp=+v;kpRenderExec();}
+    function kpEnsure(){
+        if(document.getElementById('kp-modal'))return;
+        const d=document.createElement('div'); d.id='kp-modal'; d.setAttribute('role','dialog'); d.setAttribute('aria-modal','true'); d.onclick=e=>{if(e.target===d)kpClose()};
+        d.innerHTML='<div class="kp-box"><div class="kp-top"><h3 id="kp-title"></h3><button type="button" class="kp-x" aria-label="ปิด" onclick="kpClose()"><i class="fa-solid fa-xmark"></i></button></div><div id="kp-body" class="kp-body"></div></div>';
+        document.body.appendChild(d);
+    }
+    function kpOpen(g){kpEnsure();kpG=g;kpRecId='';document.getElementById('kp-modal').classList.add('on');kpShow();}
+    function kpClose(){const m=document.getElementById('kp-modal');if(m)m.classList.remove('on');}
+    function kpShow(){
+        const m=document.getElementById('kp-modal'); if(!m||!m.classList.contains('on'))return;
+        document.getElementById('kp-title').textContent=(kpG+'. ')+KP_GROUPS[kpG]+' ปีงบ '+KP_FY;
+        const up=kpUp||kpLatest(), ds=kpByG(kpG);
+        let h=kpG===2?'<div class="kp-banner"><i class="fa-solid fa-circle-info"></i> ระบบยังไม่ได้เชื่อมต่อแหล่งข้อมูลอัตโนมัติ (เช่น HDC) จึงบันทึกผลด้วยตนเอง หรือนำเข้าแบบวางข้อมูล (CSV) ได้ด้านล่าง</div>':'';
+        h+='<p class="kp-note" style="margin-bottom:.6rem">แสดงผลสะสมถึง '+kpLbl(up)+'</p>'
+          +(ds.length?'<div class="kp-tbw"><table class="kp-tb"><tr><th>ตัวชี้วัด</th><th>เป้าหมาย</th><th>ผลงาน</th><th>สถานะ</th><th></th></tr>'+ds.map(d=>{const v=kpCum(d,up);
+            return '<tr><td>'+escapeHTML(d.name)+'</td><td>'+kpTarget(d)+'</td><td><b>'+kpFmt(v,d)+'</b></td><td>'+kpBd(kpSt(d,v))+'</td><td style="white-space:nowrap"><button type="button" class="kp-btn ln" onclick="kpRec(\''+d.id+'\')">บันทึกผล</button>'
+              +(kpAdmin()?' <button type="button" class="kp-btn dg" aria-label="ลบตัวชี้วัด" onclick="kpDel(\''+d.id+'\')"><i class="fa-solid fa-trash-can"></i></button>':'')+'</td></tr>'}).join('')+'</table></div>'
+            :'<p class="kp-note" style="margin-bottom:1rem">ยังไม่มีตัวชี้วัดในกลุ่มนี้'+(kpAdmin()?' เพิ่มได้ที่ฟอร์มด้านล่าง':' ให้ผู้ดูแลระบบเพิ่มตัวชี้วัดก่อน')+'</p>');
+        const rd=kpDefs.find(x=>x.id===kpRecId);
+        if(rd){const r=kpMonthly(rd)[kpRecM]||{};
+            h+='<div class="kp-card"><b>บันทึกผล: '+escapeHTML(rd.name)+'</b><div class="kp-row" style="margin-top:.7rem"><div><label for="kp-rm">เดือน</label><select id="kp-rm" onchange="kpRecM=+this.value;kpShow()">'+KP_M.map((n,i)=>'<option value="'+(i+1)+'"'+(kpRecM===i+1?' selected':'')+'>'+kpLbl(i+1)+'</option>').join('')+'</select></div>'
+              +(rd.t==='pct'?'<div><label for="kp-num">ตัวตั้ง (A)</label><input id="kp-num" type="number" min="0" step="any" value="'+(r.num!=null?r.num:'')+'"></div><div><label for="kp-den">ตัวหาร (B)</label><input id="kp-den" type="number" min="0" step="any" value="'+(r.den!=null?r.den:'')+'"></div>'
+                :'<div><label for="kp-val">ค่าที่ได้</label><input id="kp-val" type="number" step="any" value="'+(r.val!=null?r.val:'')+'"></div>')
+              +'<div><button type="button" class="kp-btn" onclick="kpSaveRes()">บันทึก</button></div></div></div>';}
+        if(kpAdmin())h+='<div class="kp-card"><b>เพิ่มตัวชี้วัดในกลุ่มนี้</b><div class="kp-row" style="margin-top:.7rem"><div style="flex:2;min-width:14rem"><label for="kp-nm">ชื่อตัวชี้วัด</label><input id="kp-nm" type="text"></div>'
+          +'<div><label for="kp-ty">ชนิดข้อมูล</label><select id="kp-ty"><option value="pct">ร้อยละ (ตัวตั้ง/ตัวหาร)</option><option value="val">ค่าตัวเลข/อัตรา</option></select></div>'
+          +'<div><label for="kp-tg">เป้าหมาย</label><input id="kp-tg" type="number" step="any"></div><div><label for="kp-dr">เกณฑ์</label><select id="kp-dr"><option value="ge">ไม่น้อยกว่าเป้า</option><option value="le">ไม่เกินเป้า</option></select></div>'
+          +'<div><button type="button" class="kp-btn" onclick="kpAdd()">เพิ่ม</button></div></div></div>';
+        h+='<details class="kp-card"><summary style="cursor:pointer;font-weight:600">นำเข้าผลงานแบบวางข้อมูล (CSV)</summary><p class="kp-note" style="margin:.6rem 0">หนึ่งบรรทัดต่อหนึ่งเดือน รูปแบบ: <code>ชื่อตัวชี้วัด,เดือน,ตัวตั้ง,ตัวหาร</code> (ตัวชี้วัดแบบค่าตัวเลขใส่ค่าที่ได้ในช่องตัวตั้ง) เดือนใช้ ต.ค. พ.ย. … ก.ย. หรือเลข 1–12 (1 = ต.ค.) ชื่อต้องตรงกับตัวชี้วัดในกลุ่มนี้</p><textarea id="kp-csv" rows="4"></textarea><div style="margin-top:.6rem"><button type="button" class="kp-btn" onclick="kpImport()">นำเข้า</button></div></details>';
+        document.getElementById('kp-body').innerHTML=h;
+    }
+    function kpRec(id){kpRecId=id;kpRecM=kpUp||kpLatest();kpShow();}
+    async function kpSaveRes(){
+        const d=kpDefs.find(x=>x.id===kpRecId); if(!d)return; const g=i=>document.getElementById(i), o={k:d.id,i:kpRecM};
+        try{let by='-';try{by=getSession().user.name}catch(e){}o.by=by;
+            if(d.t==='pct'){const n=g('kp-num').value,m=g('kp-den').value;if(n===''||m===''||+m<=0||+n<0){showToast('กรุณากรอกตัวตั้งและตัวหาร (ตัวหารต้องมากกว่า 0)');return;}o.num=+n;o.den=+m;}
+            else{const v=g('kp-val').value;if(v===''){showToast('กรุณากรอกค่าที่ได้');return;}o.val=+v;}
+            await rtdb.ref('kpiRes/'+d.id+'_'+kpRecM).set(o);showToast('บันทึกผลงานแล้ว');kpRecId='';
+        }catch(e){showToast('บันทึกไม่สำเร็จ: '+e.message);}
+    }
+    async function kpAdd(){
+        const g=i=>document.getElementById(i), nm=g('kp-nm').value.trim(), tg=g('kp-tg').value;
+        if(!nm||tg===''){showToast('กรุณากรอกชื่อตัวชี้วัดและเป้าหมาย');return;}
+        try{await DB.push('kpiDefs',{g:kpG,name:nm,t:g('kp-ty').value,target:+tg,dir:g('kp-dr').value});showToast('เพิ่มตัวชี้วัดแล้ว');}catch(e){showToast('เพิ่มไม่สำเร็จ: '+e.message);}
+    }
+    async function kpDel(id){
+        if(!confirm('ลบตัวชี้วัดนี้พร้อมผลงานทั้งหมด?'))return;
+        try{await rtdb.ref('kpiDefs/'+id).remove();await Promise.all(kpRes.filter(r=>r.k===id).map(r=>rtdb.ref('kpiRes/'+r.id).remove()));}catch(e){showToast('ลบไม่สำเร็จ: '+e.message);}
+    }
+    async function kpImport(){
+        const ds=kpByG(kpG), lines=document.getElementById('kp-csv').value.split('\n').map(x=>x.trim()).filter(Boolean); let ok=0,bad=0;
+        for(const ln of lines){const p=ln.split(',').map(x=>x.trim()),d=ds.find(x=>x.name===p[0]);
+            let i=KP_M.indexOf(p[1]); if(i<0)i=(+p[1])-1; i+=1;
+            if(!d||!(i>=1&&i<=12)||p[2]===''||isNaN(+p[2])||(d.t==='pct'&&!(+p[3]>0))){bad++;continue;}
+            const o={k:d.id,i:i,by:'นำเข้า CSV'}; if(d.t==='pct'){o.num=+p[2];o.den=+p[3];}else o.val=+p[2];
+            try{await rtdb.ref('kpiRes/'+d.id+'_'+i).set(o);ok++;}catch(e){bad++;}}
+        showToast('นำเข้าสำเร็จ '+ok+' รายการ'+(bad?' ผิดพลาด '+bad+' บรรทัด':''));
+    }
+    if(rtdb){
+        DB.listen('kpiDefs',d=>{kpDefs=Object.entries(d||{}).map(([id,v])=>Object.assign({id},v)).sort((a,b)=>(a.createdAt||0)-(b.createdAt||0));kpRenderExec();kpShow();},()=>{});
+        DB.listen('kpiRes',d=>{kpRes=Object.entries(d||{}).map(([id,v])=>Object.assign({id},v));kpRenderExec();kpShow();},()=>{});
+    }
+    document.addEventListener('keydown',e=>{if(e.key==='Escape')kpClose();});
     // public queue booking -> /bookings
     window.submitBooking=function(){
         const g=i=>document.getElementById(i), name=g('booking-name').value.trim(), phone=g('booking-phone').value.trim(), date=g('booking-date').value;
