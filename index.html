@@ -366,6 +366,36 @@ button[onclick="toggleAIChat()"].w-14::before{content:"";position:absolute;inset
 .cw-bd{flex:1;min-width:0}.cw-bd h6{font-weight:700;font-size:.95rem;color:#0A2540;margin-bottom:.2rem}.cw-bd p{font-size:.8125rem;color:#4B6283;margin:.1rem 0}
 .cw-rp{border-collapse:collapse;width:100%;font-family:"Sarabun","TH Sarabun New",Tahoma,sans-serif}.cw-rp td,.cw-rp th{border:1px solid #9aa5b1;padding:.4rem .65rem;font-size:.95rem;vertical-align:middle;color:#000}.cw-rp th{font-weight:700;text-align:center;background:#fff}.cw-rp .cw-ti{border:none;font-size:1.2rem;padding:.6rem}.cw-rp .cw-y{background:#FFFF00;font-weight:700;text-align:right;white-space:nowrap;-webkit-print-color-adjust:exact;print-color-adjust:exact}.cw-rp .cw-c{background:#00FFFF;font-weight:700;-webkit-print-color-adjust:exact;print-color-adjust:exact}.cw-rp .cw-nb{border:none;background:none}.cw-rp td.ct{text-align:center}.cw-rp .cw-today td{background:#FFF9E6}.cw-rp td.cw-nb{white-space:nowrap;padding-left:.8rem}
 .cw-rp .cw-add td{background:#F1FAF4}.cw-rp input,.cw-rp select{border:1px solid #CBDDF5;border-radius:.5rem;padding:.3rem .45rem;font-size:.85rem;width:100%;min-width:6rem;background:#fff}.cw-rp .cw-add td:nth-child(3){min-width:12rem}
+
+/* ===== ตารางรายงานคิวงาน สไตล์ AI (หน้าจอเท่านั้น) ===== */
+#cw-dash .kp-tbw,#cw-modal .kp-tbw{border:1px solid #D6E4F7;border-radius:1.25rem;background:#fff;box-shadow:0 18px 40px -26px rgba(10,42,107,.45)}
+.kp-tbw .cw-rp{border-collapse:separate;border-spacing:0;min-width:58rem;font-family:'Sarabun',sans-serif}
+.kp-tbw .cw-rp td,.kp-tbw .cw-rp th{border:none;border-bottom:1px solid #E6EFFB;padding:.65rem .85rem;font-size:.92rem;color:#0A2540}
+.kp-tbw .cw-rp .cw-ti{font-family:'Anuphan',sans-serif;font-size:1.1rem;font-weight:700;color:#fff;text-align:center;letter-spacing:.01em;padding:1rem;border-bottom:none;background:radial-gradient(120% 220% at 0% 0%,#2F9BFF 0,transparent 55%),linear-gradient(135deg,#0A2540,#1457D6 70%,#1F6FEB)}
+.kp-tbw .cw-rp .cw-y{background:#F1F7FF;text-align:left;font-weight:600;color:#0A2540}
+.kp-tbw .cw-rp tr td.cw-y:first-child{background:linear-gradient(135deg,#1F6FEB,#2F9BFF);color:#fff;text-align:center;font-family:'Anuphan',sans-serif;font-weight:700;border-bottom:1px solid #fff;width:5.5rem}
+.kp-tbw .cw-rp tr td.cw-y:nth-child(2){border-bottom:1px solid #fff}
+.kp-tbw .cw-rp td[colspan="2"]{background:#F9FBFF;color:#38506F;font-weight:400;border-bottom:1px solid #fff}
+.kp-tbw .cw-rp td.cw-c{background:#E3FAFD;color:#055160;font-weight:600;box-shadow:inset 4px 0 0 #06b6d4}
+.kp-tbw .cw-rp th{background:#F4F8FF;color:#38506F;font-family:'Anuphan',sans-serif;font-weight:600;font-size:.85rem;border-bottom:2px solid #CBDDF5;white-space:nowrap}
+.kp-tbw .cw-rp th.cw-nb,.kp-tbw .cw-rp td.cw-nb{background:#fff;border-bottom:1px solid #E6EFFB}
+.kp-tbw .cw-rp tbody tr,.kp-tbw .cw-rp tr{transition:background .15s}
+.kp-tbw .cw-rp tr:not(.cw-add):hover td:not(.cw-y):not(.cw-c):not(.cw-ti):not([colspan]){background:#F4F9FF}
+.kp-tbw .cw-rp td.ct:first-child{font-weight:700;color:#0A2540;box-shadow:inset 4px 0 0 #C9D6E8}
+.kp-tbw .cw-rp tr.cw-up td.ct:first-child{box-shadow:inset 4px 0 0 #2EAD6B}
+.kp-tbw .cw-rp tr.cw-today td.ct:first-child{box-shadow:inset 4px 0 0 #F0B429}
+.kp-tbw .cw-rp tr.cw-today td{background:#FFF8E1}
+.kp-tbw .cw-rp .cw-chip{display:inline-block;padding:.2rem .7rem;border-radius:999px;font-size:.82rem;font-weight:600;background:#EEF2F7;color:#38506F;line-height:1.5}
+.kp-tbw .cw-rp .cw-chip.cw-t1{background:#E3EEFF;color:#1457D6}.kp-tbw .cw-rp .cw-chip.cw-t2{background:#DDF7F3;color:#0B6B5E}.kp-tbw .cw-rp .cw-chip.cw-t3{background:#EFE7FF;color:#5B2FBF}.kp-tbw .cw-rp .cw-chip.cw-t4{background:#FFEAD9;color:#A14A00}
+.kp-tbw .cw-rp tr.cw-add td{background:linear-gradient(180deg,#F1FAF4,#F7FCF9);border-bottom:none;border-top:2px dashed #BFE6CF}
+.kp-tbw .cw-rp tr.cw-add td.cw-nb{background:#F7FCF9}
+.kp-tbw .cw-rp input,.kp-tbw .cw-rp select{border:1px solid #CBDDF5;border-radius:.65rem;padding:.4rem .6rem;font-size:.85rem;background:#fff;color:#0A2540;outline:none;transition:box-shadow .15s,border-color .15s}
+.kp-tbw .cw-rp input:focus,.kp-tbw .cw-rp select:focus{border-color:#2F9BFF;box-shadow:0 0 0 3px rgba(47,155,255,.2)}
+.kp-tbw .cw-rp td.cw-nb .kp-btn{padding:.35rem .8rem;font-size:.8rem;border-radius:999px}
+.kp-tbw .cw-rp td.cw-nb .kp-btn+.kp-btn{margin-left:.25rem}
+.kp-tbw .cw-rp .cw-cap{caption-side:bottom;text-align:right;padding:.6rem 1rem;font-size:.78rem;color:#4B6283;background:#fff}
+.cw-dot{display:inline-block;width:.6rem;height:.6rem;border-radius:50%;margin:0 .3rem 0 .8rem}.cw-dot.up{background:#2EAD6B}.cw-dot.td{background:#F0B429}.cw-dot.ps{background:#C9D6E8}
+.cw-team{background:linear-gradient(180deg,#fff,#F6FAFF);box-shadow:0 10px 24px -20px rgba(10,42,107,.5);transition:transform .15s}.cw-team:hover{transform:translateY(-2px)}
 </style>
 </head>
 <body class="site antialiased selection:bg-aiBlue-500 selection:text-white">
@@ -2682,11 +2712,11 @@ function hashPw(user,pw){
     const cwDMY=ds=>{const p=(ds||'').split('-');return p.length<3?'-':(+p[2])+' '+TH_M[(+p[1])-1]+(+p[0]+543);};
     function cwReport(rows,fy,mode){
         const E=escapeHTML, cols=mode?6:5, t=cwToday(), ed=mode==='dash'?'cwEditFrom':'cwEvForm';
-        let h='<table class="cw-rp"><tr><th colspan="'+cols+'" class="cw-ti">ตารางจัดการ แผนการเข้าร่วมกิจกรรม ส่วนรวม ของเจ้าหน้าที่ รพ.สต.บ้านนายอ ปีงบประมาณ '+fy+'</th></tr>';
+        let h='<table class="cw-rp">'+(mode?'<caption class="cw-cap"><i class="cw-dot up"></i>กำลังจะมาถึง <i class="cw-dot td"></i>วันนี้ <i class="cw-dot ps"></i>ผ่านไปแล้ว</caption>':'')+'<tr><th colspan="'+cols+'" class="cw-ti">ตารางจัดการ แผนการเข้าร่วมกิจกรรม ส่วนรวม ของเจ้าหน้าที่ รพ.สต.บ้านนายอ ปีงบประมาณ '+fy+'</th></tr>';
         cwTeams.forEach(tm=>{const hl=tm.hl!=null?!!tm.hl:tm.no!=='1';
             h+='<tr><td class="cw-y">ทีม '+E(tm.no)+'</td><td class="cw-y">'+E(tm.members)+'</td><td colspan="2"'+(hl&&tm.note?' class="cw-c"':'')+'>'+(tm.note?(hl?'**หมายเหตุ ':'')+E(tm.note):'')+'</td><td class="cw-nb" colspan="'+(cols-4)+'"></td></tr>';});
         h+='<tr><th>วัน/เดือน/ปี</th><th>เวลา</th><th>งาน/กิจกรรม</th><th>สถานที่</th><th>ทีมที่ไป</th>'+(mode?'<th class="cw-nb"></th>':'')+'</tr>';
-        h+=rows.length?rows.map(e=>'<tr'+(e.date===t?' class="cw-today"':'')+'><td class="ct" style="white-space:nowrap">'+cwDMY(e.date)+'</td><td class="ct" style="white-space:nowrap">'+E(e.time||'')+'</td><td>'+E(e.title)+'</td><td>'+E(e.place||'')+'</td><td class="ct">'+E(cwWho(e))+'</td>'
+        h+=rows.length?rows.map(e=>'<tr'+(e.date===t?' class="cw-today"':e.date>t?' class="cw-up"':'')+'><td class="ct" style="white-space:nowrap">'+cwDMY(e.date)+'</td><td class="ct" style="white-space:nowrap">'+E(e.time||'')+'</td><td>'+E(e.title)+'</td><td>'+E(e.place||'')+'</td><td class="ct">'+(cwWho(e)?'<span class="cw-chip cw-t'+(e.team||0)+'">'+E(cwWho(e))+'</span>':'')+'</td>'
             +(mode?'<td class="cw-nb"><button type="button" class="kp-btn ln" onclick="'+ed+'(\''+e.id+'\')"><i class="fa-solid fa-pen"></i> แก้ไข</button> <button type="button" class="kp-btn dg" aria-label="ลบกิจกรรม" onclick="cwEvDel(\''+e.id+'\')"><i class="fa-solid fa-trash-can"></i> ลบ</button></td>':'')+'</tr>').join('')
           :'<tr><td colspan="5" class="ct">ไม่พบกิจกรรม</td></tr>';
         if(mode){const sg=cwSuggest(),sel='<select id="cwa-'+mode+'-tm" onchange="cwPickInline(\''+mode+'\')"><option value="">ไม่ระบุทีม</option>'+cwTeams.map(x=>'<option value="'+E(x.no)+'"'+(sg&&sg.no===x.no?' selected':'')+'>ทีม '+E(x.no)+'</option>').join('')+'</select>';
