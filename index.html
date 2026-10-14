@@ -361,6 +361,9 @@ button[onclick="toggleAIChat()"].w-14::before{content:"";position:absolute;inset
 #cw-modal{position:fixed;inset:0;background:rgba(10,37,64,.55);z-index:80;display:none;align-items:flex-start;justify-content:center;padding:16px;overflow:auto}#cw-modal.on{display:flex}
 #cw-modal .kp-box{max-width:1180px}#cw-modal .kp-body input[type=date]{border:1px solid #CBDDF5;border-radius:.75rem;padding:.55rem .8rem;font-size:.95rem;background:#fff;width:100%}
 .cw-teams{display:grid;grid-template-columns:repeat(auto-fit,minmax(15rem,1fr));gap:.7rem;margin-bottom:.8rem}.cw-team{border:1px solid #D6E4F7;border-radius:1rem;padding:.8rem 1rem;background:#fff;font-size:.9rem}.cw-th{display:flex;justify-content:space-between;align-items:center;margin-bottom:.35rem;font-family:'Anuphan',sans-serif;color:#0A2540}.cw-today td{background:#FFF9E6}
+.cw-dash{display:grid;grid-template-columns:repeat(auto-fit,minmax(17rem,1fr));gap:.75rem}.cw-card{display:flex;gap:.8rem;align-items:flex-start;border:1px solid #D6E4F7;border-radius:1rem;padding:.8rem;background:#fff}.cw-card.up{border-color:#9AD7B5;background:#F4FCF7}
+.cw-dt{flex:0 0 3.4rem;text-align:center;border-radius:.8rem;background:#E3F4FB;padding:.35rem 0;color:#0A2540}.cw-dt b{display:block;font-family:'Anuphan',sans-serif;font-size:1.5rem;line-height:1.1}.cw-dt span{font-size:.75rem;color:#38506F}
+.cw-bd{flex:1;min-width:0}.cw-bd h6{font-weight:700;font-size:.95rem;color:#0A2540;margin-bottom:.2rem}.cw-bd p{font-size:.8125rem;color:#4B6283;margin:.1rem 0}
 </style>
 </head>
 <body class="site antialiased selection:bg-aiBlue-500 selection:text-white">
@@ -1328,7 +1331,7 @@ button[onclick="toggleAIChat()"].w-14::before{content:"";position:absolute;inset
             if(m.n==='2.2') box.querySelectorAll('li').forEach((li,i)=>{li.style.cursor='pointer';li.title='คลิกเพื่อเปิด';li.onclick=()=>openCar(['form','report'][i]);});
             if(m.n==='2.3'){box.querySelectorAll('li').forEach((li,i)=>{li.style.cursor='pointer';li.title='คลิกเพื่อเปิด';li.onclick=()=>{if(i<3)kpOpen(i+1);else{const e=document.getElementById('kpi-exec');if(e)e.scrollIntoView({behavior:'smooth'});}};});box.insertAdjacentHTML('beforeend','<div id="kpi-exec"></div>');if(window.kpRenderExec)kpRenderExec();}
             if(m.n==='2.9') box.querySelectorAll('li').forEach((li,i)=>{li.style.cursor='pointer';li.title='คลิกเพื่อเปิด';li.onclick=()=>openClean(['form','dash','person','zones'][i]);});
-            if(m.n==='2.10') box.querySelectorAll('li').forEach((li,i)=>{li.style.cursor='pointer';li.title='คลิกเพื่อเปิด';li.onclick=()=>cwOpen(['list','add','teams','teams','print'][i]);});
+            if(m.n==='2.10') box.querySelectorAll('li').forEach((li,i)=>{li.style.cursor='pointer';li.title='คลิกเพื่อเปิด';li.onclick=()=>cwOpen(['list','add','teams','teams','print'][i]);});box.insertAdjacentHTML('beforeend','<div id="cw-dash"></div>');if(window.cwDash)cwDash();
             if(scroll && window.innerWidth<1024) box.scrollIntoView({behavior:'smooth',block:'start'});
         }
         (function(){
@@ -2673,10 +2676,24 @@ function hashPw(user,pw){
         return cwEv.filter(e=>cwFYof(e.date)===cwFY).filter(e=>cwSt==='all'||(cwSt==='up'?e.date>=t:e.date<t))
           .filter(e=>!q||[e.title,e.place,e.who,e.time,cwWho(e)].join(' ').toLowerCase().includes(q)).sort((a,b)=>a.date.localeCompare(b.date));
     }
-    function cwCounts(){const c={},last={};cwTeams.forEach(t=>{c[t.no]=0;last[t.no]='';});
+    function cwCounts(){if(cwFY==null)cwFY=cwFYof(cwToday());const c={},last={};cwTeams.forEach(t=>{c[t.no]=0;last[t.no]='';});
         cwEv.filter(e=>cwFYof(e.date)===cwFY&&e.team&&c[e.team]!=null).forEach(e=>{c[e.team]++;if(e.date>last[e.team])last[e.team]=e.date;});return {c:c,last:last};}
     function cwSuggest(){const x=cwCounts();return cwTeams.slice().sort((a,b)=>(x.c[a.no]-x.c[b.no])||(x.last[a.no]||'').localeCompare(x.last[b.no]||'')||(+a.no-+b.no))[0]||null;}
+    function cwDash(){
+        const el=document.getElementById('cw-dash'); if(!el)return;
+        const t=cwToday(), last=cwEv.slice().sort((a,b)=>b.date.localeCompare(a.date)).slice(0,5), sg=cwSuggest();
+        let h='<section class="kp-exec"><div class="kp-head"><h4><i class="fa-solid fa-people-group" style="color:#0891b2;margin-right:.5rem"></i>Dashboard คิวงานส่วนรวมล่าสุด 5 รายการ</h4>'
+          +'<div style="display:flex;gap:.5rem;flex-wrap:wrap"><button type="button" class="kp-btn ln" onclick="cwOpen(\'add\')"><i class="fa-solid fa-plus"></i> เพิ่มกิจกรรม</button><button type="button" class="kp-btn" onclick="cwOpen(\'list\')">ดูตารางทั้งหมด</button></div></div>';
+        if(!last.length)return el.innerHTML=h+'<p class="kp-note">ยังไม่มีคิวงานส่วนรวม กด "ดูตารางทั้งหมด" เพื่อเพิ่มหรือนำเข้าข้อมูลจากไฟล์ Excel</p></section>';
+        h+='<div class="cw-dash">'+last.map(e=>{const d=e.date.split('-'),st=e.date<t?['ผ่านไปแล้ว','n']:e.date===t?['วันนี้','a']:['กำลังจะมาถึง','g'];
+            return '<article class="cw-card'+(e.date>=t?' up':'')+'"><div class="cw-dt"><b>'+(+d[2])+'</b><span>'+TH_M[(+d[1])-1]+' '+String(+d[0]+543).slice(-2)+'</span></div>'
+              +'<div class="cw-bd"><h6>'+escapeHTML(e.title)+'</h6><p><i class="fa-regular fa-clock"></i> '+escapeHTML(e.time||'-')+'</p><p><i class="fa-solid fa-location-dot"></i> '+escapeHTML(e.place||'-')+'</p>'
+              +'<p><i class="fa-solid fa-user-group"></i> '+escapeHTML(cwWho(e)||'-')+'</p></div><div>'+kpBd(st)+'</div></article>';}).join('')+'</div>'
+          +(sg?'<p class="kp-note" style="margin-top:.7rem"><i class="fa-solid fa-lightbulb" style="color:#F0B429"></i> ทีมที่ควรได้คิวถัดไป: <b>ทีม '+escapeHTML(sg.no)+'</b> (ไปน้อยที่สุดในปีงบ '+cwFYof(t)+')</p>':'')+'</section>';
+        el.innerHTML=h;
+    }
     function cwRender(){
+        cwDash();
         const m=document.getElementById('cw-modal'); if(!m||!m.classList.contains('on'))return;
         if(cwFY==null)cwFY=cwFYof(cwToday());
         const fys=cwFYs(); if(!fys.includes(cwFY))fys.unshift(cwFY);
