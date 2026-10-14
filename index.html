@@ -94,11 +94,6 @@ main:has(#tab-admin:not(.hidden)){background:linear-gradient(180deg,#e0f2fe 0,#f
 #tab-admin .adm-btn:hover{background:rgba(255,255,255,.22);border-color:rgba(255,255,255,.35)}
 #tab-admin .adm-btn.danger{background:rgba(214,69,93,.3);border-color:rgba(255,160,175,.45)}
 #tab-admin .adm-btn.danger:hover{background:rgba(214,69,93,.5)}
-#tab-admin .adm-stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(9.5rem,1fr));gap:.75rem;margin-top:1.5rem}
-#tab-admin .adm-stat{display:flex;align-items:center;gap:.75rem;padding:.75rem .9rem;border-radius:1rem;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.18);backdrop-filter:blur(8px)}
-#tab-admin .adm-stat>i{width:2.25rem;height:2.25rem;border-radius:.7rem;display:grid;place-items:center;color:var(--sea-100);background:rgba(255,255,255,.14)}
-#tab-admin .adm-stat b{display:block;font-family:'Anuphan',sans-serif;font-size:1.35rem;font-weight:600;line-height:1.1;font-variant-numeric:tabular-nums}
-#tab-admin .adm-stat span{font-size:.8125rem;color:#bfe5f4}
 
 /* Sub navigation */
 #tab-admin .adm-nav{position:sticky;top:5.5rem;z-index:20;display:flex;gap:.25rem;padding:.35rem;overflow-x:auto;background:rgba(255,255,255,.92);backdrop-filter:blur(10px);border:1px solid var(--sea-line);border-radius:1.1rem;box-shadow:0 10px 24px -18px rgba(5,42,71,.5);scrollbar-width:none}
@@ -131,6 +126,9 @@ main:has(#tab-admin:not(.hidden)){background:linear-gradient(180deg,#e0f2fe 0,#f
 .mod-card.is-on .mod-meta{color:#cdeaf6}
 
 /* Module detail */
+#mod-detail:empty{display:none}
+.mod-back{display:inline-flex;align-items:center;gap:.5rem;margin-bottom:.9rem;padding:.45rem .9rem;border-radius:999px;background:#f1f5f9;color:var(--sea-ink);font-size:.875rem;font-weight:600;border:1px solid var(--sea-line);cursor:pointer;transition:background .15s}
+.mod-back:hover{background:#e2e8f0}
 #mod-detail{background:#fff;border:1px solid var(--sea-line);border-radius:1.5rem;padding:1.15rem;box-shadow:0 18px 40px -34px rgba(5,42,71,.5)}
 .mod-head{display:flex;align-items:center;gap:1rem;padding:1rem 1.15rem;margin-bottom:1rem;border-radius:1.1rem;background:linear-gradient(100deg,color-mix(in srgb,var(--mc) 13%,#fff),#fff 75%);border:1px solid color-mix(in srgb,var(--mc) 22%,#fff)}
 .mod-head .ic{flex:none;width:3.25rem;height:3.25rem;border-radius:1rem;display:grid;place-items:center;font-size:1.35rem;color:#fff;background:linear-gradient(145deg,color-mix(in srgb,var(--mc) 72%,var(--sea-900)),var(--mc));box-shadow:0 12px 22px -12px var(--mc)}
@@ -906,12 +904,6 @@ button[onclick="toggleAIChat()"].w-14::before{content:"";position:absolute;inset
                         </div>
                     </div>
                 </div>
-                <div class="adm-stats">
-                    <div class="adm-stat"><i class="fa-solid fa-grip"></i><div><b id="stat-mods">8</b><span>หมวดงานหลัก</span></div></div>
-                    <div class="adm-stat"><i class="fa-solid fa-list-check"></i><div><b id="stat-items">-</b><span>รายการงานย่อย</span></div></div>
-                    <div class="adm-stat"><i class="fa-solid fa-calendar-days"></i><div><b id="stat-cal">-</b><span>กิจกรรมในปฏิทิน</span></div></div>
-                    <div class="adm-stat"><i class="fa-solid fa-folder-open"></i><div><b id="stat-docs">-</b><span>คำสั่ง/หนังสือเวียน</span></div></div>
-                </div>
             </section>
 
             <!-- Admin Sub-navigation Tabs -->
@@ -926,7 +918,7 @@ button[onclick="toggleAIChat()"].w-14::before{content:"";position:absolute;inset
                 <div class="adm-sec-head">
                     <div>
                         <h3><span class="hi"><i class="fa-solid fa-grip"></i></span>ระบบจัดการภายใน รพ.สต.</h3>
-                        <p>เลือกหมวดเพื่อดูรายละเอียดงานย่อย ข้อมูลทุกหมวดเชื่อมโยงกันเป็นศูนย์กลางเดียว</p>
+                        <p id="mod-hint">เลือกหมวดเพื่อดูรายละเอียดงานย่อย ข้อมูลทุกหมวดเชื่อมโยงกันเป็นศูนย์กลางเดียว</p>
                     </div>
                 </div>
                 <div id="mod-grid" class="grid grid-cols-2 lg:grid-cols-4 gap-4"></div>
@@ -1332,11 +1324,14 @@ button[onclick="toggleAIChat()"].w-14::before{content:"";position:absolute;inset
               +(m.d?'<span class="mod-meta">'+m.d+'</span>':'')+'</button>';}).join('');
         }
         function openMod(k,scroll){
-            const m=MODS[k]; renderGrid(k);
+            const m=MODS[k];
+            document.getElementById('mod-grid').style.display='none';
+            const hint=document.getElementById('mod-hint'); if(hint) hint.classList.add('hidden');
             const total=m.g.reduce((t,g)=>t+g[1].length,0), box=document.getElementById('mod-detail');
             box.style.setProperty('--mc',MOD_HUE[k]);
             box.innerHTML=
-              '<div class="mod-head"><div class="ic"><i class="fa-solid '+m.i+'"></i></div>'
+              '<button type="button" class="mod-back" onclick="closeMod()"><i class="fa-solid fa-arrow-left"></i>กลับไปหน้ารวมทุกหมวด</button>'
+              +'<div class="mod-head"><div class="ic"><i class="fa-solid '+m.i+'"></i></div>'
               +'<div><div class="no">หมวด '+m.n+'</div><h4>'+m.t+'</h4></div>'
               +'<div class="tot"><b>'+total+'</b>รายการงาน</div></div>'
               +'<div class="mod-groups">'+m.g.map(g=>
@@ -1348,10 +1343,16 @@ button[onclick="toggleAIChat()"].w-14::before{content:"";position:absolute;inset
             if(m.n==='2.3'){box.querySelectorAll('li').forEach((li,i)=>{li.style.cursor='pointer';li.title='คลิกเพื่อเปิด';li.onclick=()=>{if(i<3)kpOpen(i+1);else{const e=document.getElementById('kpi-exec');if(e)e.scrollIntoView({behavior:'smooth'});}};});box.insertAdjacentHTML('beforeend','<div id="kpi-exec"></div>');if(window.kpRenderExec)kpRenderExec();}
             if(m.n==='2.9') box.querySelectorAll('li').forEach((li,i)=>{li.style.cursor='pointer';li.title='คลิกเพื่อเปิด';li.onclick=()=>openClean(['form','dash','person','zones'][i]);});
             if(m.n==='2.10'){['.tot','.mod-groups'].forEach(q=>{const x=box.querySelector(q);if(x)x.remove();});box.insertAdjacentHTML('beforeend','<div id="cw-dash"></div>');if(window.cwDash)cwDash();}
-            if(scroll && window.innerWidth<1024) box.scrollIntoView({behavior:'smooth',block:'start'});
+            if(scroll) window.scrollTo({top:Math.max(0,box.getBoundingClientRect().top+window.scrollY-120),behavior:'smooth'});
+        }
+        function closeMod(){
+            document.getElementById('mod-detail').innerHTML='';
+            document.getElementById('mod-grid').style.display='';
+            const hint=document.getElementById('mod-hint'); if(hint) hint.classList.remove('hidden');
+            renderGrid(-1);
         }
         (function(){
-            openMod(0);
+            renderGrid(-1);
             const si=document.getElementById('stat-items'); if(si) si.textContent=MODS.reduce((t,m)=>t+m.g.reduce((x,g)=>x+g[1].length,0),0);
             const sd=document.getElementById('stat-docs'); if(sd) sd.textContent=document.querySelectorAll('#admin-sub-doc .doc-row').length;
         })();
