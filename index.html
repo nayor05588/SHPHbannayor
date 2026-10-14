@@ -1275,7 +1275,7 @@ button[onclick="toggleAIChat()"].w-14::before{content:"";position:absolute;inset
         {n:'2.10',t:'จัดการคิวงานส่วนรวม',d:'ตารางคิวทีมเข้าร่วมงานพิธี/กิจกรรมส่วนรวม แยกตามปีงบประมาณ',i:'fa-people-group',c:'teal',g:[
           ['ตารางคิวงาน',['ตารางคิวงานส่วนรวม ตามปีงบประมาณ','เพิ่ม/แก้ไขกิจกรรม']],
           ['ทีมและคิว',['จัดการทีมและสมาชิก','ทีมที่ควรได้คิวถัดไป']],
-          ['รายงาน',['พิมพ์/ส่งออกตารางคิวงาน']]]}
+          ['รายงาน',['รายงานตารางคิวงาน (แก้ไข/ลบ/พิมพ์/ส่งออก)']]]}
         ];
         const ICONS=[
           [/คุมงบ/,'fa-wallet'],[/เสนอ/,'fa-paper-plane'],[/สปสช/,'fa-building-columns'],[/ตัดจ่าย/,'fa-right-left'],[/แจ้งเตือนยา/,'fa-bell'],[/506|ระบาด|ควบคุมโรค/,'fa-virus'],
@@ -2668,7 +2668,7 @@ function hashPw(user,pw){
         document.body.appendChild(d);
     }
     function cwOpen(act){cwEnsure();document.getElementById('cw-modal').classList.add('on');cwRender();
-        if(act==='add')cwEvForm('new');else if(act==='teams'){const e=document.getElementById('cw-sum');if(e)e.scrollIntoView({behavior:'smooth'});}else if(act==='print')cwPrint();}
+        if(act==='add')cwEvForm('new');else if(act==='teams'){const e=document.getElementById('cw-sum');if(e)e.scrollIntoView({behavior:'smooth'});}else if(act==='print'){const e=document.getElementById('cw-list');if(e)e.scrollIntoView({behavior:'smooth'});}}
     function cwClose(){const m=document.getElementById('cw-modal');if(m)m.classList.remove('on');}
     function cwFYs(){const s=new Set(cwEv.map(e=>cwFYof(e.date)).filter(Boolean));s.add(cwFYof(cwToday()));return [...s].sort((a,b)=>b-a);}
     function cwFiltered(){
@@ -2679,16 +2679,17 @@ function hashPw(user,pw){
     function cwCounts(){if(cwFY==null)cwFY=cwFYof(cwToday());const c={},last={};cwTeams.forEach(t=>{c[t.no]=0;last[t.no]='';});
         cwEv.filter(e=>cwFYof(e.date)===cwFY&&e.team&&c[e.team]!=null).forEach(e=>{c[e.team]++;if(e.date>last[e.team])last[e.team]=e.date;});return {c:c,last:last};}
     function cwSuggest(){const x=cwCounts();return cwTeams.slice().sort((a,b)=>(x.c[a.no]-x.c[b.no])||(x.last[a.no]||'').localeCompare(x.last[b.no]||'')||(+a.no-+b.no))[0]||null;}
+    function cwEditFrom(id){cwOpen('list');cwEvForm(id);}
     function cwDash(){
         const el=document.getElementById('cw-dash'); if(!el)return;
         const t=cwToday(), last=cwEv.slice().sort((a,b)=>b.date.localeCompare(a.date)).slice(0,5), sg=cwSuggest();
         let h='<section class="kp-exec"><div class="kp-head"><h4><i class="fa-solid fa-people-group" style="color:#0891b2;margin-right:.5rem"></i>Dashboard คิวงานส่วนรวมล่าสุด 5 รายการ</h4>'
           +'<div style="display:flex;gap:.5rem;flex-wrap:wrap"><button type="button" class="kp-btn ln" onclick="cwOpen(\'add\')"><i class="fa-solid fa-plus"></i> เพิ่มกิจกรรม</button><button type="button" class="kp-btn" onclick="cwOpen(\'list\')">ดูตารางทั้งหมด</button></div></div>';
         if(!last.length)return el.innerHTML=h+'<p class="kp-note">ยังไม่มีคิวงานส่วนรวม กด "ดูตารางทั้งหมด" เพื่อเพิ่มหรือนำเข้าข้อมูลจากไฟล์ Excel</p></section>';
-        h+='<div class="cw-dash">'+last.map(e=>{const d=e.date.split('-'),st=e.date<t?['ผ่านไปแล้ว','n']:e.date===t?['วันนี้','a']:['กำลังจะมาถึง','g'];
-            return '<article class="cw-card'+(e.date>=t?' up':'')+'"><div class="cw-dt"><b>'+(+d[2])+'</b><span>'+TH_M[(+d[1])-1]+' '+String(+d[0]+543).slice(-2)+'</span></div>'
-              +'<div class="cw-bd"><h6>'+escapeHTML(e.title)+'</h6><p><i class="fa-regular fa-clock"></i> '+escapeHTML(e.time||'-')+'</p><p><i class="fa-solid fa-location-dot"></i> '+escapeHTML(e.place||'-')+'</p>'
-              +'<p><i class="fa-solid fa-user-group"></i> '+escapeHTML(cwWho(e)||'-')+'</p></div><div>'+kpBd(st)+'</div></article>';}).join('')+'</div>'
+        h+='<div class="kp-tbw"><table class="kp-tb"><tr><th>วัน/เดือน/ปี</th><th>เวลา</th><th>งาน/กิจกรรม</th><th>สถานที่</th><th>ทีมที่ไป</th><th>สถานะ</th><th>จัดการ</th></tr>'
+          +last.map(e=>{const st=e.date<t?['ผ่านไปแล้ว','n']:e.date===t?['วันนี้','a']:['กำลังจะมาถึง','g'];
+            return '<tr'+(e.date===t?' class="cw-today"':'')+'><td style="white-space:nowrap">'+cwTH(e.date)+'</td><td style="white-space:nowrap">'+escapeHTML(e.time||'-')+'</td><td style="min-width:12rem">'+escapeHTML(e.title)+'</td><td>'+escapeHTML(e.place||'-')+'</td><td>'+escapeHTML(cwWho(e)||'-')+'</td><td>'+kpBd(st)+'</td>'
+              +'<td style="white-space:nowrap"><button type="button" class="kp-btn ln" onclick="cwEditFrom(\''+e.id+'\')"><i class="fa-solid fa-pen"></i> แก้ไข</button> <button type="button" class="kp-btn dg" aria-label="ลบกิจกรรม" onclick="cwEvDel(\''+e.id+'\')"><i class="fa-solid fa-trash-can"></i></button></td></tr>';}).join('')+'</table></div>'
           +(sg?'<p class="kp-note" style="margin-top:.7rem"><i class="fa-solid fa-lightbulb" style="color:#F0B429"></i> ทีมที่ควรได้คิวถัดไป: <b>ทีม '+escapeHTML(sg.no)+'</b> (ไปน้อยที่สุดในปีงบ '+cwFYof(t)+')</p>':'')+'</section>';
         el.innerHTML=h;
     }
