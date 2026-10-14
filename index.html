@@ -1360,7 +1360,7 @@ button[onclick="toggleAIChat()"].w-14::before{content:"";position:absolute;inset
             if(m.n==='2.2') box.querySelectorAll('li').forEach((li,i)=>{li.style.cursor='pointer';li.title='คลิกเพื่อเปิด';li.onclick=()=>openCar(['form','report'][i]);});
             if(m.n==='2.3'){box.querySelectorAll('li').forEach((li,i)=>{li.style.cursor='pointer';li.title='คลิกเพื่อเปิด';li.onclick=()=>{if(i<3)kpOpen(i+1);else{const e=document.getElementById('kpi-exec');if(e)e.scrollIntoView({behavior:'smooth'});}};});box.insertAdjacentHTML('beforeend','<div id="kpi-exec"></div>');if(window.kpRenderExec)kpRenderExec();}
             if(m.n==='2.9') box.querySelectorAll('li').forEach((li,i)=>{li.style.cursor='pointer';li.title='คลิกเพื่อเปิด';li.onclick=()=>openClean(['form','dash','person','zones'][i]);});
-            if(m.n==='2.10') ['.tot','.mod-groups'].forEach(q=>{const x=box.querySelector(q);if(x)x.remove();});box.insertAdjacentHTML('beforeend','<div id="cw-dash"></div>');if(window.cwDash)cwDash();
+            if(m.n==='2.10'){['.tot','.mod-groups'].forEach(q=>{const x=box.querySelector(q);if(x)x.remove();});box.insertAdjacentHTML('beforeend','<div id="cw-dash"></div>');if(window.cwDash)cwDash();}
             if(scroll && window.innerWidth<1024) box.scrollIntoView({behavior:'smooth',block:'start'});
         }
         (function(){
@@ -1371,7 +1371,7 @@ button[onclick="toggleAIChat()"].w-14::before{content:"";position:absolute;inset
 
         // ===== ระบบจัดการการลา (เขียนใบลา / ทะเบียนคุม / สรุป) =====
 const LV_TYPES=['ป่วย','กิจส่วนตัว','พักผ่อน','สาย','คลอดบุตร','ศึกษาอบรมดูงาน'], LV_KEY='rpst_leaves';
-let lvView='form', lvFYsel=null;
+let lvView='form', lvFYsel=null, lvEditId='';
 const lvEsc=x=>String(x==null?'':x).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 function lvLoad(){try{return JSON.parse(localStorage.getItem(LV_KEY)||'[]')}catch(e){return []}}
 function lvSave(a){try{localStorage.setItem(LV_KEY,JSON.stringify(a));return true}catch(e){return false}}
@@ -1417,14 +1417,15 @@ function lvFYopts(recs){
   const a=[...set].sort((x,y)=>y-x);if(!lvFYsel||!set.has(lvFYsel))lvFYsel=lvFY(lvToday());
   return '<label style="max-width:240px;margin-bottom:12px">ปีงบประมาณ (1 ต.ค. – 30 ก.ย.)<select onchange="lvFYsel=+this.value;lvShow(lvView)">'+a.map(y=>'<option value="'+y+'"'+(y===lvFYsel?' selected':'')+'>พ.ศ. '+y+'</option>').join('')+'</select></label>';
 }
-function lvShow(v){
-  lvView=v;const recs=lvLoad();
+function lvShow(v,keep){
+  if(!keep)lvEditId='';lvView=v;const recs=lvLoad();
   ['form','register','summary'].forEach(k=>$lv('lv-tab-'+k).classList.toggle('on',k===v));
   $lv('lv-title').textContent={form:'แบบฟอร์มใบลา',register:'ทะเบียนคุมการลา',summary:'สรุปการลา'}[v];
   let h='';
   if(v==='form'){
     const names=[...new Set(LV_ROSTER.map(x=>x[0]).concat(recs.map(r=>r.name)))];
     h='<datalist id="lv-names">'+names.map(n=>'<option value="'+lvEsc(n)+'">').join('')+'</datalist>'
+    +(lvEditId?'<div class="lv-note" style="background:#fff7ed;border-color:#fdba74;color:#9a3412">✏️ กำลังแก้ไขใบลาที่บันทึกไว้ แก้ข้อมูลที่ต้องการแล้วกด "บันทึกการแก้ไข" (สถิติ "ลามาแล้ว" ไม่นับใบลานี้ซ้ำ)</div>':'')
     +'<div class="lv-note">เขียนที่ รพ.สต.บ้านนายอ · เรียน นายกองค์การบริหารส่วนจังหวัดสกลนคร</div>'
     +'<div class="lv-g"><label>ชื่อ-สกุล (ข้าพเจ้า)<input id="lv-name" list="lv-names" placeholder="เช่น นางสมศรี ใจดี" autocomplete="off"></label>'
     +'<label>ตำแหน่ง<input id="lv-pos"></label><label>สังกัด<input id="lv-dept" value="รพ.สต.บ้านนายอ"></label>'
@@ -1437,10 +1438,16 @@ function lvShow(v){
     +'<div class="lv-g"><label>ตั้งแต่วันที่<input type="date" id="lv-lf"></label><label>ถึงวันที่<input type="date" id="lv-lt"></label><label>มีกำหนด (วัน)<input type="number" id="lv-ld" min="0" step="0.5"></label></div>'
     +'<label style="margin-bottom:12px">ระหว่างลาติดต่อข้าพเจ้าได้ที่<input id="lv-contact" placeholder="ที่อยู่ / เบอร์โทร"></label>'
     +'<div class="lv-sec">สถิติการลาในปีงบประมาณนี้ (กรอกอัตโนมัติ)</div><div class="lv-wrap"><table class="lv-t"><thead><tr><th>ประเภทการลา</th><th>ลามาแล้ว (วันทำการ)</th><th>ลาครั้งนี้ (วันทำการ)</th><th>รวมเป็น (วันทำการ)</th></tr></thead><tbody id="lv-stats"></tbody></table></div>'
-    +'<div style="display:flex;gap:8px;flex-wrap:wrap"><button type="button" class="lv-btn" onclick="lvSubmit()">บันทึกใบลา</button>'
-    +'<button type="button" class="lv-btn" style="background:#16a34a" onclick="lvSubmit(true)">🖨 บันทึกและพิมพ์ใบลา</button>'
-    +'<button type="button" class="lv-btn" style="background:#64748b" onclick="lvPrintForm()">พิมพ์ใบลา (ไม่บันทึก)</button></div>';
-    $lv('lv-body').innerHTML=h;lvStats();return;
+    +'<div style="display:flex;gap:8px;flex-wrap:wrap"><button type="button" class="lv-btn" onclick="lvSubmit()">'+(lvEditId?'💾 บันทึกการแก้ไข':'บันทึกใบลา')+'</button>'
+    +'<button type="button" class="lv-btn" style="background:#16a34a" onclick="lvSubmit(true)">🖨 '+(lvEditId?'บันทึกการแก้ไขและพิมพ์ใบลา':'บันทึกและพิมพ์ใบลา')+'</button>'
+    +'<button type="button" class="lv-btn" style="background:#64748b" onclick="lvPrintForm()">พิมพ์ใบลา (ไม่บันทึก)</button>'
+    +(lvEditId?'<button type="button" class="lv-btn" style="background:#fff;color:#475569;border:1px solid #cbd5e1" onclick="lvEditCancel()">ยกเลิกการแก้ไข</button>':'')+'</div>';
+    $lv('lv-body').innerHTML=h;
+    if(lvEditId){const r=recs.find(x=>x.id===lvEditId);
+      if(r){const set=(id,v)=>{$lv(id).value=v==null?'':v};set('lv-name',r.name);set('lv-pos',r.pos);set('lv-dept',r.dept);set('lv-written',r.written);set('lv-reason',r.reason);set('lv-from',r.from);set('lv-to',r.to);set('lv-days',r.days);set('lv-lf',r.lf);set('lv-lt',r.lt);set('lv-ld',r.ld);set('lv-contact',r.contact);
+        const rd=document.querySelector('input[name=lv-type][value="'+r.type+'"]');if(rd)rd.checked=true;}
+      else lvEditId='';}
+    lvStats();return;
   }
   const rs=recs.filter(r=>lvFY(r.from)===(lvFYsel||lvFY(lvToday())));
   h=lvFYopts(recs);
@@ -1586,7 +1593,7 @@ function lvRegHtml(name,recs,pr){
     const r=rs[i];
     if(r){const x=lvRegCells(r);
       body+='<tr style="height:26px"><td>'+(i+1)+'</td>'+x.c.map(t=>'<td>'+t+'</td>').join('')+'<td>'+x.period+'</td><td>'+r.days+'</td><td class="l">'+lvEsc(x.rem)+'</td>'
-        +(pr?'':'<td style="border:0"><button type="button" class="lv-del" title="ลบ" onclick="lvDel(\''+r.id+'\')">🗑</button><button type="button" class="lv-del" style="color:#0284c7" title="พิมพ์ใบลา" onclick="lvPrintRec(\''+r.id+'\')">🖨</button></td>')+'</tr>';
+        +(pr?'':'<td style="border:0"><button type="button" class="lv-del" style="color:#d97706" title="แก้ไขใบลา" onclick="lvEdit(\''+r.id+'\')">✏️</button><button type="button" class="lv-del" title="ลบ" onclick="lvDel(\''+r.id+'\')">🗑</button><button type="button" class="lv-del" style="color:#0284c7" title="พิมพ์ใบลา" onclick="lvPrintRec(\''+r.id+'\')">🖨</button></td>')+'</tr>';
     }else body+='<tr style="height:26px">'+'<td>&nbsp;</td>'.repeat(9)+(pr?'':'<td style="border:0"></td>')+'</tr>';
   }
   if(rs.length)body+='<tr style="height:26px;font-weight:700"><td></td>'+T.t.map(v=>'<td>'+(v||'')+'</td>').join('')+'<td>รวม</td><td>'+T.all+'</td><td class="l">'+(T.late?'มาสาย '+T.late+' วัน':'')+'</td>'+(pr?'':'<td style="border:0"></td>')+'</tr>';
@@ -1645,14 +1652,14 @@ async function lvRegXls(){
 function lvStats(){
   const name=($lv('lv-name').value||'').trim(), from=$lv('lv-from').value||$lv('lv-written').value||lvToday();
   const type=(document.querySelector('input[name=lv-type]:checked')||{}).value, d=+$lv('lv-days').value||0, fy=lvFY(from);
-  const recs=lvLoad().filter(r=>r.name===name&&lvFY(r.from)===fy);
+  const recs=lvLoad().filter(r=>r.id!==lvEditId&&r.name===name&&lvFY(r.from)===fy);
   $lv('lv-stats').innerHTML=LV_TYPES.map(t=>{
     const prev=recs.filter(r=>r.type===t).reduce((a,r)=>a+(+r.days),0), now=t===type?d:0;
     return '<tr'+(t===type?' class="hl"':'')+'><td class="l">'+lvName(t)+'</td><td>'+prev+'</td><td>'+now+'</td><td>'+(prev+now)+'</td></tr>'}).join('');
 }
 function lvLast(){
   const name=($lv('lv-name').value||'').trim(), type=(document.querySelector('input[name=lv-type]:checked')||{}).value;
-  const l=lvLoad().filter(r=>r.name===name&&r.type===type).sort((a,b)=>a.to<b.to?1:-1)[0]||{};
+  const l=lvLoad().filter(r=>r.id!==lvEditId&&r.name===name&&r.type===type).sort((a,b)=>a.to<b.to?1:-1)[0]||{};
   $lv('lv-lf').value=l.from||'';$lv('lv-lt').value=l.to||'';$lv('lv-ld').value=l.days||'';
 }
 function lvChange(e){
@@ -1664,11 +1671,12 @@ function lvChange(e){
 }
 function lvSubmit(pr){
   const g=id=>$lv(id).value.trim(), type=document.querySelector('input[name=lv-type]:checked').value;
-  const r={id:'l'+Date.now(),name:g('lv-name'),pos:g('lv-pos'),dept:g('lv-dept'),written:g('lv-written'),type,reason:g('lv-reason'),from:g('lv-from'),to:g('lv-to'),days:+g('lv-days'),lf:g('lv-lf'),lt:g('lv-lt'),ld:g('lv-ld'),contact:g('lv-contact')};
+  const r={id:lvEditId||'l'+Date.now(),name:g('lv-name'),pos:g('lv-pos'),dept:g('lv-dept'),written:g('lv-written'),type,reason:g('lv-reason'),from:g('lv-from'),to:g('lv-to'),days:+g('lv-days'),lf:g('lv-lf'),lt:g('lv-lt'),ld:g('lv-ld'),contact:g('lv-contact')};
   if(!r.name||!r.from||!r.to||!(r.days>0)||r.to<r.from){showToast('กรุณากรอก ชื่อ-สกุล วันที่ลา และจำนวนวัน ให้ครบถ้วนและถูกต้อง');return}
-  const a=lvLoad();a.push(r);
+  const a=lvLoad(), ix=lvEditId?a.findIndex(x=>x.id===lvEditId):-1, was=ix>=0;
+  if(was)a[ix]=Object.assign({},a[ix],r);else a.push(r);
   if(!lvSave(a)){showToast('บันทึกไม่สำเร็จ (เบราว์เซอร์ไม่อนุญาตให้เก็บข้อมูล)');return}
-  lvFYsel=lvFY(r.from);lvPerson=r.name;showToast('บันทึกใบลาเรียบร้อย');lvShow('register');if(pr)lvPrint(lvLeaveHtml(r),LV_LFCSS);
+  lvEditId='';lvFYsel=lvFY(r.from);lvPerson=r.name;showToast(was?'แก้ไขใบลาเรียบร้อย':'บันทึกใบลาเรียบร้อย');lvShow('register');if(pr)lvPrint(lvLeaveHtml(r),LV_LFCSS);
 }
 
 // ===== พิมพ์ใบลาตามแบบ "ใบลาป่วย ลาคลอดบุตร ลากิจส่วนตัว" =====
@@ -1722,6 +1730,8 @@ function lvLeaveHtml(r){
 }
 function lvPrintForm(){const r=lvFormRec();if(!r.name){showToast('กรุณากรอกชื่อ-สกุลก่อนพิมพ์ใบลา');return}lvPrint(lvLeaveHtml(r),LV_LFCSS)}
 function lvPrintRec(id){const r=lvLoad().find(x=>x.id===id);if(r)lvPrint(lvLeaveHtml(r),LV_LFCSS)}
+function lvEdit(id){if(!lvLoad().some(r=>r.id===id))return;lvEditId=id;lvShow('form',true);const b=$lv('lv-body');if(b)b.scrollTop=0;}
+function lvEditCancel(){lvEditId='';lvShow('register');}
 function lvDel(id){if(confirm('ลบรายการลานี้?')){lvSave(lvLoad().filter(r=>r.id!==id));lvShow(lvView)}}
 
 
