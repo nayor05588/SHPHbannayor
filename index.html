@@ -113,17 +113,27 @@ main:has(#tab-admin:not(.hidden)){background:linear-gradient(180deg,#e0f2fe 0,#f
 #tab-admin .btn-line:hover{background:var(--sea-50);border-color:var(--sea-300)}
 
 /* Module cards */
-.mod-card{position:relative;display:flex;flex-direction:column;align-items:flex-start;gap:.3rem;width:100%;text-align:left;padding:1rem;border-radius:1.15rem;background:#fff;border:1px solid var(--sea-line);transition:border-color .18s,box-shadow .18s;cursor:pointer}
-.mod-card:hover{border-color:color-mix(in srgb,var(--mc) 45%,#fff);box-shadow:0 14px 28px -18px color-mix(in srgb,var(--mc) 75%,transparent)}
-.mod-card .mod-ic{width:2.75rem;height:2.75rem;border-radius:.9rem;display:grid;place-items:center;font-size:1.1rem;color:var(--mc);background:color-mix(in srgb,var(--mc) 11%,#fff);margin-bottom:.45rem}
-.mod-card .mod-no{position:absolute;top:.95rem;right:1rem;font-size:.8125rem;font-weight:600;color:var(--mc);font-variant-numeric:tabular-nums}
-.mod-card .mod-t{font-family:'Anuphan',sans-serif;font-weight:600;font-size:.95rem;line-height:1.35;color:var(--sea-ink)}
-.mod-card .mod-meta{display:flex;flex-wrap:wrap;gap:.2rem .8rem;font-size:.8125rem;color:var(--sea-muted)}
-.mod-card .mod-meta b{font-weight:600;color:var(--sea-ink)}
-.mod-card.is-on{background:linear-gradient(145deg,var(--sea-900),color-mix(in srgb,var(--mc) 72%,var(--sea-900)));border-color:transparent;box-shadow:0 20px 36px -20px var(--mc)}
-.mod-card.is-on .mod-ic{background:rgba(255,255,255,.16);color:#fff}
-.mod-card.is-on .mod-no,.mod-card.is-on .mod-t,.mod-card.is-on .mod-meta,.mod-card.is-on .mod-meta b{color:#fff}
-.mod-card.is-on .mod-meta{color:#cdeaf6}
+.mod-card{position:relative;display:flex;flex-direction:column;align-items:center;gap:.7rem;width:100%;text-align:center;padding:.4rem .2rem .2rem;background:none;border:0;border-radius:1.4rem;cursor:pointer;-webkit-tap-highlight-color:transparent;outline:none}
+.mod-card .mod-ic{position:relative;isolation:isolate;width:4.5rem;height:4.5rem;border-radius:1.5rem;display:grid;place-items:center;font-size:1.65rem;color:#fff;margin:0;
+  background:radial-gradient(120% 90% at 22% 8%,rgba(255,255,255,.55),rgba(255,255,255,0) 52%),linear-gradient(150deg,color-mix(in srgb,var(--mc) 62%,#fff) 0%,var(--mc) 48%,color-mix(in srgb,var(--mc) 62%,#1e1b4b) 100%);
+  box-shadow:inset 0 1px 1px rgba(255,255,255,.7),inset 0 -8px 14px -8px rgba(15,23,42,.45),0 14px 24px -12px var(--mc),0 2px 4px rgba(15,23,42,.12);
+  transition:transform .28s cubic-bezier(.2,.9,.3,1.3),box-shadow .28s}
+.mod-card .mod-ic i{filter:drop-shadow(0 2px 3px rgba(15,23,42,.35));transition:transform .28s}
+.mod-card .mod-ic::before{content:"";position:absolute;inset:-5px;z-index:-1;border-radius:1.8rem;background:conic-gradient(from 0deg,var(--mc),#a78bfa,#22d3ee,var(--mc));opacity:0;filter:blur(9px);transition:opacity .3s}
+.mod-card .mod-ic::after{content:"";position:absolute;top:.3rem;right:.3rem;width:.9rem;height:.9rem;background:radial-gradient(circle,#fff 0 18%,rgba(255,255,255,0) 62%);opacity:0;transform:scale(.4);transition:opacity .3s,transform .3s}
+.mod-card:hover .mod-ic,.mod-card:focus-visible .mod-ic{transform:translateY(-5px) scale(1.06);box-shadow:inset 0 1px 1px rgba(255,255,255,.75),inset 0 -8px 14px -8px rgba(15,23,42,.45),0 22px 32px -12px var(--mc),0 2px 4px rgba(15,23,42,.12)}
+.mod-card:hover .mod-ic::before,.mod-card:focus-visible .mod-ic::before{opacity:.55}
+.mod-card:hover .mod-ic::after,.mod-card:focus-visible .mod-ic::after{opacity:.95;transform:scale(1)}
+.mod-card:hover .mod-ic i{transform:scale(1.08)}
+.mod-card:active .mod-ic{transform:scale(.95)}
+.mod-card .mod-no{display:none}
+.mod-card .mod-t{font-family:'Anuphan',sans-serif;font-weight:600;font-size:.8125rem;line-height:1.35;color:var(--sea-ink);display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;max-width:8.5rem}
+.mod-card .mod-meta{display:none}
+.mod-card.is-on .mod-ic::before{opacity:.75}
+.mod-card.is-on .mod-ic{box-shadow:inset 0 1px 1px rgba(255,255,255,.75),0 0 0 3px #fff,0 0 0 5px var(--mc),0 18px 28px -12px var(--mc)}
+@media (prefers-reduced-motion:no-preference){.mod-card .mod-ic::before{animation:modSpin 9s linear infinite}}
+@keyframes modSpin{to{transform:rotate(360deg)}}
+@media (prefers-reduced-motion:reduce){.mod-card .mod-ic,.mod-card .mod-ic i{transition:none}}
 
 /* Module detail */
 #mod-detail:empty{display:none}
@@ -921,7 +931,7 @@ button[onclick="toggleAIChat()"].w-14::before{content:"";position:absolute;inset
                         <p id="mod-hint">เลือกหมวดเพื่อดูรายละเอียดงานย่อย ข้อมูลทุกหมวดเชื่อมโยงกันเป็นศูนย์กลางเดียว</p>
                     </div>
                 </div>
-                <div id="mod-grid" class="grid grid-cols-2 lg:grid-cols-4 gap-4"></div>
+                <div id="mod-grid" class="grid grid-cols-3 sm:grid-cols-4 lg:grid-cols-5 gap-x-3 gap-y-7 justify-items-center pt-2"></div>
                 <div id="mod-detail"></div>
             </div>
 
@@ -1318,7 +1328,7 @@ button[onclick="toggleAIChat()"].w-14::before{content:"";position:absolute;inset
         function renderGrid(a){
             document.getElementById('mod-grid').innerHTML=MODS.map((m,k)=>{
               const n=m.g.reduce((t,g)=>t+g[1].length,0), on=k===a;
-              return '<button type="button" onclick="'+(m.u?'window.open(\''+m.u+'\',\'_blank\',\'noopener\')':'openMod('+k+',true)')+'" aria-pressed="'+on+'" class="mod-card'+(on?' is-on':'')+'" style="--mc:'+MOD_HUE[k]+'">'
+              return '<button type="button" onclick="'+(m.u?'window.open(\''+m.u+'\',\'_blank\',\'noopener\')':'openMod('+k+',true)')+'" aria-pressed="'+on+'" title="'+String(m.d||m.t).replace(/"/g,'&quot;')+'" class="mod-card'+(on?' is-on':'')+'" style="--mc:'+MOD_HUE[k]+'">'
               +'<span class="mod-ic"><i class="fa-solid '+m.i+'"></i></span>'
               +'<span class="mod-t">'+m.t+'</span>'
               +(m.d?'<span class="mod-meta">'+m.d+'</span>':'')+'</button>';}).join('');
