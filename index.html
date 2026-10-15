@@ -135,6 +135,28 @@ main:has(#tab-admin:not(.hidden)){background:linear-gradient(180deg,#e0f2fe 0,#f
 @keyframes modSpin{to{transform:rotate(360deg)}}
 @media (prefers-reduced-motion:reduce){.mod-card .mod-ic,.mod-card .mod-ic i{transition:none}}
 
+.kp-ppl{display:flex;flex-wrap:wrap;gap:.65rem;margin:.3rem 0 1.1rem}
+.kp-pp{--pc:#0284c7;display:flex;align-items:center;gap:.65rem;padding:.4rem 1rem .4rem .4rem;border-radius:1.2rem;background:#fff;border:1px solid #D6E4F7;cursor:pointer;text-align:left;transition:transform .2s,box-shadow .2s,border-color .2s}
+.kp-pp:hover{transform:translateY(-2px);border-color:color-mix(in srgb,var(--pc) 55%,#fff);box-shadow:0 14px 22px -16px var(--pc)}
+.kp-pp.on{background:color-mix(in srgb,var(--pc) 8%,#fff);border-color:var(--pc);box-shadow:0 0 0 3px color-mix(in srgb,var(--pc) 18%,transparent)}
+.kp-av{flex:none;width:2.75rem;height:2.75rem;border-radius:1rem;display:grid;place-items:center;font-family:'Anuphan',sans-serif;font-weight:700;font-size:1.1rem;color:#fff;
+  background:radial-gradient(120% 90% at 22% 8%,rgba(255,255,255,.5),rgba(255,255,255,0) 52%),linear-gradient(150deg,color-mix(in srgb,var(--pc) 62%,#fff),var(--pc) 50%,color-mix(in srgb,var(--pc) 62%,#1e1b4b));
+  box-shadow:inset 0 1px 1px rgba(255,255,255,.6),0 10px 16px -10px var(--pc)}
+.kp-av-lg{width:3.75rem;height:3.75rem;border-radius:1.25rem;font-size:1.5rem}
+.kp-pn{display:block;font-weight:600;font-size:.875rem;line-height:1.25;color:#0A2540}
+.kp-ps{display:block;font-size:.75rem;color:#4B6283}
+.kp-pd{border:1px solid color-mix(in srgb,var(--pc) 28%,#fff);border-radius:1.25rem;padding:1.1rem;background:linear-gradient(180deg,color-mix(in srgb,var(--pc) 6%,#fff),#fff 140px)}
+.kp-pdh{display:flex;align-items:center;gap:1rem;margin-bottom:1rem;flex-wrap:wrap}
+.kp-pdn{font-family:'Anuphan',sans-serif;font-weight:700;font-size:1.25rem;color:#0A2540;line-height:1.25}
+.kp-bar{--pc:#1F6FEB;height:.5rem;border-radius:999px;background:#E3EEFF;overflow:hidden;margin-top:.35rem}
+.kp-bar>i{display:block;height:100%;border-radius:inherit;background:linear-gradient(90deg,color-mix(in srgb,var(--pc) 60%,#fff),var(--pc))}
+.kp-gh{display:flex;align-items:center;justify-content:space-between;gap:.5rem;flex-wrap:wrap;margin:1.2rem 0 .5rem}
+.kp-lnk{display:inline-flex;align-items:center;gap:.4rem;padding:.3rem .8rem;border-radius:999px;border:1px solid #D6E4F7;background:#fff;color:#0A2540;font-size:.8125rem;font-weight:600;cursor:pointer}
+.kp-lnk:hover{background:#F0F6FF}
+.kp-dot{display:inline-block;width:.6rem;height:.6rem;border-radius:50%;margin-right:.5rem}
+.kp-tb tr.kp-none td{color:#8aa0bd}
+.kp-tb tr[onclick]:hover td{background:#F5F9FF}
+
 /* Module detail */
 #mod-detail:empty{display:none}
 .mod-back{display:inline-flex;align-items:center;gap:.5rem;margin-bottom:.9rem;padding:.45rem .9rem;border-radius:999px;background:#f1f5f9;color:var(--sea-ink);font-size:.875rem;font-weight:600;border:1px solid var(--sea-line);cursor:pointer;transition:background .15s}
@@ -2587,28 +2609,72 @@ function hashPw(user,pw){
     const kpQ=(id,f)=>document.querySelector('[data-id="'+id+'"][data-f="'+f+'"]');
 
     // ---- แดชบอร์ดผู้บริหาร ----
+    let kpPerson='', kpPersons=[];
+    const KP_PC=['#0284c7','#7c3aed','#0891b2','#db2777','#059669','#d97706','#4f46e5','#0d9488','#e11d48','#65a30d'];
+    function kpPick(i){kpPerson=i<0?'':(kpPersons[i]||'');kpRenderExec();}
+    function kpBars(arr,color,label){
+        const mx=Math.max.apply(null,arr.concat([1])), sh=v=>v>=1000?(Math.round(v/100)/10)+'k':Math.round(v);
+        return '<svg viewBox="0 0 480 150" style="width:100%;max-height:210px" role="img" aria-label="'+label+'">'
+          +arr.map((v,i)=>{const x=10+i*39,hh=v/mx*90;return '<rect x="'+x+'" y="'+(110-hh)+'" width="28" height="'+hh+'" rx="5" fill="'+(v?color:'#E3EEFF')+'"/><text x="'+(x+14)+'" y="'+(104-hh)+'" font-size="9" text-anchor="middle" fill="#0A2540">'+(v?sh(v):'')+'</text><text x="'+(x+14)+'" y="128" font-size="10" text-anchor="middle" fill="#4B6283">'+KP_M[i]+'</text>'}).join('')+'</svg>';
+    }
+    function kpAvatar(w){const c=Array.from(String(w)).filter(ch=>!/[เแโใไ]/.test(ch))[0]||'?';return c;}
     function kpRenderExec(){
         const el=document.getElementById('kpi-exec'); if(!el)return;
-        const up=kpUp||kpLatest(); let totals={1:0,2:0,3:0}, withData=0, all=0, per={}, items=[];
-        [1,2,3].forEach(g=>KP_FORMS[g].rows.forEach(r=>{if(r.sec)return;all++;const s=kpSum(g,r,up);
-            if(Object.keys(kpRecs(g,r)).some(i=>+i<=up))withData++;
-            totals[g]+=s.money;const w=r.who;per[w]=per[w]||{1:0,2:0,3:0};per[w][g]+=s.money;
+        const up=kpUp||kpLatest(); let totals={1:0,2:0,3:0}, withData=0, all=0, items=[];
+        const P={}, order=[];
+        [1,2,3].forEach(g=>KP_FORMS[g].rows.forEach(r=>{if(r.sec)return;all++;
+            const s=kpSum(g,r,up), recs=kpRecs(g,r), has=Object.keys(recs).some(i=>+i<=up);
+            if(has)withData++; totals[g]+=s.money;
+            const w=r.who||'(ไม่ระบุ)'; if(!P[w]){P[w]={rows:[],1:0,2:0,3:0,wd:0,all:0,mon:Array(12).fill(0),pt:Array(12).fill(0)};order.push(w);}
+            const p=P[w]; p.all++; if(has)p.wd++; p[g]+=s.money;
+            p.rows.push({g:g,n:r.n,name:r.name,rate:r.rate,v:s.v,money:s.money,has:has});
+            for(let i=1;i<=12;i++){const x=recs[i];if(x){const m=kpIsNum(r)?r.rate*(+x.v||0):(+x.amt||0);if(g<3)p.mon[i-1]+=m;else p.pt[i-1]+=m;}}
             if(g<3)items.push({g:g,name:r.name,who:w,v:s.v,money:s.money});}));
-        const mon=KP_M.map((n,i)=>{let t=0;[1,2].forEach(g=>KP_FORMS[g].rows.forEach(r=>{if(r.sec)return;const x=kpRecs(g,r)[i+1];if(x)t+=kpIsNum(r)?r.rate*(+x.v||0):(+x.amt||0);}));return t;});
+        kpPersons=order; if(kpPerson&&!P[kpPerson])kpPerson='';
+        const mon=Array(12).fill(0); order.forEach(w=>P[w].mon.forEach((v,i)=>mon[i]+=v));
         const hasAny=withData>0;
         let h='<section class="kp-exec"><div class="kp-head"><h4><i class="fa-solid fa-gauge-high" style="color:#1F6FEB;margin-right:.5rem"></i>แดชบอร์ดผู้บริหาร ผลงานตามตัวชี้วัด ปีงบ 2570</h4>'
           +'<label class="kp-note">ข้อมูลสะสมถึงเดือน <select onchange="kpSetUp(this.value)">'+KP_M.map((n,i)=>'<option value="'+(i+1)+'"'+(up===i+1?' selected':'')+'>'+kpLbl(i+1)+'</option>').join('')+'</select></label></div>';
         const tiles=[['เงินที่ได้ ดึงข้อมูลไม่ได้ (บาท)',kpFmt(totals[1])],['เงินที่ได้ ดึงข้อมูลได้ (บาท)',kpFmt(totals[2])],['รวมสองกลุ่ม (บาท)',kpFmt(totals[1]+totals[2])],['แพทย์แผนไทย (Point)',kpFmt(totals[3])],['ตัวชี้วัดที่มีผลงาน',withData+' / '+all]];
         h+='<div class="kp-tiles">'+tiles.map(t=>'<div class="kp-tile"><b style="font-size:1.35rem">'+t[1]+'</b><span>'+t[0]+'</span></div>').join('')+'</div>';
         if(!hasAny)return el.innerHTML=h+'<p class="kp-note">ยังไม่มีการบันทึกผลงาน กดเมนู 1–3 ด้านบนเพื่อบันทึกผลงานรายเดือน แดชบอร์ดจะคำนวณให้อัตโนมัติ</p></section>';
-        h+='<h5 class="kp-sh">สรุปรายผู้รับผิดชอบ (สะสมถึง '+kpLbl(up)+')</h5><div class="kp-tbw"><table class="kp-tb"><tr><th>ผู้รับผิดชอบ</th><th style="text-align:right">ดึงข้อมูลไม่ได้ (บาท)</th><th style="text-align:right">ดึงข้อมูลได้ (บาท)</th><th style="text-align:right">รวม (บาท)</th><th style="text-align:right">แพทย์แผนไทย (Point)</th></tr>'
-          +Object.keys(per).map(w=>'<tr><td>'+escapeHTML(w)+'</td><td class="num">'+kpFmt(per[w][1])+'</td><td class="num">'+kpFmt(per[w][2])+'</td><td class="num"><b>'+kpFmt(per[w][1]+per[w][2])+'</b></td><td class="num">'+kpFmt(per[w][3])+'</td></tr>').join('')+'</table></div>';
+
+        // ตัวเลือกผู้รับผิดชอบ (ไอคอนอวาตาร์)
+        h+='<h5 class="kp-sh">ผลงานรายบุคคล ผู้รับผิดชอบ <span class="kp-note" style="font-weight:400">(เลือกชื่อเพื่อดูรายละเอียด)</span></h5><div class="kp-ppl" role="tablist">'
+          +'<button type="button" role="tab" aria-selected="'+(!kpPerson)+'" class="kp-pp'+(!kpPerson?' on':'')+'" style="--pc:#1F6FEB" onclick="kpPick(-1)"><span class="kp-av"><i class="fa-solid fa-users"></i></span><span><span class="kp-pn">ทุกคน</span><span class="kp-ps">'+order.length+' คน</span></span></button>'
+          +order.map((w,i)=>{const p=P[w],on=kpPerson===w;
+              return '<button type="button" role="tab" aria-selected="'+on+'" class="kp-pp'+(on?' on':'')+'" style="--pc:'+KP_PC[i%KP_PC.length]+'" onclick="kpPick('+i+')"><span class="kp-av">'+escapeHTML(kpAvatar(w))+'</span><span><span class="kp-pn">'+escapeHTML(w)+'</span><span class="kp-ps">'+kpFmt(p[1]+p[2])+' บาท'+(p[3]?' · '+kpFmt(p[3])+' Pt':'')+'</span></span></button>';}).join('')+'</div>';
+
+        if(kpPerson){
+            const w=kpPerson,p=P[w],i0=order.indexOf(w),pc=KP_PC[i0%KP_PC.length],pct=p.all?Math.round(p.wd/p.all*100):0;
+            const hasG=g=>p.rows.some(r=>r.g===g);
+            h+='<div class="kp-pd" style="--pc:'+pc+'"><div class="kp-pdh"><span class="kp-av kp-av-lg">'+escapeHTML(kpAvatar(w))+'</span><div style="flex:1;min-width:12rem"><div class="kp-pdn">'+escapeHTML(w)+'</div>'
+              +'<div class="kp-note">รับผิดชอบ '+p.all+' ตัวชี้วัด · มีผลงานแล้ว '+p.wd+' ตัว ('+pct+'%) · สะสมถึง '+kpLbl(up)+'</div><div class="kp-bar"><i style="width:'+pct+'%"></i></div></div></div>';
+            const pt=[];
+            if(hasG(1))pt.push(['ดึงข้อมูลไม่ได้ (บาท)',kpFmt(p[1])]);
+            if(hasG(2))pt.push(['ดึงข้อมูลได้ (บาท)',kpFmt(p[2])]);
+            if(hasG(1)||hasG(2))pt.push(['รวม (บาท)',kpFmt(p[1]+p[2])]);
+            if(hasG(3))pt.push(['แพทย์แผนไทย (Point)',kpFmt(p[3])]);
+            h+='<div class="kp-tiles">'+pt.map(t=>'<div class="kp-tile"><b style="font-size:1.35rem;color:'+pc+'">'+t[1]+'</b><span>'+t[0]+'</span></div>').join('')+'</div>';
+            if(hasG(1)||hasG(2))h+='<h5 class="kp-sh">เงินที่ได้รายเดือน (บาท)</h5>'+kpBars(p.mon,pc,'กราฟเงินที่ได้รายเดือนของ '+w);
+            if(hasG(3))h+='<h5 class="kp-sh">แต้มรายเดือน แพทย์แผนไทย (Point)</h5>'+kpBars(p.pt,pc,'กราฟแต้มรายเดือนของ '+w);
+            [1,2,3].forEach(g=>{const rs=p.rows.filter(r=>r.g===g); if(!rs.length)return;
+                const unit=g===3?'Point':'บาท';
+                h+='<div class="kp-gh"><h5 class="kp-sh" style="margin:0">'+escapeHTML(KP_GROUPS[g])+'</h5><button type="button" class="kp-lnk" onclick="kpOpen('+g+')"><i class="fa-solid fa-pen-to-square"></i> บันทึกผลงานกลุ่มนี้</button></div>'
+                  +'<div class="kp-tbw"><table class="kp-tb"><tr><th>ข้อ</th><th>ตัวชี้วัด</th><th style="text-align:right">อัตรา</th><th style="text-align:right">ผลงานสะสม</th><th style="text-align:right">'+(g===3?'แต้ม':'เงินที่ได้ (บาท)')+'</th></tr>'
+                  +rs.map(r=>'<tr'+(r.has?'':' class="kp-none"')+'><td>'+r.n+'</td><td>'+escapeHTML(r.name)+'</td><td class="num">'+(kpIsNum(r)?kpFmt(r.rate):escapeHTML(String(r.rate)))+'</td><td class="num">'+(r.has?kpFmt(r.v):'–')+'</td><td class="num">'+(r.has?'<b>'+kpFmt(r.money)+'</b>':'–')+'</td></tr>').join('')+'</table></div>';});
+            h+='<p class="kp-note">แถวสีจางคือยังไม่มีการบันทึกผลงานถึงเดือนที่เลือก</p></div></section>';
+            return el.innerHTML=h;
+        }
+
+        // มุมมองทุกคน: เปรียบเทียบรายบุคคล
+        const mxm=Math.max.apply(null,order.map(w=>P[w][1]+P[w][2]).concat([1]));
+        h+='<div class="kp-tbw"><table class="kp-tb"><tr><th>ผู้รับผิดชอบ</th><th style="text-align:right">มีผลงาน</th><th style="text-align:right">ดึงข้อมูลไม่ได้ (บาท)</th><th style="text-align:right">ดึงข้อมูลได้ (บาท)</th><th style="text-align:right">รวม (บาท)</th><th style="min-width:7rem"></th><th style="text-align:right">แพทย์แผนไทย (Point)</th></tr>'
+          +order.map((w,i)=>{const p=P[w],tt=p[1]+p[2];return '<tr style="cursor:pointer" onclick="kpPick('+i+')"><td><span class="kp-dot" style="background:'+KP_PC[i%KP_PC.length]+'"></span>'+escapeHTML(w)+'</td><td class="num">'+p.wd+' / '+p.all+'</td><td class="num">'+kpFmt(p[1])+'</td><td class="num">'+kpFmt(p[2])+'</td><td class="num"><b>'+kpFmt(tt)+'</b></td><td><div class="kp-bar" style="--pc:'+KP_PC[i%KP_PC.length]+'"><i style="width:'+Math.round(tt/mxm*100)+'%"></i></div></td><td class="num">'+kpFmt(p[3])+'</td></tr>';}).join('')+'</table></div>';
         const top=items.filter(x=>x.money>0).sort((a,b)=>b.money-a.money).slice(0,10);
         h+='<h5 class="kp-sh">ตัวชี้วัดที่ได้เงินสูงสุด 10 อันดับ (บาท)</h5>'+(top.length?'<div class="kp-tbw"><table class="kp-tb"><tr><th>กลุ่ม</th><th>ตัวชี้วัด</th><th>ผู้รับผิดชอบ</th><th style="text-align:right">ผลงานสะสม</th><th style="text-align:right">เงินที่ได้</th></tr>'
           +top.map(r=>'<tr><td>'+r.g+'</td><td>'+escapeHTML(r.name)+'</td><td>'+escapeHTML(r.who)+'</td><td class="num">'+kpFmt(r.v)+'</td><td class="num"><b>'+kpFmt(r.money)+'</b></td></tr>').join('')+'</table></div>':'<p class="kp-note">ยังไม่มีรายการที่คำนวณเป็นเงินได้</p>');
-        const mx=Math.max.apply(null,mon.concat([1])), sh=v=>v>=1000?(Math.round(v/100)/10)+'k':Math.round(v);
-        h+='<h5 class="kp-sh">เงินที่ได้รายเดือน กลุ่ม 1+2 (บาท)</h5><svg viewBox="0 0 480 150" style="width:100%;max-height:220px" role="img" aria-label="กราฟเงินที่ได้รายเดือน">'
-          +mon.map((v,i)=>{const x=10+i*39,hh=v/mx*90;return '<rect x="'+x+'" y="'+(110-hh)+'" width="28" height="'+hh+'" rx="5" fill="'+(v?'#1F6FEB':'#E3EEFF')+'"/><text x="'+(x+14)+'" y="'+(104-hh)+'" font-size="9" text-anchor="middle" fill="#0A2540">'+(v?sh(v):'')+'</text><text x="'+(x+14)+'" y="128" font-size="10" text-anchor="middle" fill="#4B6283">'+KP_M[i]+'</text>'}).join('')+'</svg>'
+        h+='<h5 class="kp-sh">เงินที่ได้รายเดือน กลุ่ม 1+2 (บาท)</h5>'+kpBars(mon,'#1F6FEB','กราฟเงินที่ได้รายเดือน')
           +'<p class="kp-note">เงินที่ได้ = อัตราจ่าย × ผลงานสะสม ตามไฟล์ Excel ส่วนรายการ "ตามเกณฑ์/ตามจริง" ใช้จำนวนเงินที่กรอกเอง</p></section>';
         el.innerHTML=h;
     }
