@@ -2624,7 +2624,7 @@ function hashPw(user,pw){
           +'<div style="flex:0 0 auto;display:flex;gap:.5rem"><button type="button" class="kp-btn" onclick="kpSave()"><i class="fa-solid fa-floppy-disk"></i> บันทึก</button><button type="button" class="kp-btn ln" onclick="kpExport()"><i class="fa-solid fa-file-csv"></i> ส่งออก Excel (CSV)</button></div></div>';
         h+='<p class="kp-note" style="margin-bottom:.6rem">กรอก "ผลงาน (เดือนนี้)" ระบบคำนวณ ผลงานสะสม (ต.ค.–'+KP_M[kpM-1]+') และ'+(pt?'ผลงาน x point':'เงินที่ได้')+' ให้อัตโนมัติ'+(g===2?'':'')+' | รายการอัตรา "ตามเกณฑ์ / ตามจริง" ให้กรอก'+(pt?'แต้ม':'จำนวนเงิน')+'ของเดือนนี้เอง</p>';
         if(g===1)h+='<div class="kp-banner"><i class="fa-solid fa-circle-info"></i> ตัวชี้วัดกลุ่มนี้ดึงข้อมูลจากระบบไม่ได้ ให้นับและกรอกผลงานด้วยตนเองทุกเดือน</div>';
-        if(g===2)h+='<div class="kp-banner"><i class="fa-solid fa-circle-info"></i> ตัวชี้วัดกลุ่มนี้ดึงข้อมูลได้จากระบบ (เช่น HDC/JHCIS) ยังไม่ได้เชื่อมต่ออัตโนมัติ จึงกรอกผลงานด้วยตนเองไปก่อน</div>';
+        if(g===2)h+='<div class="kp-banner"><i class="fa-solid fa-circle-info"></i> ตัวชี้วัดกลุ่มนี้ดึงข้อมูลได้จาก 43 แฟ้ม กด "นำเข้า 43 แฟ้ม" เลือกไฟล์ (.csv/.txt เช่น ANC, POSTNATAL, FP) ระบบนับผลงานของเดือนที่เลือกให้ ตรวจแล้วกดบันทึก ข้อที่ไม่มีกฎนับให้กรอกเอง <input type="file" id="kp-imp" accept=".csv,.txt,.dat" multiple hidden onchange="kpImport(this)"> <button type="button" class="kp-btn ln" onclick="document.getElementById(\'kp-imp\').click()"><i class="fa-solid fa-file-import"></i> นำเข้า 43 แฟ้ม</button></div>';
         let body='', pend='';
         F.rows.forEach(r=>{
             if(r.sec){pend='<tr class="kp-sec"><td colspan="7">'+escapeHTML(r.sec)+'</td></tr>';return;}
@@ -2645,6 +2645,63 @@ function hashPw(user,pw){
         kpCalc();
     }
     function kpIn(){kpDirty=true;kpCalc();}
+    // ===== นำเข้า 43 แฟ้ม (กลุ่ม 2) : นับผลงานเดือนที่เลือกจากไฟล์ แล้วเติมช่อง "ผลงาน (เดือนนี้)" =====
+    // เพิ่มกฎได้ที่นี่: id=รหัสแถวในกลุ่ม 2, file=ชื่อแฟ้ม, date=คอลัมน์วันที่, uniq=คอลัมน์ที่ใช้กันนับซ้ำ, ok=เงื่อนไขกรองแถว
+    // ** ตรวจรหัสให้ตรงนิยามตัวชี้วัดของหน่วยก่อนใช้จริง **
+    const KP_IMP_RULES=[
+      {id:'1',file:'ANC',date:'DATE_SERV',uniq:['PID','ANCNO'],ok:r=>{const n=+r.ANCNO;return n>=1&&n<=8;}},
+      {id:'2',file:'POSTNATAL',date:'PPCARE',uniq:['PID','PPCARE']},
+      {id:'7',file:'FP',date:'DATE_SERV',uniq:['PID','SEQ'],ok:r=>r.FPTYPE==='1'},
+      {id:'8',file:'FP',date:'DATE_SERV',uniq:['PID','SEQ'],ok:r=>r.FPTYPE==='2'}
+    ];
+    function kpParse(txt){
+      txt=txt.replace(/^\uFEFF/,'');
+      const first=txt.split(/\r?\n/,1)[0], d=[',','|','\t',';'].reduce((a,c)=>first.split(c).length>first.split(a).length?c:a,',');
+      const rows=[];let row=[],f='',q=false;
+      for(let i=0;i<txt.length;i++){const c=txt[i];
+        if(q){if(c==='"'){if(txt[i+1]==='"'){f+='"';i++;}else q=false;}else f+=c;}
+        else if(c==='"')q=true;
+        else if(c===d){row.push(f);f='';}
+        else if(c==='\n'||c==='\r'){if(c==='\r'&&txt[i+1]==='\n')i++;row.push(f);f='';if(row.length>1||row[0]!=='')rows.push(row);row=[];}
+        else f+=c;}
+      if(f!==''||row.length){row.push(f);rows.push(row);}
+      if(!rows.length)return [];
+      const h=rows.shift().map(x=>x.trim().toUpperCase());
+      return rows.map(r=>{const o={};h.forEach((k,i)=>o[k]=(r[i]||'').trim());return o;});
+    }
+    function kpYM(s){
+      s=String(s||'').trim(); let y,m;
+      if(s.indexOf('/')>0){const p=s.split(/[\/\s]/);y=+p[2];m=+p[1];}
+      else{const n=s.replace(/\D/g,'');if(n.length<6)return null;y=+n.slice(0,4);m=+n.slice(4,6);}
+      if(y>2400)y-=543; return y?[y,m]:null;
+    }
+    async function kpImport(inp){
+      const files=[...inp.files]; inp.value=''; if(!files.length||kpG!==2)return;
+      const cm=((kpM+8)%12)+1, cy=(kpM<=3?KP_FY-1:KP_FY)-543, need={};
+      files.forEach(f=>{const tk=f.name.toUpperCase().replace(/\.[^.]+$/,'').split(/[^A-Z]+/);
+        KP_IMP_RULES.forEach(r=>{if(tk.includes(r.file)&&!need[r.file])need[r.file]=f;});});
+      if(!Object.keys(need).length){showToast('ไม่พบแฟ้มที่รองรับ (ตั้งชื่อไฟล์เช่น ANC.csv, POSTNATAL.csv, FP.csv)');return;}
+      const tbl={};
+      try{for(const k in need)tbl[k]=kpParse(await need[k].text());}catch(e){showToast('อ่านไฟล์ไม่สำเร็จ: '+e.message);return;}
+      const res=[],skip=[];
+      KP_IMP_RULES.forEach(r=>{
+        if(!tbl[r.file])return;
+        const rows=tbl[r.file];
+        if(rows.length&&!(r.date in rows[0])){skip.push('แฟ้ม '+r.file+' ไม่มีคอลัมน์ '+r.date);return;}
+        const seen=new Set();
+        rows.forEach(x=>{const ym=kpYM(x[r.date]);if(!ym||ym[0]!==cy||ym[1]!==cm)return;if(r.ok&&!r.ok(x))return;seen.add(r.uniq.map(u=>x[u]||'').join('|'));});
+        res.push({id:r.id,n:seen.size,row:KP_FORMS[2].rows.find(z=>z.id===r.id)});
+      });
+      if(!res.length){showToast(skip.join(' / ')||'ไม่พบข้อมูล');return;}
+      const msg='นับผลงานเดือน '+kpLbl(kpM)+' จากไฟล์ที่เลือก\n\n'+res.map(x=>'ข้อ '+x.row.n+': '+x.n+' ราย/ครั้ง').join('\n')
+        +(skip.length?'\n\nข้าม: '+skip.join(', '):'')+'\n\nค่าที่กรอกไว้ในข้อเหล่านี้จะถูกแทนที่ (ยังไม่บันทึกจนกว่าจะกดบันทึก) ต้องการดำเนินการหรือไม่?';
+      if(!confirm(msg))return;
+      let hid=0;
+      res.forEach(x=>{const el=kpQ(kpFid(2,x.id),'v');if(el)el.value=x.n;else hid++;});
+      kpIn();
+      showToast('นำเข้าแล้ว ตรวจสอบตัวเลขแล้วกดบันทึก'+(hid?' (มี '+hid+' ข้อที่ถูกซ่อนจากตัวกรอง เลือก "ทั้งหมด" แล้วนำเข้าใหม่)':''));
+    }
+
     function kpCalc(){
         const g=kpG, F=KP_FORMS[g]; let tot=0;
         F.rows.forEach(r=>{if(r.sec)return;const id=kpFid(g,r.id),p=kpSum(g,r,kpM-1),iv=kpQ(id,'v'),ia=kpQ(id,'amt'),sv=kpRecs(g,r)[kpM]||{};
