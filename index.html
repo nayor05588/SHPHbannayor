@@ -2625,6 +2625,7 @@ function hashPw(user,pw){
         h+='<p class="kp-note" style="margin-bottom:.6rem">กรอก "ผลงาน (เดือนนี้)" ระบบคำนวณ ผลงานสะสม (ต.ค.–'+KP_M[kpM-1]+') และ'+(pt?'ผลงาน x point':'เงินที่ได้')+' ให้อัตโนมัติ'+(g===2?'':'')+' | รายการอัตรา "ตามเกณฑ์ / ตามจริง" ให้กรอก'+(pt?'แต้ม':'จำนวนเงิน')+'ของเดือนนี้เอง</p>';
         if(g===1)h+='<div class="kp-banner"><i class="fa-solid fa-circle-info"></i> ตัวชี้วัดกลุ่มนี้ดึงข้อมูลจากระบบไม่ได้ ให้นับและกรอกผลงานด้วยตนเองทุกเดือน</div>';
         if(g===2)h+='<div class="kp-banner"><i class="fa-solid fa-circle-info"></i> ตัวชี้วัดกลุ่มนี้ดึงข้อมูลได้จาก 43 แฟ้ม กด "นำเข้า 43 แฟ้ม" เลือกไฟล์ (.csv/.txt เช่น ANC, POSTNATAL, FP) ระบบนับผลงานของเดือนที่เลือกให้ ตรวจแล้วกดบันทึก ข้อที่ไม่มีกฎนับให้กรอกเอง <input type="file" id="kp-imp" accept=".csv,.txt,.dat" multiple hidden onchange="kpImport(this)"> <button type="button" class="kp-btn ln" onclick="document.getElementById(\'kp-imp\').click()"><i class="fa-solid fa-file-import"></i> นำเข้า 43 แฟ้ม</button> <input type="file" id="kp-cd-in" accept=".csv,.txt,.dat" hidden onchange="kpCodes(this)"> <button type="button" class="kp-btn ln" onclick="document.getElementById(\'kp-cd-in\').click()"><i class="fa-solid fa-magnifying-glass"></i> ดูรหัสในแฟ้ม</button></div>';
+        if(g===3)h+='<div class="kp-banner"><i class="fa-solid fa-circle-info"></i> กลุ่มนี้นับจาก 43 แฟ้มได้ กด "นำเข้า 43 แฟ้ม" เลือกไฟล์ service, procedure_opd, drug_opd พร้อมกัน ระบบนับเดือนที่เลือก แยกสิทธิ UC (0100) กับ อปท. (4200) ให้ แล้วตรวจก่อนกดบันทึก <input type="file" id="kp-imp3" accept=".csv,.txt,.dat" multiple hidden onchange="kpImportTM(this)"> <button type="button" class="kp-btn ln" onclick="document.getElementById(\'kp-imp3\').click()"><i class="fa-solid fa-file-import"></i> นำเข้า 43 แฟ้ม</button> <input type="file" id="kp-cd-in" accept=".csv,.txt,.dat" hidden onchange="kpCodes(this)"> <button type="button" class="kp-btn ln" onclick="document.getElementById(\'kp-cd-in\').click()"><i class="fa-solid fa-magnifying-glass"></i> ดูรหัสในแฟ้ม</button></div>';
         let body='', pend='';
         F.rows.forEach(r=>{
             if(r.sec){pend='<tr class="kp-sec"><td colspan="7">'+escapeHTML(r.sec)+'</td></tr>';return;}
@@ -2713,6 +2714,61 @@ function hashPw(user,pw){
       {id:'7',file:'FP',date:'DATE_SERV',uniq:['PID','SEQ'],ok:r=>r.FPTYPE==='1'},
       {id:'8',file:'FP',date:'DATE_SERV',uniq:['PID','SEQ'],ok:r=>r.FPTYPE==='2'}
     ];
+    // ===== นำเข้า 43 แฟ้ม (กลุ่ม 3 แพทย์แผนไทย) : แถว UC ได้จำนวนครั้ง, แถว อปท. ได้จำนวนครั้งและแต้ม (ครั้ง x แต้มต่อครั้ง) =====
+    // ลำดับบริการ 1 นวด, 2 ประคบ, 3 นวด+ประคบ, 4 อบสมุนไพร, 5 พอกเข่า, 6 ฟื้นฟูมารดาหลังคลอด, 7 ยาสมุนไพร 32 รายการ (แถว U1-U7 = UC, O1-O7 = อปท.)
+    const KP_TM_UC=['0100'], KP_TM_LGO=['4200']; // INSTYPE ในแฟ้ม SERVICE: 0100 = UC, 4200 = ข้าราชการ/พนักงานส่วนท้องถิ่น
+    // ** ใส่รหัสหัตถการ (PROCEDCODE ในแฟ้ม PROCEDURE_OPD) ของแต่ละบริการที่นี่ ถามชไมพร เช่น 1:['7378070'] ถ้ายังว่างระบบจะข้ามบริการนั้น **
+    const KP_TM_PROC={1:[],2:[],3:[],4:[],5:[],6:[]};
+    // รหัสยาสมุนไพร (DIDSTD ในแฟ้ม DRUG_OPD) ** ให้เภสัช/ชไมพรตรวจรายการให้ตรงบัญชียาสมุนไพร 32 รายการ **
+    const KP_TM_HERB=new Set(['410000000109125020182896','420000011029502494782755','420000005349120020382755','420000002939598094724976','410000000479125020182896','410000000499145020182737','420000001949301540624976']);
+    const KP_TM_PT={1:200,2:150,3:250,4:120,5:100,6:500,7:25};
+    async function kpImportTM(inp){
+      const files=[...inp.files]; inp.value=''; if(!files.length||kpG!==3)return;
+      const cm=((kpM+8)%12)+1, cy=(kpM<=3?KP_FY-1:KP_FY)-543, need={};
+      files.forEach(f=>{const nm='_'+f.name.toUpperCase().replace(/\.[^.]+$/,'').replace(/[^A-Z]+/g,'_')+'_',has=k=>nm.includes('_'+k+'_');
+        ['SERVICE','PROCEDURE_OPD','DRUG_OPD'].forEach(k=>{if(has(k)&&!need[k])need[k]=f;});});
+      if(!need.SERVICE){showToast('ต้องเลือกแฟ้ม service ร่วมด้วย (ใช้แยกสิทธิ UC / อปท.)');return;}
+      if(!need.PROCEDURE_OPD&&!need.DRUG_OPD){showToast('ไม่พบแฟ้ม procedure_opd หรือ drug_opd');return;}
+      const tbl={};
+      try{for(const k in need)tbl[k]=kpParse(await need[k].text());}catch(e){showToast('อ่านไฟล์ไม่สำเร็จ: '+e.message);return;}
+      const ins={}; tbl.SERVICE.forEach(x=>{if(x.PID&&x.SEQ)ins[x.PID+'|'+x.SEQ]=x.INSTYPE;});
+      const C={U:{},O:{}}, other={}, skip=[]; let noSvc=0;
+      for(let k=1;k<=7;k++){C.U[k]=new Set();C.O[k]=new Set();}
+      const put=(k,x,key)=>{const t=ins[x.PID+'|'+x.SEQ];if(t==null){noSvc++;return;}
+        if(KP_TM_UC.includes(t))C.U[k].add(key);else if(KP_TM_LGO.includes(t))C.O[k].add(key);else other[t]=(other[t]||0)+1;};
+      if(tbl.PROCEDURE_OPD){
+        const rows=tbl.PROCEDURE_OPD;
+        if(rows.length&&!('DATE_SERV' in rows[0]))skip.push('procedure_opd ไม่มีคอลัมน์ DATE_SERV');
+        else for(let k=1;k<=6;k++){
+          const codes=KP_TM_PROC[k]; if(!codes.length){skip.push('บริการข้อ '+k+' ยังไม่ได้กำหนดรหัสหัตถการ');continue;}
+          rows.forEach(x=>{const ym=kpYM(x.DATE_SERV);if(!ym||ym[0]!==cy||ym[1]!==cm)return;if(!codes.includes(x.PROCEDCODE))return;put(k,x,x.PID+'|'+x.SEQ+'|'+x.PROCEDCODE);});
+        }
+      }else skip.push('ไม่ได้เลือกแฟ้ม procedure_opd (ข้อ 1-6)');
+      if(tbl.DRUG_OPD){
+        const rows=tbl.DRUG_OPD;
+        if(rows.length&&!('DATE_SERV' in rows[0]))skip.push('drug_opd ไม่มีคอลัมน์ DATE_SERV');
+        else rows.forEach(x=>{const ym=kpYM(x.DATE_SERV);if(!ym||ym[0]!==cy||ym[1]!==cm)return;if(!KP_TM_HERB.has(x.DIDSTD))return;put(7,x,x.PID+'|'+x.SEQ+'|'+x.DIDSTD);});
+      }else skip.push('ไม่ได้เลือกแฟ้ม drug_opd (ข้อ 7)');
+      const nm={};KP_FORMS[3].rows.forEach(r=>{if(r.id)nm[r.id]=r.n+'. '+r.name.replace(/\s*\*.*$/,'');});
+      let msg='นับผลงานเดือน '+kpLbl(kpM)+' จากไฟล์ที่เลือก\n\nสิทธิ UC (ครั้ง)\n',any=false;
+      for(let k=1;k<=7;k++){if(k<=6&&!KP_TM_PROC[k].length)continue;any=true;msg+='  '+nm['U'+k]+': '+C.U[k].size+'\n';}
+      msg+='\nสิทธิ อปท. (ครั้ง / แต้ม)\n';
+      for(let k=1;k<=7;k++){if(k<=6&&!KP_TM_PROC[k].length)continue;msg+='  '+nm['O'+k]+': '+C.O[k].size+' ครั้ง / '+(C.O[k].size*KP_TM_PT[k])+' แต้ม\n';}
+      const ot=Object.keys(other).map(t=>t+' x'+other[t]).join(', ');
+      if(ot)msg+='\nไม่นับ (สิทธิอื่น): '+ot;
+      if(noSvc)msg+='\nไม่พบในแฟ้ม service: '+noSvc+' แถว (ไม่นับ)';
+      if(skip.length)msg+='\n\nข้าม: '+skip.join(', ');
+      if(!any&&!tbl.DRUG_OPD){showToast(skip.join(' / ')||'ไม่พบข้อมูล');return;}
+      msg+='\n\nค่าที่กรอกไว้ในข้อเหล่านี้จะถูกแทนที่ (ยังไม่บันทึกจนกว่าจะกดบันทึก) ต้องการดำเนินการหรือไม่?';
+      if(!confirm(msg))return;
+      let hid=0;
+      for(let k=1;k<=7;k++){if(k<=6&&!KP_TM_PROC[k].length)continue;
+        const ev=kpQ(kpFid(3,'U'+k),'v'); if(ev)ev.value=C.U[k].size;else hid++;
+        const ov=kpQ(kpFid(3,'O'+k),'v'), oa=kpQ(kpFid(3,'O'+k),'amt');
+        if(ov)ov.value=C.O[k].size; if(oa)oa.value=C.O[k].size*KP_TM_PT[k];}
+      kpIn();
+      showToast('นำเข้าแล้ว ตรวจสอบตัวเลขแล้วกดบันทึก'+(hid?' (มีข้อที่ถูกซ่อนจากตัวกรอง เลือก "ทั้งหมด" แล้วนำเข้าใหม่)':''));
+    }
     function kpParse(txt){
       txt=txt.replace(/^\uFEFF/,'');
       const first=txt.split(/\r?\n/,1)[0], d=[',','|','\t',';'].reduce((a,c)=>first.split(c).length>first.split(a).length?c:a,',');
