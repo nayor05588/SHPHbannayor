@@ -2646,7 +2646,7 @@ function hashPw(user,pw){
     }
     function kpIn(){kpDirty=true;kpCalc();}
     // ===== ตัวช่วยดูรหัสในแฟ้ม: แสดงค่าที่พบในคอลัมน์พร้อมจำนวน (ประมวลผลในเบราว์เซอร์ ไม่อัปโหลดข้อมูล) =====
-    const KP_CODE_COL={EPI:'VACCINETYPE',LABFU:'LABTEST',DRUG_OPD:'DIDSTD',PROCEDURE_OPD:'PROCEDCODE',DENTAL:'DENTTYPE',NCDSCREEN:'BSTEST',FP:'FPTYPE',SERVICE:'INSID'};
+    const KP_CODE_COL={EPI:'VACCINETYPE',LABFU:'LABTEST',DRUG_OPD:'DIDSTD',PROCEDURE_OPD:'PROCEDCODE',DENTAL:'DENTTYPE',NCDSCREEN:'BSTEST',FP:'FPTYPE',SERVICE:'INSTYPE'};
     const KP_CODE_NAME={DRUG_OPD:'DNAME'};
     let kpCD=null;
     function kpCodeRows(d,cm,cy){
