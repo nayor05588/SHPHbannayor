@@ -2745,20 +2745,20 @@ function hashPw(user,pw){
       const cm=((kpM+8)%12)+1, cy=(kpM<=3?KP_FY-1:KP_FY)-543, need={};
       files.forEach(f=>{const nm='_'+f.name.toUpperCase().replace(/\.[^.]+$/,'').replace(/[^A-Z]+/g,'_')+'_',has=k=>nm.includes('_'+k+'_');
         ['SERVICE','PROCEDURE_OPD','DRUG_OPD'].forEach(k=>{if(has(k)&&!need[k])need[k]=f;});});
-      if(!need.SERVICE){showToast('ไม่พบไฟล์ service ในที่เลือก (ชื่อไฟล์ต้องมีคำว่า service) ไฟล์ที่เลือก: '+files.map(f=>f.name).join(', '));return;}
-      if(!need.PROCEDURE_OPD&&!need.DRUG_OPD){showToast('ไม่พบแฟ้ม procedure_opd หรือ drug_opd');return;}
+      if(!need.SERVICE){alert('ไม่พบไฟล์ service ในที่เลือก (ชื่อไฟล์ต้องมีคำว่า service) ไฟล์ที่เลือก: '+files.map(f=>f.name).join(', '));return;}
+      if(!need.PROCEDURE_OPD&&!need.DRUG_OPD){alert('ไม่พบแฟ้ม procedure_opd หรือ drug_opd');return;}
       const tbl={};
-      try{for(const k in need)tbl[k]=kpParse(await need[k].text());}catch(e){showToast('อ่านไฟล์ไม่สำเร็จ: '+e.message);return;}
+      try{for(const k in need)tbl[k]=kpParse(await need[k].text());}catch(e){alert('อ่านไฟล์ไม่สำเร็จ: '+e.message);return;}
       const cols=k=>tbl[k]&&tbl[k].length?Object.keys(tbl[k][0]).join(','):'(อ่านไม่ได้สักแถว)';
       const chk=(k,list)=>{if(!tbl[k])return null;if(!tbl[k].length)return 'แฟ้ม '+k.toLowerCase()+' อ่านไม่ได้สักแถว';
         const miss=list.filter(c=>!(c in tbl[k][0]));return miss.length?'แฟ้ม '+k.toLowerCase()+' ไม่มีคอลัมน์ '+miss.join(', ')+' (พบคอลัมน์: '+cols(k)+')':null;};
       const bad=[chk('SERVICE',['SEQ','INSTYPE']),chk('PROCEDURE_OPD',['PID','SEQ','DATE_SERV','PROCEDCODE']),chk('DRUG_OPD',['PID','SEQ','DATE_SERV','DIDSTD'])].filter(Boolean);
-      if(bad.length){showToast(bad.join(' / '));return;}
+      if(bad.length){alert(bad.join(' / '));return;}
       // เชื่อมสิทธิจาก SERVICE: ใช้ PID+SEQ ก่อน ถ้าไม่เจอใช้ SEQ อย่างเดียว
       const insP={}, insS={}; tbl.SERVICE.forEach(x=>{const t=(x.INSTYPE||'').trim();if(x.SEQ){insS[x.SEQ]=t;if(x.PID)insP[x.PID+'|'+x.SEQ]=t;}});
-      const C={U:{},O:{}}, other={}, skip=[], st={svc:tbl.SERVICE.length,pm:0,pmh:0,dm:0,dmh:0}; let noSvc=0;
+      const miss=[], C={U:{},O:{}}, other={}, skip=[], st={svc:tbl.SERVICE.length,pm:0,pmh:0,dm:0,dmh:0}; let noSvc=0;
       for(let k=1;k<=7;k++){C.U[k]=new Set();C.O[k]=new Set();}
-      const put=(k,key,pid,seq)=>{let t=insP[pid+'|'+seq];if(t==null)t=insS[seq];if(t==null||t===''){noSvc++;return;}
+      const put=(k,key,pid,seq)=>{let t=insP[pid+'|'+seq];if(t==null)t=insS[seq];if(t==null||t===''){noSvc++;if(miss.length<3&&!miss.includes(seq))miss.push(seq);return;}
         if(KP_TM_UC.includes(t))C.U[k].add(key);else if(KP_TM_LGO.includes(t))C.O[k].add(key);else other[t]=(other[t]||0)+1;};
       const inMonth=x=>{const ym=kpYM(x.DATE_SERV);return ym&&ym[0]===cy&&ym[1]===cm;};
       if(tbl.PROCEDURE_OPD){
@@ -2781,7 +2781,9 @@ function hashPw(user,pw){
       const ot=Object.keys(other).map(t=>t+' x'+other[t]).join(', ');
       if(ot)msg+='\nไม่นับ (สิทธิอื่น): '+ot;
       if(noSvc)msg+='\nไม่พบการมารับบริการนี้ในแฟ้ม service: '+noSvc+' ครั้ง (ไม่นับ)';
-      msg+='\n\nตรวจสอบการอ่านไฟล์: service '+st.svc+' แถว';
+      if(noSvc)msg+='\nตัวอย่าง SEQ ที่หาไม่เจอ: '+miss.join(', ')+' | ตัวอย่าง SEQ ใน service: '+tbl.SERVICE.slice(0,3).map(x=>x.SEQ).join(', ');
+      msg+='\n\nไฟล์ที่ใช้: '+Object.keys(need).map(k=>k.toLowerCase()+' = '+need[k].name).join(', ');
+      msg+='\nตรวจสอบการอ่านไฟล์: service '+st.svc+' แถว';
       if(tbl.PROCEDURE_OPD)msg+=' | procedure_opd เดือนนี้ '+st.pm+' แถว (ตรงรหัสแพทย์แผนไทย '+st.pmh+' ครั้ง)';
       if(tbl.DRUG_OPD)msg+=' | drug_opd เดือนนี้ '+st.dm+' แถว (ยาสมุนไพร '+st.dmh+' แถว)';
       if(skip.length)msg+='\n\nข้าม: '+skip.join(', ');
