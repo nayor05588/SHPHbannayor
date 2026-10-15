@@ -2688,7 +2688,20 @@ function hashPw(user,pw){
     // ** ตรวจรหัสให้ตรงนิยามตัวชี้วัดของหน่วยก่อนใช้จริง **
     // วัคซีนพื้นฐาน EPI (ข้อ 13) ตามตารางรหัสของหน่วย: DTP, DTP-HB-Hib, โปลิโอ, โรต้า, MMR, JE, BCG, HBV, HPV (ไม่รวม 815 ไข้หวัดใหญ่, 101 TT, 106 dT ผู้ใหญ่)
     const KP_EPI13=new Set(['010','041','042','043','D21','D22','D23','033','034','035','024','081','082','083','084','085','086','401','I11','I12','R11','R12','R21','R22','R23','061','073','051','052','J11','J12','HPVC21']);
+    const KP_TRI='201120320037726221781506', KP_FE200='100488000004203121781674', KP_FE45='100488000001280130481618'; // Triferdine 150 / Ferrous fumarate 200 mg / Ferrous fumarate 45 mg drop
+    // เกณฑ์กลุ่มเสี่ยง (ข้อ 5, 6) ปรับค่าได้ที่นี่ ** ตรวจให้ตรงนิยามของหน่วยก่อนใช้จริง **
+    const KP_HT_RISK=r=>{const n=v=>(r[v]===''||r[v]==null)?NaN:+r[v],av=(a,b)=>isNaN(a)?b:(isNaN(b)?a:(a+b)/2),s=av(n('SBP_1'),n('SBP_2')),d=av(n('DBP_1'),n('DBP_2'));
+      if(isNaN(s)&&isNaN(d))return false; if((!isNaN(s)&&s>=140)||(!isNaN(d)&&d>=90))return false; return (!isNaN(s)&&s>=130)||(!isNaN(d)&&d>=85);};
+    const KP_DM_RISK=r=>{const v=r.BSLEVEL===''?NaN:+r.BSLEVEL; if(isNaN(v))return false; return v>=(r.BSTEST==='2'?110:100)&&v<=125;};
     const KP_IMP_RULES=[
+      {id:'5',file:'NCDSCREEN',date:'DATE_SERV',uniq:['PID'],first:true,age:[35,200],ok:KP_HT_RISK,note:'ข้อ 5 (นับคน): อายุ ≥35 ปี ความดันเฉลี่ย 130–139 / 85–89 (ไม่ถึง 140/90) นับครั้งแรกของปีงบ ต้องมีข้อมูลตั้งแต่ ต.ค. ในไฟล์จึงไม่นับซ้ำข้ามเดือน'},
+      {id:'6',file:'NCDSCREEN',date:'DATE_SERV',uniq:['PID'],first:true,age:[35,200],ok:KP_DM_RISK,note:'ข้อ 6 (นับคน): อายุ ≥35 ปี น้ำตาล 100–125 (bstest=1) หรือ 110–125 (bstest=2) นับครั้งแรกของปีงบ ต้องมีข้อมูลตั้งแต่ ต.ค. ในไฟล์'},
+      {id:'20',file:'PROCEDURE_OPD',date:'DATE_SERV',uniq:['PID','DATE_SERV'],parts:[r=>r.PROCEDCODE==='2330011'||r.PROCEDCODE==='2330013',r=>['2387010','2277310','2277320','2287310','2287320'].includes(r.PROCEDCODE)],note:'ข้อ 20: นับเมื่อคนเดียวกันมีทั้งตรวจช่องปาก (2330011/2330013) และขัดฟัน (2387010, 2277310/2277320, 2287310/2287320) ในวันเดียวกัน ไม่ได้ตรวจเพดานต่อปี และไม่นับรหัส 2387020'},
+      {id:'21',file:'PROCEDURE_OPD',date:'DATE_SERV',uniq:['PID','SEQ'],age:[25,59],note:'ข้อ 21: นับหัตถการ 2377020/2377021 ในอายุ 25–59 ปี ไม่ได้ตรวจเกณฑ์กลุ่มเสี่ยงและเพดาน 2 ครั้งต่อปี',ok:r=>r.PROCEDCODE==='2377020'||r.PROCEDCODE==='2377021'},
+      {id:'3',file:'DRUG_OPD',date:'DATE_SERV',uniq:['PID','SEQ','DIDSTD'],near:{file:'POSTNATAL',date:'PPCARE',days:90},note:'ข้อ 3: นับหญิงที่มีแถว postnatal ห่างจากวันจ่ายยาไม่เกิน 90 วัน ไม่ได้ตรวจเพดาน 2 ครั้งต่อคน',ok:r=>r.DIDSTD===KP_TRI},
+      {id:'10',file:'DRUG_OPD',date:'DATE_SERV',uniq:['PID','SEQ','DIDSTD'],age:[13,45],sex:'2',notin:['ANC','POSTNATAL'],note:'ข้อ 10: ตัดคนที่ปรากฏในแฟ้ม anc/postnatal ทั้งไฟล์ ไม่ได้ตรวจเพดาน 1 ครั้งต่อปี และไม่นับ Folic acid แยก',ok:r=>r.DIDSTD===KP_FE200},
+      {id:'18',file:'DRUG_OPD',date:'DATE_SERV',uniq:['PID','SEQ','DIDSTD'],ageM:[[6,71]],ok:r=>r.DIDSTD===KP_FE45},
+      {id:'18',file:'DRUG_OPD',date:'DATE_SERV',uniq:['PID','SEQ','DIDSTD'],ageM:[[72,155]],ok:r=>r.DIDSTD===KP_FE200},
       {id:'13',file:'EPI',date:'DATE_SERV',uniq:['PID','SEQ','VACCINETYPE'],age:[0,14],ok:r=>KP_EPI13.has(r.VACCINETYPE)},
       {id:'14',file:'EPI',date:'DATE_SERV',uniq:['PID','SEQ','VACCINETYPE'],ok:r=>r.VACCINETYPE==='815'},
       {id:'1',file:'ANC',date:'DATE_SERV',uniq:['PID','ANCNO'],ok:r=>{const n=+r.ANCNO;return n>=1&&n<=8;}},
@@ -2724,31 +2737,46 @@ function hashPw(user,pw){
     function kpYMD(s){s=String(s||'').trim();let y,m,d;if(s.indexOf('/')>0){const p=s.split(/[\/\s]/);d=+p[0];m=+p[1];y=+p[2];}else{const n=s.replace(/\D/g,'');if(n.length<6)return null;y=+n.slice(0,4);m=+n.slice(4,6);d=+n.slice(6,8)||1;}if(y>2400)y-=543;return y?[y,m,d]:null;}
     function kpAge(b,s){const x=kpYMD(s);if(!b||!x)return null;return x[0]-b[0]-((x[1]<b[1]||(x[1]===b[1]&&x[2]<b[2]))?1:0);}
     function kpAgeM(b,s){const x=kpYMD(s);if(!b||!x)return null;return (x[0]-b[0])*12+(x[1]-b[1])-(x[2]<b[2]?1:0);}
+    const kpDay=s=>{const x=kpYMD(s);return x?Date.UTC(x[0],x[1]-1,x[2]):null;};
     async function kpImport(inp){
       const files=[...inp.files]; inp.value=''; if(!files.length||kpG!==2)return;
       const cm=((kpM+8)%12)+1, cy=(kpM<=3?KP_FY-1:KP_FY)-543, need={};
-      files.forEach(f=>{const tk=f.name.toUpperCase().replace(/\.[^.]+$/,'').split(/[^A-Z]+/);
-        if(tk.includes('PERSON')&&!need.PERSON)need.PERSON=f;
-        KP_IMP_RULES.forEach(r=>{if(tk.includes(r.file)&&!need[r.file])need[r.file]=f;});});
+      files.forEach(f=>{const nm='_'+f.name.toUpperCase().replace(/\.[^.]+$/,'').replace(/[^A-Z]+/g,'_')+'_',has=k=>nm.includes('_'+k+'_');
+        if(has('PERSON')&&!need.PERSON)need.PERSON=f;
+        KP_IMP_RULES.forEach(r=>{if(has(r.file)&&!need[r.file])need[r.file]=f;});});
       if(!KP_IMP_RULES.some(r=>need[r.file])){showToast('ไม่พบแฟ้มที่รองรับ (ตั้งชื่อไฟล์เช่น ANC.csv, POSTNATAL.csv, FP.csv)');return;}
       const tbl={};
       try{for(const k in need)tbl[k]=kpParse(await need[k].text());}catch(e){showToast('อ่านไฟล์ไม่สำเร็จ: '+e.message);return;}
-      const res=[],skip=[],bd={};
-      (tbl.PERSON||[]).forEach(x=>{const b=kpYMD(x.BIRTH);if(b&&x.PID)bd[x.PID]=b;});
+      const res=[],skip=[],bd={},sx={},notes=[];
+      (tbl.PERSON||[]).forEach(x=>{const b=kpYMD(x.BIRTH);if(b&&x.PID){bd[x.PID]=b;sx[x.PID]=x.SEX;}});
+      const _ps={},_nm={};
+      const pset=f=>_ps[f]||(_ps[f]=new Set(tbl[f].map(x=>x.PID)));
+      const nearM=n=>_nm[n.file]||(_nm[n.file]=(()=>{const m={};tbl[n.file].forEach(x=>{const t=kpDay(x[n.date]);if(t!=null&&x.PID)(m[x.PID]=m[x.PID]||[]).push(t);});return m;})());
       const ancK=new Set((tbl.ANC||[]).map(x=>x.PID+'|'+x.SEQ));
       KP_IMP_RULES.forEach(r=>{
         if(!tbl[r.file])return;
         const rows=tbl[r.file];
         if(rows.length&&!(r.date in rows[0])){skip.push('แฟ้ม '+r.file+' ไม่มีคอลัมน์ '+r.date);return;}
-        if((r.age||r.ageM)&&!tbl.PERSON){skip.push('ข้อ '+KP_FORMS[2].rows.find(z=>z.id===r.id).n+' ต้องเลือกแฟ้ม person ร่วมด้วย (ใช้คำนวณอายุ)');return;}
+        const rn=KP_FORMS[2].rows.find(z=>z.id===r.id).n;
+        if((r.age||r.ageM||r.sex)&&!tbl.PERSON){skip.push('ข้อ '+rn+' ต้องเลือกแฟ้ม person ร่วมด้วย (ใช้คำนวณอายุ/เพศ)');return;}
+        const miss=[].concat(r.notin||[],r.near?[r.near.file]:[]).filter(f=>!tbl[f]);
+        if(miss.length){skip.push('ข้อ '+rn+' ต้องเลือกแฟ้ม '+miss.join(', ').toLowerCase()+' ร่วมด้วย');return;}
+        if(r.near&&tbl[r.near.file].length&&!(r.near.date in tbl[r.near.file][0])){skip.push('แฟ้ม '+r.near.file+' ไม่มีคอลัมน์ '+r.near.date);return;}
         if(r.anc&&(!tbl.ANC||(tbl.ANC.length&&!('SEQ' in tbl.ANC[0])))){skip.push('ข้อ '+KP_FORMS[2].rows.find(z=>z.id===r.id).n+' ต้องเลือกแฟ้ม anc ร่วมด้วย (ต้องมีคอลัมน์ seq) เพื่อแยกหญิงตั้งครรภ์');return;}
-        const seen=new Set();
-        rows.forEach(x=>{const ym=kpYM(x[r.date]);if(!ym||ym[0]!==cy||ym[1]!==cm)return;if(r.ok&&!r.ok(x))return;if(r.age){const a=kpAge(bd[x.PID],x[r.date]);if(a==null||a<r.age[0]||a>r.age[1])return;}if(r.ageM){const a=kpAgeM(bd[x.PID],x[r.date]);if(a==null||!r.ageM.some(q=>a>=q[0]&&a<=q[1]))return;}if(r.anc){const inA=ancK.has(x.PID+'|'+x.SEQ);if((r.anc==='in')!==inA)return;}seen.add(r.uniq.map(u=>x[u]||'').join('|'));});
-        res.push({id:r.id,n:seen.size,row:KP_FORMS[2].rows.find(z=>z.id===r.id)});
+        const seen=new Set(),pm={};
+        if(r.first){const fs=Date.UTC(KP_FY-1-543,9,1),mm={};
+          rows.forEach(x=>{if(r.ok&&!r.ok(x))return;const t=kpDay(x[r.date]);if(t==null||t<fs)return;
+            if(r.age){const a=kpAge(bd[x.PID],x[r.date]);if(a==null||a<r.age[0]||a>r.age[1])return;}
+            const k=r.uniq.map(u=>x[u]||'').join('|');if(!(k in mm)||t<mm[k])mm[k]=t;});
+          Object.keys(mm).forEach(k=>{const d=new Date(mm[k]);if(d.getUTCFullYear()===cy&&d.getUTCMonth()+1===cm)seen.add(k);});
+        }else rows.forEach(x=>{const ym=kpYM(x[r.date]);if(!ym||ym[0]!==cy||ym[1]!==cm)return;if(r.parts){const k=r.uniq.map(u=>x[u]||'').join('|');r.parts.forEach((f,i)=>{if(f(x))(pm[k]=pm[k]||new Set()).add(i);});return;}if(r.ok&&!r.ok(x))return;if(r.age){const a=kpAge(bd[x.PID],x[r.date]);if(a==null||a<r.age[0]||a>r.age[1])return;}if(r.ageM){const a=kpAgeM(bd[x.PID],x[r.date]);if(a==null||!r.ageM.some(q=>a>=q[0]&&a<=q[1]))return;}if(r.anc){const inA=ancK.has(x.PID+'|'+x.SEQ);if((r.anc==='in')!==inA)return;}if(r.sex&&sx[x.PID]!==r.sex)return;if(r.notin&&r.notin.some(f=>pset(f).has(x.PID)))return;if(r.near){const ds=nearM(r.near)[x.PID],t=kpDay(x[r.date]);if(!ds||t==null||!ds.some(d=>Math.abs(d-t)<=r.near.days*864e5))return;}seen.add(r.uniq.map(u=>x[u]||'').join('|'));});
+        if(r.parts)Object.keys(pm).forEach(k=>{if(pm[k].size===r.parts.length)seen.add(k);});
+        const ex=res.find(z=>z.id===r.id);if(ex)ex.n+=seen.size;else res.push({id:r.id,n:seen.size,row:KP_FORMS[2].rows.find(z=>z.id===r.id)});
+        if(r.note&&!notes.includes(r.note))notes.push(r.note);
       });
       if(!res.length){showToast(skip.join(' / ')||'ไม่พบข้อมูล');return;}
       const msg='นับผลงานเดือน '+kpLbl(kpM)+' จากไฟล์ที่เลือก\n\n'+res.map(x=>'ข้อ '+x.row.n+': '+x.n+' ราย/ครั้ง').join('\n')
-        +(skip.length?'\n\nข้าม: '+skip.join(', '):'')+'\n\nค่าที่กรอกไว้ในข้อเหล่านี้จะถูกแทนที่ (ยังไม่บันทึกจนกว่าจะกดบันทึก) ต้องการดำเนินการหรือไม่?';
+        +(skip.length?'\n\nข้าม: '+skip.join(', '):'')+(notes.length?'\n\nหมายเหตุ:\n'+notes.join('\n'):'')+'\n\nค่าที่กรอกไว้ในข้อเหล่านี้จะถูกแทนที่ (ยังไม่บันทึกจนกว่าจะกดบันทึก) ต้องการดำเนินการหรือไม่?';
       if(!confirm(msg))return;
       let hid=0;
       res.forEach(x=>{const el=kpQ(kpFid(2,x.id),'v');if(el)el.value=x.n;else hid++;});
