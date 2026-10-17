@@ -943,6 +943,7 @@ button[onclick="toggleAIChat()"].w-14::before{content:"";position:absolute;inset
                 <button type="button" onclick="switchAdminSub('modules')" id="sub-btn-modules" class="admin-sub-btn adm-tab is-active"><i class="fa-solid fa-grip"></i>ระบบจัดการภายใน รพ.สต.</button>
                 <button type="button" onclick="switchAdminSub('calendar')" id="sub-btn-calendar" class="admin-sub-btn adm-tab"><i class="fa-solid fa-calendar-days"></i>ปฏิทินงานองค์กร</button>
                 <button type="button" onclick="switchAdminSub('doc')" id="sub-btn-doc" class="admin-sub-btn adm-tab"><i class="fa-solid fa-folder-open"></i>คลังคำสั่ง/หนังสือเวียน</button>
+                <button type="button" onclick="switchAdminSub('web')" id="sub-btn-web" class="admin-sub-btn adm-tab"><i class="fa-solid fa-pen-ruler"></i>จัดการหน้าเวป</button>
             </div>
 
             <!-- SUB-SECTION 0: CORE MODULES 2.1-2.9 -->
@@ -955,6 +956,14 @@ button[onclick="toggleAIChat()"].w-14::before{content:"";position:absolute;inset
                 </div>
                 <div id="mod-grid" class="grid grid-cols-3 sm:grid-cols-4 lg:grid-cols-5 gap-x-3 gap-y-7 justify-items-center pt-2"></div>
                 <div id="mod-detail"></div>
+            </div>
+
+            <div id="admin-sub-web" class="admin-sub-content hidden space-y-6">
+                <div class="adm-sec-head"><div>
+                    <h3><span class="hi"><i class="fa-solid fa-pen-ruler"></i></span>จัดการหน้าเวป</h3>
+                    <p>แก้ไขเนื้อหาหน้าเว็บสาธารณะ: สถานการณ์สุขภาพเดือนนี้ คลินิกและบริการ ข่าวประชาสัมพันธ์ ทำเนียบบุคลากร และ AI หมอประจำบ้าน</p>
+                </div></div>
+                <div id="web-body" class="space-y-5"></div>
             </div>
 
             <!-- SUB-SECTION 1: CALENDAR -->
@@ -2081,6 +2090,7 @@ async function crXls(){
                     reply = "ท่านสามารถติดต่อ รพ.สต.บ้านนายอ ได้ที่เบอร์ 042-163-603 หรือติดต่อผ่าน อสม. ประจำคุ้มบ้านของท่านได้เลยครับ";
                 }
 
+                if(window.webAiReply) reply = webAiReply(msg, reply);
                 chatMessages.innerHTML += `
                     <div class="flex items-start space-x-2">
                         <div class="w-8 h-8 rounded-full ai-gradient text-white flex items-center justify-center text-xs shrink-0"><i class="fa-solid fa-robot"></i></div>
@@ -3117,5 +3127,79 @@ function hashPw(user,pw){
           .catch(e=>showToast('จองคิวไม่สำเร็จ: '+e.message));
     };
     </script>
+<script>
+// ===== จัดการหน้าเวป (CMS) : เก็บข้อมูลที่ Firebase  site/{stats,clinics,news,staff,ai} =====
+(function(){
+const $=id=>document.getElementById(id),E=s=>escapeHTML(String(s==null?'':s)),CL=o=>JSON.parse(JSON.stringify(o));
+const CN={aiBlue:'ฟ้า',cyan:'ฟ้าอ่อน',emerald:'เขียว',amber:'เหลือง',pink:'ชมพู',violet:'ม่วง',rose:'แดง'};
+const NC={aiBlue:'text-cyan-300',cyan:'text-cyan-300',emerald:'text-emerald-400',amber:'text-amber-300',pink:'text-pink-400',violet:'text-violet-300',rose:'text-rose-300'};
+const arrOf=v=>Array.isArray(v)?v.filter(Boolean):(v&&typeof v==='object'?Object.values(v):[]);
+const tx=(el,q)=>{const n=el.querySelector(q);return n?n.textContent.trim():''};
+const okImg=u=>/^https:\/\//.test(u||''),okUrl=u=>/^https?:\/\//.test(u||''),okIcon=i=>/^fa-(solid|regular|brands) fa-[\w-]+$/.test(i||'');
+// ---- อ่านค่าตั้งต้นจากหน้าเว็บปัจจุบัน ----
+const ORIG={},IMG0=[];
+ORIG.stats=[...document.querySelectorAll('.hero-card .grid > div')].map(d=>{const p=d.querySelectorAll('p'),v=p[1],u=v.querySelector('span');return{label:p[0].textContent.trim(),value:[...v.childNodes].filter(n=>n.nodeType===3).map(n=>n.textContent).join('').trim(),unit:u?u.textContent.trim():'',color:(v.className.match(/text-(cyan|emerald|amber|pink)-/)||[])[1]||'cyan'}});
+const CG=document.querySelector('#tab-services [class~="lg:grid-cols-4"]');
+ORIG.clinics=[...CG.children].map(c=>({title:tx(c,'h3'),desc:tx(c,'p.text-slate-600'),time:tx(c,'.border-t span'),icon:(c.querySelector('i')||{}).className||'fa-solid fa-stethoscope',color:(c.innerHTML.match(/bg-(\w+)-50/)||[])[1]||'aiBlue',url:c.tagName==='A'?(c.getAttribute('href')||''):''}));
+ORIG.news=[...document.querySelectorAll('#news-grid .news-item')].map(c=>{const m=tx(c,'p.text-xs').split('|'),o=(c.querySelector('button').getAttribute('onclick')||'').match(/openNewsModal\('([^']*)',\s*'([^']*)'\)/)||[];return{title:tx(c,'h3'),cat:tx(c,'span.rounded-full'),date:m[0].trim(),by:(m[1]||'').replace('โดย','').trim(),img:'',desc:tx(c,'p.text-slate-600'),body:o[2]||''}});
+const SC=[...document.querySelectorAll('#tab-staff img[alt]')].map(i=>i.closest('.rounded-2xl'));
+ORIG.staff=SC.map(c=>{const i=c.querySelector('img');IMG0.push(i.src);return{name:i.alt,pos:tx(c,'p.text-aiBlue-600'),img:'',hide:false}});
+ORIG.ai={welcome:'สวัสดีครับ! ผมคือ AI ผู้ช่วยสุขภาพประจำ รพ.สต.บ้านนายอ ต.สร้างค้อ อ.ภูพาน จ.สกลนคร มีอะไรให้ผมช่วยวันนี้ครับ? เช่น ตรวจสอบวันฉีดวัคซีน คลินิกเปิดทำการ หรือปรึกษาอาการเบื้องต้น',
+ def:'ขอบคุณสำหรับคำถามครับ สำหรับ รพ.สต.บ้านนายอ ต.สร้างค้อ อ.ภูพาน จ.สกลนคร เปิดให้บริการวันจันทร์-ศุกร์ 08.30-16.30 น. หากต้องการปรึกษาโรคหรือจองคิว สามารถเลือกเมนูบริการประชาชนด้านบนได้เลยครับ',
+ prompts:[{label:'🕒 เวลาเปิดคลินิก',q:'คลินิกโรคเรื้อรังเปิดวันไหนบ้าง?'},{label:'📅 จองคิวออนไลน์',q:'วิธีจองคิวรับบริการออนไลน์'},{label:'📞 เบอร์ติดต่อ',q:'ติดต่อเจ้าหน้าที่ รพ.สต.'}],
+ rules:[{keys:'เวลา,คลินิก',reply:'คลินิกโรคเรื้อรัง (NCD) เปิดวันพุธ, คลินิกแม่และเด็กเปิดวันอังคาร และคลินิกผู้สูงอายุเปิดวันพฤหัสบดี เวลา 08.30 - 12.00 น. ครับ'},{keys:'จอง',reply:"ท่านสามารถเลื่อนไปที่หน้า 'บริการประชาชน' เพื่อกรอกฟอร์มจองคิวออนไลน์ล่วงหน้าได้ทันทีครับ สะดวกและไม่ต้องรอนาน!"},{keys:'เบอร์,ติดต่อ',reply:'ท่านสามารถติดต่อ รพ.สต.บ้านนายอ ได้ที่เบอร์ 042-163-603 หรือติดต่อผ่าน อสม. ประจำคุ้มบ้านของท่านได้เลยครับ'}]};
+// ---- แสดงผลบนหน้าเว็บสาธารณะ ----
+let NEWS=[],AI=null;
+function rStats(l){const g=document.querySelector('.hero-card .grid');if(g)g.innerHTML=arrOf(l).map(s=>`<div class="bg-sky-900/30 p-4 rounded-xl border border-white/20"><p class="text-slate-400 text-xs">${E(s.label)}</p><p class="text-2xl font-bold ${NC[s.color]||NC.cyan} mt-1">${E(s.value)} <span class="text-xs text-slate-300 font-normal">${E(s.unit)}</span></p></div>`).join('')}
+function rClin(l){CG.innerHTML=arrOf(l).map(c=>{const k=CN[c.color]?c.color:'aiBlue',u=okUrl(c.url),in_=`<div class="w-14 h-14 rounded-2xl bg-${k}-50 text-${k}-600 flex items-center justify-center text-2xl"><i class="${okIcon(c.icon)?c.icon:'fa-solid fa-stethoscope'}"></i></div><h3 class="text-xl font-bold text-slate-900">${E(c.title)}</h3><p class="text-slate-600 text-sm">${E(c.desc)}</p><div class="pt-4 border-t border-slate-100 flex items-center justify-between text-xs text-slate-500"><span>${u?'<i class="fa-solid fa-arrow-up-right-from-square mr-1"></i>':'<i class="fa-regular fa-clock mr-1"></i>'} ${E(c.time)}</span>${u?'':`<button data-t="${E(c.title)}" onclick="bookQueue(this.dataset.t)" class="text-aiBlue-600 font-semibold hover:underline">จองคิวออนไลน์</button>`}</div>`,cls='bg-white p-6 rounded-2xl shadow-sm border border-slate-200 space-y-4 ai-card-glow';return u?`<a href="${E(c.url)}" target="_blank" rel="noopener" class="${cls} block">${in_}</a>`:`<div class="${cls}">${in_}</div>`}).join('')}
+const imgH=(n,c)=>okImg(n.img)?`<img src="${E(n.img)}" alt="" loading="lazy" class="w-full h-full object-cover">`:`<div class="w-full h-full ai-gradient flex items-center justify-center text-white text-4xl"><i class="fa-solid fa-bullhorn"></i></div>`;
+function rNews(l){NEWS=arrOf(l);
+ $('news-grid').innerHTML=NEWS.map((n,i)=>`<div class="news-item bg-white rounded-2xl overflow-hidden shadow-sm border border-slate-200 flex flex-col"><div class="h-48 bg-slate-200">${imgH(n)}</div><div class="p-6 flex-1 flex flex-col justify-between space-y-4"><div><span class="text-xs bg-aiBlue-50 text-aiBlue-600 px-2.5 py-1 rounded-full font-semibold">${E(n.cat)}</span><p class="text-xs text-slate-400 mt-2"><i class="fa-regular fa-calendar mr-1"></i> ${E(n.date)}${n.by?' | โดย '+E(n.by):''}</p><h3 class="font-bold text-slate-900 text-lg mt-1">${E(n.title)}</h3><p class="text-slate-600 text-sm mt-2">${E(n.desc)}</p></div><button onclick="WEB.news(${i})" class="w-full py-2.5 rounded-xl border border-aiBlue-500 text-aiBlue-600 hover:bg-aiBlue-50 text-sm font-medium">อ่านรายละเอียด</button></div></div>`).join('');
+ const f=document.querySelector('.news-feature');if(f)f.innerHTML=NEWS.slice(0,3).map((n,i)=>`<div class="bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-md transition border border-slate-200 flex flex-col"><div class="h-48 bg-slate-200 relative overflow-hidden">${imgH(n)}<span class="absolute top-3 left-3 bg-aiBlue-600 text-white text-xs font-semibold px-3 py-1 rounded-full shadow">${E(n.cat)}</span></div><div class="p-6 flex-1 flex flex-col justify-between space-y-4"><div><p class="text-xs text-slate-400 mb-1"><i class="fa-regular fa-calendar mr-1"></i> ${E(n.date)}</p><h3 class="font-bold text-slate-900 text-lg line-clamp-2">${E(n.title)}</h3><p class="text-slate-600 text-sm mt-2 line-clamp-3">${E(n.desc)}</p></div><button onclick="WEB.news(${i})" class="text-aiBlue-600 text-sm font-semibold hover:underline flex items-center gap-1 self-start">อ่านเพิ่มเติม <i class="fa-solid fa-chevron-right text-xs"></i></button></div></div>`).join('')}
+function rStaff(l){l=arrOf(l);
+ SC.forEach((c,i)=>{const s=l[i];if(!s)return;c.querySelector('h3').textContent=s.name||'';c.querySelector('p.text-aiBlue-600').textContent=s.pos||'';const im=c.querySelector('img');im.src=okImg(s.img)?s.img:IMG0[i];im.alt=s.name||'';c.style.display=s.hide?'none':''});
+ let x=$('web-staff-x');if(!x){x=document.createElement('div');x.id='web-staff-x';x.className='grid grid-cols-2 md:grid-cols-4 gap-6';$('tab-staff').appendChild(x)}
+ x.innerHTML=l.slice(SC.length).filter(s=>!s.hide).map(s=>`<div class="bg-white rounded-2xl shadow-sm border border-slate-200 text-center p-4 space-y-3 ai-card-glow"><div class="w-28 h-36 mx-auto rounded-xl bg-slate-200 overflow-hidden border-4 border-aiBlue-50">${okImg(s.img)?`<img src="${E(s.img)}" alt="${E(s.name)}" class="w-full h-full object-cover object-top">`:'<div class="w-full h-full flex items-center justify-center text-slate-400 text-4xl"><i class="fa-solid fa-user"></i></div>'}</div><div><h3 class="font-bold text-slate-900 text-sm md:text-base leading-snug">${E(s.name)}</h3><p class="text-xs text-aiBlue-600 font-semibold mt-1">${E(s.pos)}</p></div></div>`).join('')}
+function rAi(a){AI=Object.assign({},ORIG.ai,a);AI.rules=arrOf(AI.rules);AI.prompts=arrOf(AI.prompts);
+ const b=document.querySelector('#chat-messages .bg-white');if(b&&AI.welcome)b.textContent=AI.welcome;
+ const p=document.querySelector('#ai-chat-modal .overflow-x-auto');if(p)p.innerHTML=AI.prompts.map(q=>`<button data-q="${E(q.q)}" onclick="sendQuickPrompt(this.dataset.q)" class="px-3 py-1.5 rounded-full bg-aiBlue-50 text-aiBlue-600 hover:bg-aiBlue-100 shrink-0 font-medium">${E(q.label)}</button>`).join('')}
+window.webAiReply=(m,r)=>{if(!AI)return r;const x=AI.rules.find(u=>String(u.keys||'').split(',').some(k=>k.trim()&&m.includes(k.trim())));return E(x?x.reply:(AI.def||r))};
+// ---- หน้าจัดการ (หลังบ้าน) ----
+const TT={stats:['สถานการณ์สุขภาพเดือนนี้','fa-chart-pie'],clinics:['คลินิกและบริการ','fa-user-doctor'],news:['ข่าวประชาสัมพันธ์','fa-bullhorn'],staff:['ทำเนียบบุคลากร','fa-users-rectangle'],ai:['AI หมอประจำบ้าน','fa-robot']};
+const F={stats:[['label','หัวข้อ'],['value','ตัวเลข/ค่าที่แสดง'],['unit','หน่วย'],['color','สีตัวเลข','c']],
+ clinics:[['title','ชื่อคลินิก/บริการ'],['time','วัน-เวลาให้บริการ'],['desc','รายละเอียด','a'],['icon','ไอคอน (เช่น fa-solid fa-baby)'],['color','สีการ์ด','c'],['url','ลิงก์ระบบภายนอก (เว้นว่าง = ใช้ปุ่มจองคิว)']],
+ news:[['title','หัวข้อข่าว'],['cat','ป้ายหมวด'],['date','วันที่ (เช่น 12 ต.ค. 2569)'],['by','โดย (หน่วยงาน)'],['img','ลิงก์รูปภาพ https://... (เว้นว่างได้)'],['desc','สรุปสั้น','a'],['body','เนื้อหาเต็ม (แสดงตอนกดอ่านรายละเอียด)','a']],
+ staff:[['name','ชื่อ-สกุล'],['pos','ตำแหน่ง'],['img','ลิงก์รูป https://... (เว้นว่าง = ใช้รูปเดิม)'],['hide','ซ่อนจากหน้าเว็บ','k']],
+ 'ai.prompts':[['label','ข้อความบนปุ่ม'],['q','คำถามที่ส่งเมื่อกดปุ่ม']],
+ 'ai.rules':[['keys','คำที่จับ (คั่นด้วย ,)'],['reply','คำตอบของ AI','a']]};
+const IC='w-full mt-1 px-3 py-2 rounded-xl border border-sky-200 text-sm text-slate-800 bg-white focus:outline-none focus:border-sky-500';
+let DATA={},SEC='stats',ST={};
+function cur(k){if(!ST[k]){if(k==='ai'){const a=CL(Object.assign({},ORIG.ai,DATA.ai||{}));a.prompts=arrOf(a.prompts);a.rules=arrOf(a.rules);ST.ai=a}else ST[k]=CL(DATA[k]?arrOf(DATA[k]):ORIG[k])}return ST[k]}
+const arr=n=>n.split('.').reduce((o,k)=>o[k],ST);
+function fld(n,i,f,v){const [k,l,t]=f,h=`WEB.set('${n}',${i},'${k}',`;
+ if(t==='c')return `<label class="text-xs text-slate-500">${l}<select onchange="${h}this.value)" class="${IC}">${Object.keys(CN).map(c=>`<option value="${c}"${v===c?' selected':''}>${CN[c]}</option>`).join('')}</select></label>`;
+ if(t==='k')return `<label class="text-sm flex items-center gap-2 pt-5"><input type="checkbox" ${v?'checked':''} onchange="${h}this.checked)"> ${l}</label>`;
+ if(t==='a')return `<label class="text-xs text-slate-500 md:col-span-2">${l}<textarea rows="3" oninput="${h}this.value)" class="${IC}">${E(v)}</textarea></label>`;
+ return `<label class="text-xs text-slate-500">${l}<input value="${E(v)}" oninput="${h}this.value)" class="${IC}"></label>`}
+function listEd(n,title){const a=arr(n),fx=n==='staff';
+ return `<div class="space-y-3"><div class="flex items-center justify-between"><h4 class="font-bold text-slate-800">${title} <span class="text-xs font-normal text-slate-500">(${a.length} รายการ)</span></h4><button type="button" onclick="WEB.add('${n}')" class="px-3 py-1.5 rounded-xl ai-gradient text-white text-sm"><i class="fa-solid fa-plus mr-1"></i>เพิ่ม</button></div>`
+ +a.map((it,i)=>`<div class="bg-white border border-sky-100 rounded-2xl p-4 space-y-2"><div class="flex justify-between text-xs text-slate-500"><b>#${i+1}</b><span class="flex gap-3">${fx?'':`<button type="button" onclick="WEB.mv('${n}',${i},-1)" aria-label="เลื่อนขึ้น">▲</button><button type="button" onclick="WEB.mv('${n}',${i},1)" aria-label="เลื่อนลง">▼</button>`}${fx&&i<SC.length?'':`<button type="button" class="text-rose-600" onclick="WEB.del('${n}',${i})">ลบ</button>`}</span></div><div class="grid md:grid-cols-2 gap-2">${F[n].map(f=>fld(n,i,f,it[f[0]])).join('')}</div></div>`).join('')+'</div>'}
+function draw(){const k=SEC;cur(k);
+ let h='<div class="flex flex-wrap gap-2">'+Object.keys(TT).map(s=>`<button type="button" onclick="WEB.open('${s}')" class="px-4 py-2 rounded-xl text-sm font-medium border ${s===k?'ai-gradient text-white border-transparent':'bg-white text-sky-800 border-sky-200'}"><i class="fa-solid ${TT[s][1]} mr-1.5"></i>${TT[s][0]}</button>`).join('')+'</div>';
+ if(k==='ai'){const a=ST.ai;h+=`<label class="block text-sm font-medium">ข้อความต้อนรับของ AI<textarea rows="3" oninput="WEB.ai('welcome',this.value)" class="${IC}">${E(a.welcome)}</textarea></label><label class="block text-sm font-medium">คำตอบทั่วไป (เมื่อไม่ตรงคำที่จับข้อใดเลย)<textarea rows="3" oninput="WEB.ai('def',this.value)" class="${IC}">${E(a.def)}</textarea></label>`+listEd('ai.prompts','ปุ่มคำถามด่วน')+listEd('ai.rules','ชุดคำถาม–คำตอบ (ตรวจตามลำดับ ข้อแรกที่ตรงจะถูกใช้)')}
+ else h+=listEd(k,TT[k][0]);
+ h+='<div class="flex flex-wrap gap-2 sticky bottom-3"><button type="button" onclick="WEB.save()" class="px-5 py-2.5 rounded-xl ai-gradient text-white font-medium shadow-lg"><i class="fa-solid fa-cloud-arrow-up mr-1.5"></i>บันทึกและเผยแพร่หมวดนี้</button><button type="button" onclick="WEB.reset()" class="px-4 py-2.5 rounded-xl bg-white border border-sky-200 text-sky-800 text-sm shadow">ย้อนกลับเป็นค่าที่เผยแพร่อยู่</button></div><p class="text-xs text-slate-500">รูปภาพใช้ลิงก์ https เท่านั้น • หมวดที่ยังไม่เคยบันทึกจะแสดงข้อมูลเดิมของหน้าเว็บ • บันทึกแล้วผู้เข้าชมเห็นทันที</p>';
+ $('web-body').innerHTML=h}
+window.WEB={open(s){SEC=s;draw()},set(n,i,k,v){arr(n)[i][k]=v},ai(k,v){ST.ai[k]=v},
+ add(n){arr(n).push(n==='stats'?{color:'cyan'}:n==='clinics'?{color:'aiBlue',icon:'fa-solid fa-stethoscope'}:{});draw()},
+ del(n,i){if(confirm('ลบรายการนี้?')){arr(n).splice(i,1);draw()}},
+ mv(n,i,d){const a=arr(n),j=i+d;if(j<0||j>=a.length)return;[a[i],a[j]]=[a[j],a[i]];draw()},
+ save(){if(!ST[SEC].length&&SEC!=='ai'){alert('ต้องมีอย่างน้อย 1 รายการ');return}DB.set('site/'+SEC,CL(ST[SEC])).then(()=>showToast('บันทึกและเผยแพร่ขึ้นหน้าเว็บแล้ว')).catch(e=>alert('บันทึกไม่ได้: '+e.message+'\nตรวจ Firebase Rules ให้เขียนที่ site/ ได้'))},
+ reset(){delete ST[SEC];draw()},news(i){const n=NEWS[i]||{};openNewsModal(n.title||'',n.body||n.desc||'')}};
+const sw=window.switchAdminSub;window.switchAdminSub=function(s){sw(s);if(s==='web')draw()};
+try{DB.listen('site',d=>{DATA=d;if(d.stats)rStats(d.stats);if(d.clinics)rClin(d.clinics);if(d.news)rNews(d.news);if(d.staff)rStaff(d.staff);if(d.ai)rAi(d.ai)},()=>{})}catch(e){}
+})();
+</script>
+
 </body>
 </html>
