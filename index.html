@@ -3187,15 +3187,69 @@ function listEd(n,title){const a=arr(n),fx=n==='staff';
 function draw(){const k=SEC;cur(k);
  let h='<div class="flex flex-wrap gap-2">'+Object.keys(TT).map(s=>`<button type="button" onclick="WEB.open('${s}')" class="px-4 py-2 rounded-xl text-sm font-medium border ${s===k?'ai-gradient text-white border-transparent':'bg-white text-sky-800 border-sky-200'}"><i class="fa-solid ${TT[s][1]} mr-1.5"></i>${TT[s][0]}</button>`).join('')+'</div>';
  if(k==='ai'){const a=ST.ai;h+=`<label class="block text-sm font-medium">ข้อความต้อนรับของ AI<textarea rows="3" oninput="WEB.ai('welcome',this.value)" class="${IC}">${E(a.welcome)}</textarea></label><label class="block text-sm font-medium">คำตอบทั่วไป (เมื่อไม่ตรงคำที่จับข้อใดเลย)<textarea rows="3" oninput="WEB.ai('def',this.value)" class="${IC}">${E(a.def)}</textarea></label>`+listEd('ai.prompts','ปุ่มคำถามด่วน')+listEd('ai.rules','ชุดคำถาม–คำตอบ (ตรวจตามลำดับ ข้อแรกที่ตรงจะถูกใช้)')}
- else h+=listEd(k,TT[k][0]);
+ else{if(k==='stats')h+=panel43();h+=listEd(k,TT[k][0])}
  h+='<div class="flex flex-wrap gap-2 sticky bottom-3"><button type="button" onclick="WEB.save()" class="px-5 py-2.5 rounded-xl ai-gradient text-white font-medium shadow-lg"><i class="fa-solid fa-cloud-arrow-up mr-1.5"></i>บันทึกและเผยแพร่หมวดนี้</button><button type="button" onclick="WEB.reset()" class="px-4 py-2.5 rounded-xl bg-white border border-sky-200 text-sky-800 text-sm shadow">ย้อนกลับเป็นค่าที่เผยแพร่อยู่</button></div><p class="text-xs text-slate-500">รูปภาพใช้ลิงก์ https เท่านั้น • หมวดที่ยังไม่เคยบันทึกจะแสดงข้อมูลเดิมของหน้าเว็บ • บันทึกแล้วผู้เข้าชมเห็นทันที</p>';
  $('web-body').innerHTML=h}
+// ---- ดึงสถิติจาก 43 แฟ้ม (ประมวลผลในเบราว์เซอร์ ไม่ส่งข้อมูลรายบุคคลออก) ----
+let F43=[],R43=null,M43=new Date().toISOString().slice(0,7);
+const C43=()=>{try{return localStorage.getItem('web43codes')||''}catch(e){return ''}};
+const nf=n=>Number(n).toLocaleString('en-US');
+async function calc43(){
+ if(!F43.length){R43=null;return draw()}
+ try{
+  const by={};
+  F43.forEach(f=>{const nm='_'+f.name.toUpperCase().replace(/\.[^.]+$/,'').replace(/[^A-Z]+/g,'_')+'_';
+   ['COMMUNITY_SERVICE','PERSON','SERVICE','VISIT','NCDSCREEN','CHRONIC','EPI','ANC'].forEach(k=>{if(by[k]||!nm.includes('_'+k+'_'))return;if(k==='SERVICE'&&nm.includes('COMMUNITY'))return;by[k]=f})});
+  const T={};for(const k in by)T[k]=kpParse(await by[k].text());
+  const [Y,M]=M43.split('-').map(Number),inM=d=>{const x=kpYM(d);return !!x&&x[0]===Y&&x[1]===M},upTo=d=>{const x=kpYM(d);return !!x&&(x[0]<Y||(x[0]===Y&&x[1]<=M))};
+  const end=''+Y+String(M).padStart(2,'0')+'31',R=[];
+  const need=(t,cols)=>{const r=T[t];if(!r)return 'ไม่พบไฟล์ '+t.toLowerCase();if(!r.length)return 'อ่านไฟล์ '+t.toLowerCase()+' ไม่ได้';const m=cols.filter(c=>!(c in r[0]));return m.length?'แฟ้ม '+t.toLowerCase()+' ไม่มีคอลัมน์ '+m.join(', '):''};
+  // 1 ผู้มารับบริการ
+  {const t=T.SERVICE?'SERVICE':'VISIT',dc=t==='SERVICE'?'DATE_SERV':'VISITDATE',e=need(t,['PID',dc]);
+   if(e)R.push({k:'ผู้มารับ',label:'ผู้มารับบริการทั้งหมด',skip:e});
+   else{const rows=T[t].filter(x=>inM(x[dc])),p=new Set(rows.map(x=>x.PID));R.push({k:'ผู้มารับ',label:'ผู้มารับบริการทั้งหมด',val:nf(p.size),unit:'คน',note:'นับ PID ไม่ซ้ำจากแฟ้ม '+t.toLowerCase()+' ('+nf(rows.length)+' แถว)'})}}
+  // 2 เยี่ยมบ้านติดเตียง
+  {const codes=C43().split(',').map(x=>x.trim()).filter(Boolean),cc=T.COMMUNITY_SERVICE&&T.COMMUNITY_SERVICE[0]&&('COMSERVICE' in T.COMMUNITY_SERVICE[0]?'COMSERVICE':'COMMSERVICE'),e=need('COMMUNITY_SERVICE',['PID','DATE_SERV',cc||'COMSERVICE']);
+   if(!codes.length)R.push({k:'เยี่ยมบ้าน',label:'เยี่ยมบ้านผู้ป่วยติดเตียง',skip:'ยังไม่ได้กรอกรหัสบริการเยี่ยมบ้านติดเตียง'});
+   else if(e)R.push({k:'เยี่ยมบ้าน',label:'เยี่ยมบ้านผู้ป่วยติดเตียง',skip:e});
+   else{const p=new Set(T.COMMUNITY_SERVICE.filter(x=>inM(x.DATE_SERV)&&codes.includes(x[cc])).map(x=>x.PID));R.push({k:'เยี่ยมบ้าน',label:'เยี่ยมบ้านผู้ป่วยติดเตียง',val:nf(p.size),unit:'เคส',note:'นับ PID ไม่ซ้ำ รหัส '+codes.join(', ')})}}
+  // 3 คัดกรองเบาหวาน/ความดัน
+  {const e=need('NCDSCREEN',['PID','DATE_SERV']);
+   if(e)R.push({k:'คัดกรอง',label:'คัดกรองเบาหวาน/ความดัน',skip:e});
+   else{const bd={};(T.PERSON||[]).forEach(x=>{const b=kpYMD(x.BIRTH);if(b&&x.PID)bd[x.PID]=b});
+    const ok=x=>x.PID&&upTo(x.DATE_SERV)&&((x.BSLEVEL||'')!==''||(x.SBP_1||'')!==''||(x.SBP_2||'')!==''),age=p=>bd[p]?kpAge(bd[p],end):null;
+    const sc=new Set(T.NCDSCREEN.filter(ok).map(x=>x.PID)),s35=new Set([...sc].filter(p=>!T.PERSON||(age(p)!==null&&age(p)>=35)));
+    if(!T.PERSON)R.push({k:'คัดกรอง',label:'คัดกรองเบาหวาน/ความดัน',val:nf(s35.size),unit:'คน',note:'ไม่มีแฟ้ม person จึงแสดงจำนวนคนที่ได้รับการคัดกรอง (ยังไม่เป็น %) นับตั้งแต่ต้นไฟล์ถึงสิ้นเดือน'});
+    else{const dm=new Set((T.CHRONIC||[]).filter(x=>/^(E1[0-4]|I1[0-5])/i.test(x.CHRONIC||'')).map(x=>x.PID));
+     const pop=T.PERSON.filter(x=>{const a=age(x.PID);return x.PID&&a!==null&&a>=35&&(!('TYPEAREA' in x)||['1','3'].includes(x.TYPEAREA))&&(!('DISCHARGE' in x)||!['1','2','3'].includes(x.DISCHARGE))&&!dm.has(x.PID)}),ps=new Set(pop.map(x=>x.PID)),n=[...s35].filter(p=>ps.has(p)).length;
+     R.push({k:'คัดกรอง',label:'คัดกรองเบาหวาน/ความดัน',val:ps.size?(n*100/ps.size).toFixed(1)+'%':'-',unit:'',note:'คัดกรองแล้ว '+nf(n)+' จาก '+nf(ps.size)+' คน (อายุ ≥35 ปี TYPEAREA 1,3 ไม่รวมผู้ป่วย DM/HT เดิม'+(T.CHRONIC?'':' — ไม่มีแฟ้ม chronic จึงยังรวมผู้ป่วยเดิม')+') นับสะสมจากต้นไฟล์ถึงสิ้นเดือน'})}}}
+  // 4 วัคซีน (EPI)
+  {const e=need('EPI',['PID','DATE_SERV','VACCINETYPE']);
+   if(e)R.push({k:'วัคซีน',label:'รับวัคซีน',c:'violet',skip:e});
+   else{const rows=T.EPI.filter(x=>x.PID&&inM(x.DATE_SERV)),d=new Set(rows.map(x=>x.PID+'|'+(x.SEQ||x.DATE_SERV)+'|'+x.VACCINETYPE)),p=new Set(rows.map(x=>x.PID));R.push({k:'วัคซีน',label:'รับวัคซีน',c:'violet',val:nf(p.size),unit:'คน',note:'PID ไม่ซ้ำจากแฟ้ม epi รวม '+nf(d.size)+' เข็ม/โดส (ทุกชนิดวัคซีน)'})}}
+  // 5 ฝากครรภ์ (ANC)
+  {const e=need('ANC',['PID','DATE_SERV']);
+   if(e)R.push({k:'ฝากครรภ์',label:'หญิงตั้งครรภ์ฝากครรภ์',c:'pink',skip:e});
+   else{const rows=T.ANC.filter(x=>x.PID&&inM(x.DATE_SERV)),p=new Set(rows.map(x=>x.PID)),v=new Set(rows.map(x=>x.PID+'|'+(x.ANCNO||x.DATE_SERV)));R.push({k:'ฝากครรภ์',label:'หญิงตั้งครรภ์ฝากครรภ์',c:'pink',val:nf(p.size),unit:'คน',note:'PID ไม่ซ้ำจากแฟ้ม anc รวม '+nf(v.size)+' ครั้งที่มารับบริการ'})}}
+  // 6 ผู้ป่วยโรคเรื้อรัง (CHRONIC) นับสะสมทะเบียน
+  {const e=need('CHRONIC',['PID','CHRONIC']);
+   if(e)R.push({k:'โรคเรื้อรัง',label:'ผู้ป่วยโรคเรื้อรัง',c:'amber',skip:e});
+   else{let ok=()=>true;if(T.PERSON&&T.PERSON.length){const pp=new Set(T.PERSON.filter(x=>x.PID&&(!('TYPEAREA' in x)||['1','3'].includes(x.TYPEAREA))&&(!('DISCHARGE' in x)||!['1','2','3'].includes(x.DISCHARGE))).map(x=>x.PID));ok=x=>pp.has(x.PID)}
+    const rows=T.CHRONIC.filter(x=>x.PID&&x.CHRONIC&&ok(x)),all=new Set(rows.map(x=>x.PID)),dm=new Set(rows.filter(x=>/^E1[0-4]/i.test(x.CHRONIC)).map(x=>x.PID)),ht=new Set(rows.filter(x=>/^I1[0-5]/i.test(x.CHRONIC)).map(x=>x.PID));
+    R.push({k:'โรคเรื้อรัง',label:'ผู้ป่วยโรคเรื้อรัง',c:'amber',val:nf(all.size),unit:'คน',note:'ทะเบียนสะสมจากแฟ้ม chronic (ไม่กรองเดือน) เบาหวาน '+nf(dm.size)+' ความดัน '+nf(ht.size)+' คน'+(T.PERSON?' เฉพาะ TYPEAREA 1,3 ที่ยังไม่จำหน่าย':' (ไม่มีแฟ้ม person จึงไม่กรองประเภทพื้นที่)')})}}
+  R43=R;
+ }catch(e){R43=[{label:'เกิดข้อผิดพลาด',skip:e.message}]}
+ draw()}
+function panel43(){const L=R43&&R43.length?`<div class="overflow-x-auto"><table class="w-full text-sm bg-white rounded-xl border border-sky-100"><tbody>${R43.map(r=>`<tr class="border-b border-sky-50"><td class="p-2 font-medium">${E(r.label)}</td><td class="p-2 font-bold text-sky-700 whitespace-nowrap">${r.skip?'-':E(r.val)+' '+E(r.unit)}</td><td class="p-2 text-xs ${r.skip?'text-rose-600':'text-slate-500'}">${E(r.skip||r.note)}</td></tr>`).join('')}</tbody></table></div>${R43.some(r=>!r.skip)?'<button type="button" onclick="WEB.a43()" class="px-4 py-2 rounded-xl ai-gradient text-white text-sm"><i class="fa-solid fa-arrow-down mr-1.5"></i>นำค่าที่คำนวณได้ไปใส่ในการ์ดด้านล่าง</button>':''}`:'';
+ return `<div class="bg-sky-50 border border-sky-200 rounded-2xl p-4 space-y-3"><h4 class="font-bold text-slate-800"><i class="fa-solid fa-file-import mr-1.5 text-sky-600"></i>ดึงข้อมูลจาก 43 แฟ้ม</h4><p class="text-xs text-slate-600">เลือกไฟล์ .csv/.txt โดยตั้งชื่อไฟล์ตามแฟ้ม เช่น service, ncdscreen, person, chronic, community_service, epi, anc ระบบคำนวณในเครื่องของท่านเท่านั้น ไม่ส่งข้อมูลรายบุคคลขึ้นเซิร์ฟเวอร์ เมื่อกดบันทึกจะเก็บเฉพาะตัวเลขสรุปในการ์ด ส่วน "AI ความพึงพอใจ" ไม่มีใน 43 แฟ้ม ให้กรอกเอง</p><div class="grid md:grid-cols-3 gap-2"><label class="text-xs text-slate-500">เดือนที่ต้องการสรุป<input type="month" value="${M43}" onchange="WEB.m43(this.value)" class="${IC}"></label><label class="text-xs text-slate-500 md:col-span-2">ไฟล์ 43 แฟ้ม (เลือกได้หลายไฟล์พร้อมกัน)<input type="file" multiple accept=".csv,.txt" onchange="WEB.f43(this)" class="${IC}"></label><label class="text-xs text-slate-500 md:col-span-3">รหัสบริการเยี่ยมบ้านผู้ป่วยติดเตียง (ค่าในคอลัมน์ COMSERVICE ของแฟ้ม community_service คั่นด้วย ,) <input value="${E(C43())}" oninput="WEB.c43(this.value)" placeholder="ตรวจรหัสให้ตรงนิยามของหน่วยก่อนใช้" class="${IC}"></label></div>${F43.length?`<p class="text-xs text-slate-500">ไฟล์ที่เลือก: ${E(F43.map(f=>f.name).join(', '))}</p>`:''}${L}</div>`}
 window.WEB={open(s){SEC=s;draw()},set(n,i,k,v){arr(n)[i][k]=v},ai(k,v){ST.ai[k]=v},
  add(n){arr(n).push(n==='stats'?{color:'cyan'}:n==='clinics'?{color:'aiBlue',icon:'fa-solid fa-stethoscope'}:{});draw()},
  del(n,i){if(confirm('ลบรายการนี้?')){arr(n).splice(i,1);draw()}},
  mv(n,i,d){const a=arr(n),j=i+d;if(j<0||j>=a.length)return;[a[i],a[j]]=[a[j],a[i]];draw()},
  save(){if(!ST[SEC].length&&SEC!=='ai'){alert('ต้องมีอย่างน้อย 1 รายการ');return}DB.set('site/'+SEC,CL(ST[SEC])).then(()=>showToast('บันทึกและเผยแพร่ขึ้นหน้าเว็บแล้ว')).catch(e=>alert('บันทึกไม่ได้: '+e.message+'\nตรวจ Firebase Rules ให้เขียนที่ site/ ได้'))},
  reset(){delete ST[SEC];draw()},news(i){const n=NEWS[i]||{};openNewsModal(n.title||'',n.body||n.desc||'')}};
+Object.assign(WEB,{m43(v){M43=v||M43;calc43()},f43(i){F43=[...i.files];calc43()},c43(v){try{localStorage.setItem('web43codes',v)}catch(e){}if(R43)clearTimeout(WEB._t),WEB._t=setTimeout(calc43,600)},
+ a43(){const st=ST.stats;(R43||[]).forEach(r=>{if(r.skip||!r.k)return;const t=st.find(x=>String(x.label||'').includes(r.k));if(t){t.value=r.val;t.unit=r.unit}else if(r.c)st.push({label:r.label,value:r.val,unit:r.unit,color:r.c})});draw();showToast('ใส่ค่าในการ์ดแล้ว ตรวจแล้วกด บันทึกและเผยแพร่')}});
 const sw=window.switchAdminSub;window.switchAdminSub=function(s){sw(s);if(s==='web')draw()};
 try{DB.listen('site',d=>{DATA=d;if(d.stats)rStats(d.stats);if(d.clinics)rClin(d.clinics);if(d.news)rNews(d.news);if(d.staff)rStaff(d.staff);if(d.ai)rAi(d.ai)},()=>{})}catch(e){}
 })();
