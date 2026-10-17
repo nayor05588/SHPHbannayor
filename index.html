@@ -295,10 +295,43 @@ main .bg-slate-400{background:#9DB6D8}
 @keyframes rise{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
 
 /* quick access dock */
+/* ===== Satisfaction survey ===== */
+#tab-survey .sv-hero{border-radius:1.5rem;padding:2rem 1.5rem;color:#fff;text-align:center;background:radial-gradient(520px 260px at 92% 0,rgba(34,199,240,.38),transparent 70%),linear-gradient(135deg,#0A2A6B,#1457D6)}
+#tab-survey .sv-hero h2{margin:.7rem 0 .4rem;color:#fff}
+#tab-survey .sv-hero p{font-size:.9rem;line-height:1.7;opacity:.9}
+#tab-survey .sv-chip{display:inline-flex;gap:.4rem;align-items:center;padding:.25rem .8rem;border-radius:999px;background:rgba(255,255,255,.16);font-size:.8rem;font-weight:600}
+#tab-survey .sv-card{background:#fff;border:1px solid var(--line);border-radius:1.25rem;padding:1.4rem}
+#tab-survey .sv-card h3{display:flex;align-items:center;gap:.6rem;font-family:'Anuphan',sans-serif;font-weight:700;font-size:1.05rem;color:var(--ink)}
+#tab-survey .sv-no{flex:none;display:grid;place-items:center;width:1.7rem;height:1.7rem;border-radius:.6rem;background:var(--sky);color:var(--blue);font-size:.85rem}
+#tab-survey .sv-hint{font-size:.8rem;color:var(--muted);margin-top:.5rem}
+#tab-survey .sv-f{display:block}
+#tab-survey .sv-f span{display:block;font-size:.85rem;font-weight:600;color:var(--ink);margin-bottom:.3rem}
+#tab-survey .sv-f i{color:#e11d48;font-style:normal}
+#tab-survey input,#tab-survey select,#tab-survey textarea{width:100%;padding:.65rem .8rem;border:1px solid var(--line);border-radius:.75rem;background:#fff;font:inherit;font-size:.95rem;color:var(--ink)}
+#tab-survey textarea{margin-top:.9rem;resize:vertical}
+#tab-survey input:focus,#tab-survey select:focus,#tab-survey textarea:focus{outline:2px solid var(--blue);outline-offset:1px}
+#tab-survey .sv-q{padding:1rem 0;border-bottom:1px dashed var(--line)}
+#tab-survey .sv-q:last-of-type{border-bottom:0}
+#tab-survey .sv-q.sv-miss{background:#fff1f2;border-radius:.75rem;padding-left:.7rem;padding-right:.7rem}
+#tab-survey .sv-qt{font-size:.95rem;line-height:1.55;color:var(--ink)}
+#tab-survey .sv-row{display:flex;align-items:center;gap:.8rem;margin-top:.55rem;flex-wrap:wrap}
+#tab-survey .sv-stars{display:flex;gap:.15rem}
+#tab-survey .sv-star{width:2.6rem;height:2.6rem;display:grid;place-items:center;font-size:1.6rem;color:#d4dbe6;background:none;border:0;cursor:pointer;transition:transform .12s,color .12s;border-radius:.6rem}
+#tab-survey .sv-star.on{color:#F5B301}
+#tab-survey .sv-star:hover{transform:scale(1.15)}
+#tab-survey .sv-star:focus-visible{outline:2px solid var(--blue)}
+#tab-survey .sv-lbl{font-size:.85rem;font-weight:600;color:var(--blue);min-height:1.2rem}
+#tab-survey .sv-progress{height:.5rem;border-radius:99px;background:var(--mist);margin-top:1rem;overflow:hidden}
+#tab-survey #sv-bar{height:100%;width:0;background:linear-gradient(90deg,#1F6FEB,#22C7F0);transition:width .25s}
+#tab-survey .sv-err{padding:.75rem 1rem;border-radius:.75rem;background:#fff1f2;color:#be123c;font-size:.9rem;font-weight:600}
+#tab-survey .sv-ok{width:4rem;height:4rem;margin:0 auto;border-radius:50%;display:grid;place-items:center;font-size:1.7rem;color:#fff;background:linear-gradient(135deg,#10b981,#22C7F0)}
+#tab-survey .sv-avg{font-family:'Anuphan',sans-serif;font-size:3rem;font-weight:800;color:var(--ink);line-height:1.2}
+@media(max-width:420px){#tab-survey .sv-star{width:2.3rem;height:2.3rem;font-size:1.45rem}}
 .dock{position:relative;z-index:20;max-width:80rem;margin:-3.5rem auto 0;padding:0 1rem}
 @media(min-width:640px){.dock{padding:0 1.5rem}}@media(min-width:1024px){.dock{padding:0 2rem}}
 .dock-in{display:grid;grid-template-columns:repeat(2,1fr);gap:1px;overflow:hidden;background:var(--line);border:1px solid var(--line);border-radius:1.5rem;box-shadow:var(--shadow)}
-@media(min-width:768px){.dock-in{grid-template-columns:repeat(4,1fr)}}
+.dock-in>.dock-item:last-child:nth-child(odd){grid-column:span 2}
+@media(min-width:768px){.dock-in{grid-template-columns:repeat(5,1fr)}.dock-in>.dock-item:last-child:nth-child(odd){grid-column:auto}}
 .dock-item{display:flex;align-items:center;gap:.9rem;padding:1.2rem 1.25rem;text-align:left;background:#fff;cursor:pointer;transition:background .15s}
 .dock-item:hover{background:var(--mist)}
 .dock-ic{flex:none;display:grid;place-items:center;width:2.9rem;height:2.9rem;border-radius:.95rem;font-size:1.15rem;color:var(--blue);background:var(--sky)}
@@ -539,6 +572,7 @@ button[onclick="toggleAIChat()"].w-14::before{content:"";position:absolute;inset
             <!-- Quick Access -->
             <section class="dock"><div class="dock-in">
                 <button type="button" class="dock-item" onclick="switchTab('services')"><span class="dock-ic"><i class="fa-solid fa-user-doctor"></i></span><span><b>คลินิกและบริการ</b><small>ตรวจรักษา ฝากครรภ์ ผู้สูงอายุ</small></span></button>
+                <button type="button" class="dock-item" onclick="switchTab('survey')"><span class="dock-ic"><i class="fa-solid fa-face-smile"></i></span><span><b>ประเมินความพึงพอใจของผู้รับบริการ</b><small>แสดงความคิดเห็นต่อการให้บริการ</small></span></button>
                 <button type="button" class="dock-item" onclick="switchTab('news')"><span class="dock-ic"><i class="fa-solid fa-bullhorn"></i></span><span><b>ข่าวสารประชาสัมพันธ์</b><small>ประกาศ อสม. และฉีดวัคซีน</small></span></button>
                 <button type="button" class="dock-item" onclick="switchTab('staff')"><span class="dock-ic"><i class="fa-solid fa-users-rectangle"></i></span><span><b>ทำเนียบทีมงาน</b><small>เจ้าหน้าที่ รพ.สต.บ้านนายอ</small></span></button>
                 <button type="button" class="dock-item ai" onclick="toggleAIChat()"><span class="dock-ic"><i class="fa-solid fa-robot"></i></span><span><b>AI หมอประจำบ้าน</b><small>ปรึกษาอาการเบื้องต้น 24 ชม.</small></span></button>
@@ -766,6 +800,58 @@ button[onclick="toggleAIChat()"].w-14::before{content:"";position:absolute;inset
                         </div>
                         <button onclick="submitBooking()" class="w-full py-3 rounded-xl ai-gradient text-white font-bold shadow-md hover:opacity-95 transition">ยืนยันการจองคิว</button>
                     </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ==================== TAB: SATISFACTION SURVEY ==================== -->
+        <div id="tab-survey" class="tab-content hidden max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-10 space-y-6">
+            <div class="sv-hero">
+                <span class="sv-chip"><i class="fa-solid fa-face-smile"></i> ปีงบประมาณ 2570</span>
+                <h2>แบบประเมินความพึงพอใจผู้ใช้บริการ</h2>
+                <p>รพ.สต.บ้านนายอ ต.สร้างค้อ อ.ภูพาน จ.สกลนคร<br>ความคิดเห็นของท่านช่วยให้เราพัฒนาบริการให้ดียิ่งขึ้น ใช้เวลาประมาณ 2 นาที</p>
+            </div>
+
+            <form id="sv-form" class="space-y-6" onsubmit="return svSubmit(event)" novalidate>
+                <section class="sv-card">
+                    <h3><span class="sv-no">1</span> ข้อมูลทั่วไปของผู้ประเมิน</h3>
+                    <div class="grid sm:grid-cols-2 gap-4 mt-4">
+                        <label class="sv-f"><span>อายุ (ปี) <i>*</i></span><input id="sv-age" type="number" min="1" max="120" inputmode="numeric" placeholder="เช่น 45"></label>
+                        <label class="sv-f"><span>อาชีพ <i>*</i></span>
+                            <select id="sv-job"><option value="">เลือก</option><option>นักเรียน/นักศึกษา</option><option>เกษตรกร</option><option>ค้าขาย</option><option>รับจ้างทั่วไป</option><option>ข้าราชการ-รัฐวิสาหกิจ</option><option>อื่นๆ</option></select></label>
+                        <label class="sv-f"><span>ระดับการศึกษา <i>*</i></span>
+                            <select id="sv-edu"><option value="">เลือก</option><option>กำลังศึกษาอยู่</option><option>ประถมศึกษา</option><option>มัธยมศึกษาตอนต้น</option><option>มัธยมศึกษาตอนปลาย</option><option>อนุปริญญา</option><option>ปริญญาตรี</option><option>ปริญญาโท</option><option>ปริญญาเอก</option><option>อื่นๆ</option></select></label>
+                        <label class="sv-f"><span>สภาพสมรส <i>*</i></span>
+                            <select id="sv-mar"><option value="">เลือก</option><option>โสด</option><option>สมรส</option><option>อย่าร้าง</option><option>หม้าย</option></select></label>
+                    </div>
+                </section>
+
+                <section class="sv-card">
+                    <h3><span class="sv-no">2</span> ความพึงพอใจต่อการให้บริการ</h3>
+                    <p class="sv-hint">แตะดาวเพื่อให้คะแนน &nbsp;★ 1 = ไม่พอใจมากที่สุด &nbsp;·&nbsp; ★ 5 = พอใจมากที่สุด</p>
+                    <div id="sv-questions" class="mt-2"></div>
+                    <div class="sv-progress"><div id="sv-bar"></div></div>
+                    <p id="sv-count" class="sv-hint" style="margin-top:.4rem">ตอบแล้ว 0 / 10 ข้อ</p>
+                </section>
+
+                <section class="sv-card">
+                    <h3><span class="sv-no">3</span> ข้อเสนอแนะเพื่อปรับปรุงบริการให้ถูกใจท่าน</h3>
+                    <textarea id="sv-note" rows="4" maxlength="1000" placeholder="พิมพ์ข้อเสนอแนะ (ไม่บังคับ)"></textarea>
+                </section>
+
+                <p id="sv-err" class="sv-err hidden"></p>
+                <button id="sv-submit" type="submit" class="w-full py-3.5 rounded-xl ai-gradient text-white font-bold shadow-md hover:opacity-95 transition"><i class="fa-solid fa-paper-plane mr-2"></i>ส่งแบบประเมิน</button>
+            </form>
+
+            <div id="sv-done" class="sv-card hidden" style="text-align:center;padding:2.5rem 1.5rem">
+                <div class="sv-ok"><i class="fa-solid fa-check"></i></div>
+                <h3 style="justify-content:center;font-size:1.4rem;margin-top:1rem">ขอบคุณสำหรับการประเมิน</h3>
+                <p class="sv-hint" style="margin-top:.4rem">คะแนนเฉลี่ยที่ท่านให้</p>
+                <div id="sv-avg" class="sv-avg"></div>
+                <div id="sv-avg-stars" class="sv-stars" style="justify-content:center;pointer-events:none"></div>
+                <div class="flex flex-wrap gap-3 justify-center mt-6">
+                    <button type="button" onclick="svReset()" class="px-5 py-2.5 rounded-xl border border-slate-200 font-semibold text-slate-700 hover:bg-slate-50">ประเมินอีกครั้ง</button>
+                    <button type="button" onclick="switchTab('home')" class="px-5 py-2.5 rounded-xl ai-gradient text-white font-semibold">กลับหน้าแรก</button>
                 </div>
             </div>
         </div>
@@ -1269,6 +1355,81 @@ button[onclick="toggleAIChat()"].w-14::before{content:"";position:absolute;inset
 
     <script>
         // Tab Switching Logic
+        // ===== Satisfaction survey =====
+        const SV_Q = ["ให้การต้อนรับด้วยอัธยาศัยที่ดี สุภาพ ยิ้มแย้มแจ่มใส", "ให้บริการด้วยความเต็มใจ ยินดี กระตือรือร้น", "ให้บริการด้วยความสะดวก รวดเร็ว", "การบริการเป็นไปตามกำหนดเวลาราชการและหรือเวลาที่ประกาศ", "การบริการเป็นไปตามระเบียบปฏิบัติของทางราชการและระเบียบอื่นๆ ที่ประกาศ", "เจ้าหน้าที่ได้แจ้งขั้นตอนและเงื่อนไขการบริการให้ผู้มาติดต่อทราบอย่างชัดเจน", "ผู้รับบริการสามารถติดต่อสื่อสารกับ รพ.สต. ได้สะดวก", "เจ้าหน้าที่ของ รพ.สต. มีความรับผิดชอบและความมุ่งมั่นในการปฏิบัติงาน", "ระดับความพอใจในการให้บริการของเจ้าหน้าที่", "รพ.สต. ให้บริการตรงต่อเวลาที่นัดหมาย"];
+        const SV_L = ['', 'ไม่พอใจมากที่สุด', 'ไม่พอใจ', 'พอใจ', 'พอใจมาก', 'พอใจมากที่สุด'];
+        let svAns = [];
+        function svStars(n) { let h = ''; for (let i = 1; i <= 5; i++) h += '<i class="fa-solid fa-star sv-star ' + (i <= Math.round(n) ? 'on' : '') + '" style="width:auto;height:auto;font-size:1.6rem"></i>'; return h; }
+        function svRender() {
+            const box = document.getElementById('sv-questions');
+            box.innerHTML = SV_Q.map((q, i) => '<div class="sv-q" id="sv-q' + i + '"><div class="sv-qt">' + (i + 1) + '. ' + q + '</div><div class="sv-row"><div class="sv-stars" role="radiogroup" aria-label="คะแนนข้อ ' + (i + 1) + '">' +
+                [1, 2, 3, 4, 5].map(n => '<button type="button" class="sv-star" role="radio" aria-checked="false" aria-label="' + n + ' ดาว ' + SV_L[n] + '" onclick="svRate(' + i + ',' + n + ')"><i class="fa-solid fa-star"></i></button>').join('') +
+                '</div><span class="sv-lbl" id="sv-l' + i + '"></span></div></div>').join('');
+            svUpdate();
+        }
+        function svRate(i, n) {
+            svAns[i] = n;
+            document.querySelectorAll('#sv-q' + i + ' .sv-star').forEach((b, k) => { b.classList.toggle('on', k < n); b.setAttribute('aria-checked', k + 1 === n); });
+            document.getElementById('sv-l' + i).textContent = n + ' ดาว · ' + SV_L[n];
+            document.getElementById('sv-q' + i).classList.remove('sv-miss');
+            svUpdate();
+        }
+        function svUpdate() {
+            const c = svAns.filter(Boolean).length;
+            document.getElementById('sv-bar').style.width = (c / SV_Q.length * 100) + '%';
+            document.getElementById('sv-count').textContent = 'ตอบแล้ว ' + c + ' / ' + SV_Q.length + ' ข้อ';
+        }
+        function svReset() {
+            svAns = [];
+            ['sv-age', 'sv-job', 'sv-edu', 'sv-mar', 'sv-note'].forEach(id => document.getElementById(id).value = '');
+            document.getElementById('sv-err').classList.add('hidden');
+            document.getElementById('sv-done').classList.add('hidden');
+            document.getElementById('sv-form').classList.remove('hidden');
+            svRender();
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+        async function svSubmit(ev) {
+            ev.preventDefault();
+            const err = document.getElementById('sv-err');
+            const age = parseInt(document.getElementById('sv-age').value, 10);
+            const job = document.getElementById('sv-job').value, edu = document.getElementById('sv-edu').value, mar = document.getElementById('sv-mar').value;
+            let msg = '';
+            if (!(age >= 1 && age <= 120) || !job || !edu || !mar) msg = 'กรุณากรอกข้อมูลทั่วไปให้ครบทุกช่อง';
+            const miss = SV_Q.map((_, i) => i).filter(i => !svAns[i]);
+            document.querySelectorAll('#sv-questions .sv-q').forEach((el, i) => el.classList.toggle('sv-miss', !svAns[i]));
+            if (miss.length) msg = (msg ? msg + ' และ ' : '') + 'กรุณาให้คะแนนให้ครบทุกข้อ (ยังขาดข้อ ' + miss.map(i => i + 1).join(', ') + ')';
+            if (msg) {
+                err.textContent = msg; err.classList.remove('hidden');
+                const first = miss.length ? document.getElementById('sv-q' + miss[0]) : document.getElementById('sv-age');
+                first.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                return false;
+            }
+            err.classList.add('hidden');
+            const avg = svAns.reduce((a, b) => a + b, 0) / SV_Q.length;
+            const rec = { fy: 2570, age, job, edu, marital: mar, scores: svAns.slice(0, SV_Q.length), avg: Math.round(avg * 100) / 100, note: document.getElementById('sv-note').value.trim() };
+            const btn = document.getElementById('sv-submit');
+            btn.disabled = true; btn.style.opacity = .6;
+            try {
+                if (!window.DB) throw new Error('no-db');
+                await Promise.race([DB.push('satisfaction', rec), new Promise((_, rj) => setTimeout(() => rj(new Error('timeout')), 10000))]);
+            } catch (e) {
+                console.error(e);
+                err.textContent = 'ส่งข้อมูลไม่สำเร็จ กรุณาตรวจสอบอินเทอร์เน็ตแล้วลองอีกครั้ง';
+                err.classList.remove('hidden');
+                btn.disabled = false; btn.style.opacity = 1;
+                return false;
+            }
+            btn.disabled = false; btn.style.opacity = 1;
+            document.getElementById('sv-avg').textContent = avg.toFixed(2) + ' / 5';
+            document.getElementById('sv-avg-stars').innerHTML = svStars(avg);
+            document.getElementById('sv-form').classList.add('hidden');
+            document.getElementById('sv-done').classList.remove('hidden');
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+            return false;
+        }
+        document.addEventListener('DOMContentLoaded', svRender);
+        if (document.readyState !== 'loading') svRender();
+
         function switchTab(tabId) {
             document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
             document.getElementById('tab-' + tabId).classList.remove('hidden');
