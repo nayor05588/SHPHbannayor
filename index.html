@@ -557,7 +557,7 @@ button[onclick="toggleAIChat()"].w-14::before{content:"";position:absolute;inset
                                 </div>
                                 <div class="bg-sky-900/30 p-4 rounded-xl border border-white/20">
                                     <p class="text-slate-400 text-xs">AI ความพึงพอใจบริการ</p>
-                                    <p class="text-2xl font-bold text-pink-400 mt-1">4.9/5.0</p>
+                                    <p class="text-2xl font-bold text-pink-400 mt-1">– <span class="text-xs text-slate-300 font-normal">รอผลประเมิน</span></p>
                                 </div>
                             </div>
                             <div class="pt-2 border-t border-white/10 flex items-center justify-between text-xs text-slate-300">
@@ -1356,6 +1356,7 @@ button[onclick="toggleAIChat()"].w-14::before{content:"";position:absolute;inset
     <script>
         // Tab Switching Logic
         // ===== Satisfaction survey =====
+        function svFY() { const d = new Date(); return d.getFullYear() + 543 + (d.getMonth() >= 9 ? 1 : 0); }
         const SV_Q = ["ให้การต้อนรับด้วยอัธยาศัยที่ดี สุภาพ ยิ้มแย้มแจ่มใส", "ให้บริการด้วยความเต็มใจ ยินดี กระตือรือร้น", "ให้บริการด้วยความสะดวก รวดเร็ว", "การบริการเป็นไปตามกำหนดเวลาราชการและหรือเวลาที่ประกาศ", "การบริการเป็นไปตามระเบียบปฏิบัติของทางราชการและระเบียบอื่นๆ ที่ประกาศ", "เจ้าหน้าที่ได้แจ้งขั้นตอนและเงื่อนไขการบริการให้ผู้มาติดต่อทราบอย่างชัดเจน", "ผู้รับบริการสามารถติดต่อสื่อสารกับ รพ.สต. ได้สะดวก", "เจ้าหน้าที่ของ รพ.สต. มีความรับผิดชอบและความมุ่งมั่นในการปฏิบัติงาน", "ระดับความพอใจในการให้บริการของเจ้าหน้าที่", "รพ.สต. ให้บริการตรงต่อเวลาที่นัดหมาย"];
         const SV_L = ['', 'ไม่พอใจมากที่สุด', 'ไม่พอใจ', 'พอใจ', 'พอใจมาก', 'พอใจมากที่สุด'];
         let svAns = [];
@@ -1388,6 +1389,14 @@ button[onclick="toggleAIChat()"].w-14::before{content:"";position:absolute;inset
             svRender();
             window.scrollTo({ top: 0, behavior: 'smooth' });
         }
+        // สรุปคะแนนรวม (ไม่มีข้อมูลรายบุคคล) ให้หน้าแรกอ่านได้ที่ satSummary/{ปีงบ}
+        function svSum(rec) {
+            return DB.txn('satSummary/' + rec.fy, cur => {
+                cur = cur || {}; cur.n = (cur.n || 0) + 1; cur.pts = cur.pts || 0; cur.q = cur.q || {};
+                rec.scores.forEach((x, i) => { cur.pts += x; cur.q['q' + (i + 1)] = (cur.q['q' + (i + 1)] || 0) + x; });
+                return cur;
+            });
+        }
         async function svSubmit(ev) {
             ev.preventDefault();
             const err = document.getElementById('sv-err');
@@ -1406,12 +1415,13 @@ button[onclick="toggleAIChat()"].w-14::before{content:"";position:absolute;inset
             }
             err.classList.add('hidden');
             const avg = svAns.reduce((a, b) => a + b, 0) / SV_Q.length;
-            const rec = { fy: 2570, age, job, edu, marital: mar, scores: svAns.slice(0, SV_Q.length), avg: Math.round(avg * 100) / 100, note: document.getElementById('sv-note').value.trim() };
+            const rec = { fy: svFY(), age, job, edu, marital: mar, scores: svAns.slice(0, SV_Q.length), avg: Math.round(avg * 100) / 100, note: document.getElementById('sv-note').value.trim() };
             const btn = document.getElementById('sv-submit');
             btn.disabled = true; btn.style.opacity = .6;
             try {
                 if (!window.DB) throw new Error('no-db');
                 await Promise.race([DB.push('satisfaction', rec), new Promise((_, rj) => setTimeout(() => rj(new Error('timeout')), 10000))]);
+                svSum(rec).catch(e2 => console.warn('satSummary', e2));
             } catch (e) {
                 console.error(e);
                 err.textContent = 'ส่งข้อมูลไม่สำเร็จ กรุณาตรวจสอบอินเทอร์เน็ตแล้วลองอีกครั้ง';
@@ -2508,7 +2518,8 @@ function hashPw(user,pw){
         push:(path,data)=>rtdb.ref(path).push(Object.assign({},data,{createdAt:firebase.database.ServerValue.TIMESTAMP})),
         set:(path,data)=>rtdb.ref(path).set(data),
         remove:path=>rtdb.ref(path).remove(),
-        listen:(path,cb,err)=>rtdb.ref(path).on('value',sn=>cb(sn.val()||{}),err)
+        listen:(path,cb,err)=>rtdb.ref(path).on('value',sn=>cb(sn.val()||{}),err),
+        txn:(path,fn)=>rtdb.ref(path).transaction(fn)
     };
     const EV_CATS=[['งานป้องกันควบคุมโรค','#0284c7'],['งานบริหารทั่วไป','#06b6d4'],['คลินิกผู้สูงอายุ','#38bdf8'],['ยุทธศาสตร์ AI','#3b82f6'],['อื่นๆ','#5b7a8c']];
     const TH_M=['ม.ค.','ก.พ.','มี.ค.','เม.ย.','พ.ค.','มิ.ย.','ก.ค.','ส.ค.','ก.ย.','ต.ค.','พ.ย.','ธ.ค.'];
@@ -3415,7 +3426,7 @@ async function calc43(){
  }catch(e){R43=[{label:'เกิดข้อผิดพลาด',skip:e.message}]}
  draw()}
 function panel43(){const L=R43&&R43.length?`<div class="overflow-x-auto"><table class="w-full text-sm bg-white rounded-xl border border-sky-100"><tbody>${R43.map(r=>`<tr class="border-b border-sky-50"><td class="p-2 font-medium">${E(r.label)}</td><td class="p-2 font-bold text-sky-700 whitespace-nowrap">${r.skip?'-':E(r.val)+' '+E(r.unit)}</td><td class="p-2 text-xs ${r.skip?'text-rose-600':'text-slate-500'}">${E(r.skip||r.note)}</td></tr>`).join('')}</tbody></table></div>${R43.some(r=>!r.skip)?'<button type="button" onclick="WEB.a43()" class="px-4 py-2 rounded-xl ai-gradient text-white text-sm"><i class="fa-solid fa-arrow-down mr-1.5"></i>นำค่าที่คำนวณได้ไปใส่ในการ์ดด้านล่าง</button>':''}`:'';
- return `<div class="bg-sky-50 border border-sky-200 rounded-2xl p-4 space-y-3"><h4 class="font-bold text-slate-800"><i class="fa-solid fa-file-import mr-1.5 text-sky-600"></i>ดึงข้อมูลจาก 43 แฟ้ม</h4><p class="text-xs text-slate-600">เลือกไฟล์ .csv/.txt โดยตั้งชื่อไฟล์ตามแฟ้ม เช่น service, ncdscreen, person, chronic, community_service, epi, anc ระบบคำนวณในเครื่องของท่านเท่านั้น ไม่ส่งข้อมูลรายบุคคลขึ้นเซิร์ฟเวอร์ เมื่อกดบันทึกจะเก็บเฉพาะตัวเลขสรุปในการ์ด ส่วน "AI ความพึงพอใจ" ไม่มีใน 43 แฟ้ม ให้กรอกเอง</p><div class="grid md:grid-cols-3 gap-2"><label class="text-xs text-slate-500">เดือนที่ต้องการสรุป<input type="month" value="${M43}" onchange="WEB.m43(this.value)" class="${IC}"></label><label class="text-xs text-slate-500 md:col-span-2">ไฟล์ 43 แฟ้ม (เลือกได้หลายไฟล์พร้อมกัน)<input type="file" multiple accept=".csv,.txt" onchange="WEB.f43(this)" class="${IC}"></label><label class="text-xs text-slate-500 md:col-span-3">รหัสบริการตรวจเยี่ยมบ้าน (ไม่บังคับ ค่าในคอลัมน์ COMSERVICE ของแฟ้ม community_service คั่นด้วย , เว้นว่าง = นับทุกรหัส) <input value="${E(C43())}" oninput="WEB.c43(this.value)" placeholder="ตรวจรหัสให้ตรงนิยามของหน่วยก่อนใช้" class="${IC}"></label></div>${F43.length?`<p class="text-xs text-slate-500">ไฟล์ที่เลือก: ${E(F43.map(f=>f.name).join(', '))}</p>`:''}${L}</div>`}
+ return `<div class="bg-sky-50 border border-sky-200 rounded-2xl p-4 space-y-3"><h4 class="font-bold text-slate-800"><i class="fa-solid fa-file-import mr-1.5 text-sky-600"></i>ดึงข้อมูลจาก 43 แฟ้ม</h4><p class="text-xs text-slate-600">เลือกไฟล์ .csv/.txt โดยตั้งชื่อไฟล์ตามแฟ้ม เช่น service, ncdscreen, person, chronic, community_service, epi, anc ระบบคำนวณในเครื่องของท่านเท่านั้น ไม่ส่งข้อมูลรายบุคคลขึ้นเซิร์ฟเวอร์ เมื่อกดบันทึกจะเก็บเฉพาะตัวเลขสรุปในการ์ด ส่วน "AI ความพึงพอใจ" ระบบคำนวณอัตโนมัติจากแบบประเมินความพึงพอใจผู้ใช้บริการ ไม่ต้องกรอกเอง</p><div class="grid md:grid-cols-3 gap-2"><label class="text-xs text-slate-500">เดือนที่ต้องการสรุป<input type="month" value="${M43}" onchange="WEB.m43(this.value)" class="${IC}"></label><label class="text-xs text-slate-500 md:col-span-2">ไฟล์ 43 แฟ้ม (เลือกได้หลายไฟล์พร้อมกัน)<input type="file" multiple accept=".csv,.txt" onchange="WEB.f43(this)" class="${IC}"></label><label class="text-xs text-slate-500 md:col-span-3">รหัสบริการตรวจเยี่ยมบ้าน (ไม่บังคับ ค่าในคอลัมน์ COMSERVICE ของแฟ้ม community_service คั่นด้วย , เว้นว่าง = นับทุกรหัส) <input value="${E(C43())}" oninput="WEB.c43(this.value)" placeholder="ตรวจรหัสให้ตรงนิยามของหน่วยก่อนใช้" class="${IC}"></label></div>${window.SATSUM?SATSUM.html():''}${F43.length?`<p class="text-xs text-slate-500">ไฟล์ที่เลือก: ${E(F43.map(f=>f.name).join(', '))}</p>`:''}${L}</div>`}
 window.WEB={open(s){SEC=s;draw()},set(n,i,k,v){arr(n)[i][k]=v},ai(k,v){ST.ai[k]=v},
  add(n){arr(n).push(n==='stats'?{color:'cyan'}:n==='clinics'?{color:'aiBlue',icon:'fa-solid fa-stethoscope'}:{});draw()},
  del(n,i){if(confirm('ลบรายการนี้?')){arr(n).splice(i,1);draw()}},
@@ -3426,6 +3437,49 @@ Object.assign(WEB,{m43(v){M43=v||M43;calc43()},f43(i){F43=[...i.files];calc43()}
  a43(){const st=ST.stats;(R43||[]).forEach(r=>{if(r.skip||!r.k)return;const t=st.find(x=>String(x.label||'').includes(r.k));if(t){t.value=r.val;t.unit=r.unit;if(r.k==='เยี่ยมบ้าน')t.label=r.label}else if(r.c)st.push({label:r.label,value:r.val,unit:r.unit,color:r.c})});draw();showToast('ใส่ค่าในการ์ดแล้ว ตรวจแล้วกด บันทึกและเผยแพร่')}});
 const sw=window.switchAdminSub;window.switchAdminSub=function(s){sw(s);if(s==='web')draw()};
 try{DB.listen('site',d=>{DATA=d;if(d.stats)rStats(d.stats);if(d.clinics)rClin(d.clinics);if(d.news)rNews(d.news);if(d.staff)rStaff(d.staff);if(d.ai)rAi(d.ai)},()=>{})}catch(e){}
+})();
+</script>
+
+<script>
+// ===== เชื่อมการ์ด "AI ความพึงพอใจบริการ" (หน้าแรก) กับแบบประเมินความพึงพอใจผู้ใช้บริการ =====
+(function(){
+  const st={n:0,pts:0}, K=()=>SV_Q.length;
+  const avg=()=>st.n>0?st.pts/(st.n*K()):null;
+  const grid=document.querySelector('.hero-card .grid');
+  let obs=null;
+  function apply(){
+    const box=document.getElementById('sat-box-txt');
+    if(box) box.textContent=st.n>0?('คะแนนเฉลี่ยปีงบ '+svFY()+': '+avg().toFixed(2)+' / 5 จากผู้ตอบ '+st.n.toLocaleString('th-TH')+' ราย'):'ยังไม่มีสรุปคะแนนปีงบ '+svFY()+' (ถ้ามีผู้ตอบไว้ก่อนหน้า กดปุ่มด้านล่าง)';
+    const d=[...document.querySelectorAll('.hero-card .grid > div')].find(x=>/ความพึงพอใจ/.test((x.querySelector('p')||{}).textContent||''));
+    const v=d&&d.querySelectorAll('p')[1]; if(!v) return;
+    const h=st.n>0?avg().toFixed(2)+'/5.0 <span class="text-xs text-slate-300 font-normal">จาก '+st.n.toLocaleString('th-TH')+' ราย</span>':'– <span class="text-xs text-slate-300 font-normal">รอผลประเมิน</span>';
+    if(v.dataset.sat===h) return;
+    if(obs) obs.disconnect();
+    v.innerHTML=h; v.dataset.sat=h;
+    if(obs&&grid) obs.observe(grid,{childList:true,subtree:true});
+  }
+  // หน้า CMS อาจวาดการ์ดใหม่ทับ ให้ใส่ค่าจริงกลับทุกครั้ง
+  if(grid&&window.MutationObserver){ obs=new MutationObserver(apply); obs.observe(grid,{childList:true,subtree:true}); }
+  try{ DB.listen('satSummary/'+svFY(), d=>{ st.n=+d.n||0; st.pts=+d.pts||0; apply(); }, ()=>{}); }catch(e){ console.warn(e); }
+  window.SATSUM={
+    html(){ return '<div class="rounded-xl bg-white border border-sky-100 p-3 flex flex-wrap items-center gap-3"><i class="fa-solid fa-face-smile text-pink-500"></i><span id="sat-box-txt" class="text-xs text-slate-700 flex-1"></span><button type="button" onclick="SATSUM.rebuild()" class="px-3 py-1.5 rounded-lg border border-sky-300 text-sky-700 text-xs hover:bg-sky-50"><i class="fa-solid fa-rotate mr-1"></i>คำนวณใหม่จากแบบประเมินทั้งหมด</button></div>'; },
+    async rebuild(){
+      try{
+        const all=(await rtdb.ref('satisfaction').once('value')).val()||{}, g={};
+        Object.values(all).forEach(r=>{
+          if(!r) return;
+          let sc=Array.isArray(r.scores)?r.scores:(r.scores&&typeof r.scores==='object'?Object.values(r.scores):[]);
+          sc=sc.map(Number); if(sc.length!==K()||sc.some(x=>!(x>=1&&x<=5))) return;
+          const fy=+r.fy||svFY(), o=g[fy]||(g[fy]={n:0,pts:0,q:{}});
+          o.n++; sc.forEach((x,i)=>{ o.pts+=x; o.q['q'+(i+1)]=(o.q['q'+(i+1)]||0)+x; });
+        });
+        if(!Object.keys(g).length){ showToast('ยังไม่พบแบบประเมินที่ครบถ้วน'); return; }
+        await rtdb.ref('satSummary').update(g);
+        const c=g[svFY()]; showToast(c?('คำนวณแล้ว ปีงบ '+svFY()+' ผู้ตอบ '+c.n+' ราย เฉลี่ย '+(c.pts/(c.n*K())).toFixed(2)+'/5'):'คำนวณแล้ว (ยังไม่มีผู้ตอบในปีงบปัจจุบัน)');
+      }catch(e){ alert('คำนวณไม่ได้: '+e.message+'\nตรวจ Firebase Rules ให้อ่าน satisfaction และเขียน satSummary ได้'); }
+    }
+  };
+  apply();
 })();
 </script>
 
