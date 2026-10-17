@@ -419,6 +419,20 @@ button[onclick="toggleAIChat()"].w-14::before{content:"";position:absolute;inset
 .cw-dot{display:inline-block;width:.6rem;height:.6rem;border-radius:50%;margin:0 .3rem 0 .8rem}.cw-dot.up{background:#2EAD6B}.cw-dot.td{background:#F0B429}.cw-dot.ps{background:#C9D6E8}
 .cw-team{background:linear-gradient(180deg,#fff,#F6FAFF);box-shadow:0 10px 24px -20px rgba(10,42,107,.5);transition:transform .15s}.cw-team:hover{transform:translateY(-2px)}
 </style>
+<style>
+/* ===== สถานการณ์สุขภาพเดือนนี้ : ปรับให้กะทัดรัด ===== */
+.hero .hero-card{padding:.85rem 1rem;border-radius:1.1rem}
+.hero .hero-card.space-y-6>*+*{margin-top:.6rem!important}
+.hero-card h3{font-size:.9rem;line-height:1.3rem;flex-wrap:wrap;gap:.35rem}
+.hero-card h3 span[class*="rounded-full"]{font-size:.65rem;line-height:1rem;padding:.12rem .5rem}
+.hero-card .grid{gap:.5rem}
+.hero-card .grid>div{padding:.5rem .7rem;border-radius:.75rem}
+.hero-card .grid p.text-xs{font-size:.7rem;line-height:1rem}
+.hero-card .grid p.text-2xl{font-size:1.2rem;line-height:1.55rem;margin-top:.05rem}
+.hero-card .grid p.text-2xl span{font-size:.65rem}
+.hero-card .border-t{padding-top:.5rem;font-size:.7rem;line-height:1rem}
+@media(min-width:1024px){.hero .hero-card{max-width:25rem;margin:0 0 0 auto}}
+</style>
 </head>
 <body class="site antialiased selection:bg-aiBlue-500 selection:text-white">
 
@@ -501,8 +515,8 @@ button[onclick="toggleAIChat()"].w-14::before{content:"";position:absolute;inset
                                     <p class="text-2xl font-bold text-cyan-300 mt-1">1,428 <span class="text-xs text-slate-300 font-normal">คน</span></p>
                                 </div>
                                 <div class="bg-sky-900/30 p-4 rounded-xl border border-white/20">
-                                    <p class="text-slate-400 text-xs">เยี่ยมบ้านผู้ป่วยติดเตียง</p>
-                                    <p class="text-2xl font-bold text-emerald-400 mt-1">84 <span class="text-xs text-slate-300 font-normal">เคส</span></p>
+                                    <p class="text-slate-400 text-xs">บริการตรวจเยี่ยมบ้าน</p>
+                                    <p class="text-2xl font-bold text-emerald-400 mt-1">84 <span class="text-xs text-slate-300 font-normal">ครั้ง</span></p>
                                 </div>
                                 <div class="bg-sky-900/30 p-4 rounded-xl border border-white/20">
                                     <p class="text-slate-400 text-xs">คัดกรองเบาหวาน/ความดัน</p>
@@ -3208,11 +3222,10 @@ async function calc43(){
   {const t=T.SERVICE?'SERVICE':'VISIT',dc=t==='SERVICE'?'DATE_SERV':'VISITDATE',e=need(t,['PID',dc]);
    if(e)R.push({k:'ผู้มารับ',label:'ผู้มารับบริการทั้งหมด',skip:e});
    else{const rows=T[t].filter(x=>inM(x[dc])),p=new Set(rows.map(x=>x.PID));R.push({k:'ผู้มารับ',label:'ผู้มารับบริการทั้งหมด',val:nf(p.size),unit:'คน',note:'นับ PID ไม่ซ้ำจากแฟ้ม '+t.toLowerCase()+' ('+nf(rows.length)+' แถว)'})}}
-  // 2 เยี่ยมบ้านติดเตียง
-  {const codes=C43().split(',').map(x=>x.trim()).filter(Boolean),cc=T.COMMUNITY_SERVICE&&T.COMMUNITY_SERVICE[0]&&('COMSERVICE' in T.COMMUNITY_SERVICE[0]?'COMSERVICE':'COMMSERVICE'),e=need('COMMUNITY_SERVICE',['PID','DATE_SERV',cc||'COMSERVICE']);
-   if(!codes.length)R.push({k:'เยี่ยมบ้าน',label:'เยี่ยมบ้านผู้ป่วยติดเตียง',skip:'ยังไม่ได้กรอกรหัสบริการเยี่ยมบ้านติดเตียง'});
-   else if(e)R.push({k:'เยี่ยมบ้าน',label:'เยี่ยมบ้านผู้ป่วยติดเตียง',skip:e});
-   else{const p=new Set(T.COMMUNITY_SERVICE.filter(x=>inM(x.DATE_SERV)&&codes.includes(x[cc])).map(x=>x.PID));R.push({k:'เยี่ยมบ้าน',label:'เยี่ยมบ้านผู้ป่วยติดเตียง',val:nf(p.size),unit:'เคส',note:'นับ PID ไม่ซ้ำ รหัส '+codes.join(', ')})}}
+  // 2 บริการตรวจเยี่ยมบ้าน (COMMUNITY_SERVICE)
+  {const L='บริการตรวจเยี่ยมบ้าน',codes=C43().split(',').map(x=>x.trim()).filter(Boolean),cc=T.COMMUNITY_SERVICE&&T.COMMUNITY_SERVICE[0]&&('COMSERVICE' in T.COMMUNITY_SERVICE[0]?'COMSERVICE':'COMMSERVICE'),e=need('COMMUNITY_SERVICE',['PID','DATE_SERV'].concat(codes.length?[cc||'COMSERVICE']:[]));
+   if(e)R.push({k:'เยี่ยมบ้าน',label:L,skip:e});
+   else{const rows=T.COMMUNITY_SERVICE.filter(x=>x.PID&&inM(x.DATE_SERV)&&(!codes.length||codes.includes(x[cc]))),v=new Set(rows.map(x=>x.PID+'|'+(x.SEQ||'')+'|'+x.DATE_SERV)),p=new Set(rows.map(x=>x.PID));R.push({k:'เยี่ยมบ้าน',label:L,val:nf(v.size),unit:'ครั้ง',note:'เยี่ยม '+nf(p.size)+' คน จากแฟ้ม community_service '+(codes.length?'เฉพาะรหัส '+codes.join(', '):'นับทุกรหัสบริการในชุมชน (ถ้าต้องการเฉพาะเยี่ยมบ้าน ให้กรอกรหัสในช่องด้านบน)')})}}
   // 3 คัดกรองเบาหวาน/ความดัน
   {const e=need('NCDSCREEN',['PID','DATE_SERV']);
    if(e)R.push({k:'คัดกรอง',label:'คัดกรองเบาหวาน/ความดัน',skip:e});
@@ -3241,7 +3254,7 @@ async function calc43(){
  }catch(e){R43=[{label:'เกิดข้อผิดพลาด',skip:e.message}]}
  draw()}
 function panel43(){const L=R43&&R43.length?`<div class="overflow-x-auto"><table class="w-full text-sm bg-white rounded-xl border border-sky-100"><tbody>${R43.map(r=>`<tr class="border-b border-sky-50"><td class="p-2 font-medium">${E(r.label)}</td><td class="p-2 font-bold text-sky-700 whitespace-nowrap">${r.skip?'-':E(r.val)+' '+E(r.unit)}</td><td class="p-2 text-xs ${r.skip?'text-rose-600':'text-slate-500'}">${E(r.skip||r.note)}</td></tr>`).join('')}</tbody></table></div>${R43.some(r=>!r.skip)?'<button type="button" onclick="WEB.a43()" class="px-4 py-2 rounded-xl ai-gradient text-white text-sm"><i class="fa-solid fa-arrow-down mr-1.5"></i>นำค่าที่คำนวณได้ไปใส่ในการ์ดด้านล่าง</button>':''}`:'';
- return `<div class="bg-sky-50 border border-sky-200 rounded-2xl p-4 space-y-3"><h4 class="font-bold text-slate-800"><i class="fa-solid fa-file-import mr-1.5 text-sky-600"></i>ดึงข้อมูลจาก 43 แฟ้ม</h4><p class="text-xs text-slate-600">เลือกไฟล์ .csv/.txt โดยตั้งชื่อไฟล์ตามแฟ้ม เช่น service, ncdscreen, person, chronic, community_service, epi, anc ระบบคำนวณในเครื่องของท่านเท่านั้น ไม่ส่งข้อมูลรายบุคคลขึ้นเซิร์ฟเวอร์ เมื่อกดบันทึกจะเก็บเฉพาะตัวเลขสรุปในการ์ด ส่วน "AI ความพึงพอใจ" ไม่มีใน 43 แฟ้ม ให้กรอกเอง</p><div class="grid md:grid-cols-3 gap-2"><label class="text-xs text-slate-500">เดือนที่ต้องการสรุป<input type="month" value="${M43}" onchange="WEB.m43(this.value)" class="${IC}"></label><label class="text-xs text-slate-500 md:col-span-2">ไฟล์ 43 แฟ้ม (เลือกได้หลายไฟล์พร้อมกัน)<input type="file" multiple accept=".csv,.txt" onchange="WEB.f43(this)" class="${IC}"></label><label class="text-xs text-slate-500 md:col-span-3">รหัสบริการเยี่ยมบ้านผู้ป่วยติดเตียง (ค่าในคอลัมน์ COMSERVICE ของแฟ้ม community_service คั่นด้วย ,) <input value="${E(C43())}" oninput="WEB.c43(this.value)" placeholder="ตรวจรหัสให้ตรงนิยามของหน่วยก่อนใช้" class="${IC}"></label></div>${F43.length?`<p class="text-xs text-slate-500">ไฟล์ที่เลือก: ${E(F43.map(f=>f.name).join(', '))}</p>`:''}${L}</div>`}
+ return `<div class="bg-sky-50 border border-sky-200 rounded-2xl p-4 space-y-3"><h4 class="font-bold text-slate-800"><i class="fa-solid fa-file-import mr-1.5 text-sky-600"></i>ดึงข้อมูลจาก 43 แฟ้ม</h4><p class="text-xs text-slate-600">เลือกไฟล์ .csv/.txt โดยตั้งชื่อไฟล์ตามแฟ้ม เช่น service, ncdscreen, person, chronic, community_service, epi, anc ระบบคำนวณในเครื่องของท่านเท่านั้น ไม่ส่งข้อมูลรายบุคคลขึ้นเซิร์ฟเวอร์ เมื่อกดบันทึกจะเก็บเฉพาะตัวเลขสรุปในการ์ด ส่วน "AI ความพึงพอใจ" ไม่มีใน 43 แฟ้ม ให้กรอกเอง</p><div class="grid md:grid-cols-3 gap-2"><label class="text-xs text-slate-500">เดือนที่ต้องการสรุป<input type="month" value="${M43}" onchange="WEB.m43(this.value)" class="${IC}"></label><label class="text-xs text-slate-500 md:col-span-2">ไฟล์ 43 แฟ้ม (เลือกได้หลายไฟล์พร้อมกัน)<input type="file" multiple accept=".csv,.txt" onchange="WEB.f43(this)" class="${IC}"></label><label class="text-xs text-slate-500 md:col-span-3">รหัสบริการตรวจเยี่ยมบ้าน (ไม่บังคับ ค่าในคอลัมน์ COMSERVICE ของแฟ้ม community_service คั่นด้วย , เว้นว่าง = นับทุกรหัส) <input value="${E(C43())}" oninput="WEB.c43(this.value)" placeholder="ตรวจรหัสให้ตรงนิยามของหน่วยก่อนใช้" class="${IC}"></label></div>${F43.length?`<p class="text-xs text-slate-500">ไฟล์ที่เลือก: ${E(F43.map(f=>f.name).join(', '))}</p>`:''}${L}</div>`}
 window.WEB={open(s){SEC=s;draw()},set(n,i,k,v){arr(n)[i][k]=v},ai(k,v){ST.ai[k]=v},
  add(n){arr(n).push(n==='stats'?{color:'cyan'}:n==='clinics'?{color:'aiBlue',icon:'fa-solid fa-stethoscope'}:{});draw()},
  del(n,i){if(confirm('ลบรายการนี้?')){arr(n).splice(i,1);draw()}},
@@ -3249,7 +3262,7 @@ window.WEB={open(s){SEC=s;draw()},set(n,i,k,v){arr(n)[i][k]=v},ai(k,v){ST.ai[k]=
  save(){if(!ST[SEC].length&&SEC!=='ai'){alert('ต้องมีอย่างน้อย 1 รายการ');return}DB.set('site/'+SEC,CL(ST[SEC])).then(()=>showToast('บันทึกและเผยแพร่ขึ้นหน้าเว็บแล้ว')).catch(e=>alert('บันทึกไม่ได้: '+e.message+'\nตรวจ Firebase Rules ให้เขียนที่ site/ ได้'))},
  reset(){delete ST[SEC];draw()},news(i){const n=NEWS[i]||{};openNewsModal(n.title||'',n.body||n.desc||'')}};
 Object.assign(WEB,{m43(v){M43=v||M43;calc43()},f43(i){F43=[...i.files];calc43()},c43(v){try{localStorage.setItem('web43codes',v)}catch(e){}if(R43)clearTimeout(WEB._t),WEB._t=setTimeout(calc43,600)},
- a43(){const st=ST.stats;(R43||[]).forEach(r=>{if(r.skip||!r.k)return;const t=st.find(x=>String(x.label||'').includes(r.k));if(t){t.value=r.val;t.unit=r.unit}else if(r.c)st.push({label:r.label,value:r.val,unit:r.unit,color:r.c})});draw();showToast('ใส่ค่าในการ์ดแล้ว ตรวจแล้วกด บันทึกและเผยแพร่')}});
+ a43(){const st=ST.stats;(R43||[]).forEach(r=>{if(r.skip||!r.k)return;const t=st.find(x=>String(x.label||'').includes(r.k));if(t){t.value=r.val;t.unit=r.unit;if(r.k==='เยี่ยมบ้าน')t.label=r.label}else if(r.c)st.push({label:r.label,value:r.val,unit:r.unit,color:r.c})});draw();showToast('ใส่ค่าในการ์ดแล้ว ตรวจแล้วกด บันทึกและเผยแพร่')}});
 const sw=window.switchAdminSub;window.switchAdminSub=function(s){sw(s);if(s==='web')draw()};
 try{DB.listen('site',d=>{DATA=d;if(d.stats)rStats(d.stats);if(d.clinics)rClin(d.clinics);if(d.news)rNews(d.news);if(d.staff)rStaff(d.staff);if(d.ai)rAi(d.ai)},()=>{})}catch(e){}
 })();
