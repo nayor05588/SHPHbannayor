@@ -1975,6 +1975,7 @@ function lvSubmit(pr){
   const a=lvLoad(), ix=lvEditId?a.findIndex(x=>x.id===lvEditId):-1, was=ix>=0;
   if(was)a[ix]=Object.assign({},a[ix],r);else a.push(r);
   if(!lvSave(a)){showToast('บันทึกไม่สำเร็จ (เบราว์เซอร์ไม่อนุญาตให้เก็บข้อมูล)');return}
+  if(!was){try{if(window.lineRelay)window.lineRelay({kind:'leave',name:r.name,from:r.from,to:r.to,days:r.days})}catch(e){console.warn('leave notify failed',e)}}
   lvEditId='';lvFYsel=lvFY(r.from);lvPerson=r.name;showToast(was?'แก้ไขใบลาเรียบร้อย':'บันทึกใบลาเรียบร้อย');lvShow('register');if(pr)lvPrint(lvLeaveHtml(r),LV_LFCSS);
 }
 
@@ -3610,6 +3611,7 @@ function relay(b){
   }
 }
 
+window.lineRelay=relay;
 window.bookingSubmit=async function(){
   if(busy)return;
   const name=$('booking-name').value.trim(),phone=$('booking-phone').value.replace(/[\s-]/g,''),sel=$('booking-service'),date=$('booking-date').value,svc=sel.value,si=sel.selectedIndex;
