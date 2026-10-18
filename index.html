@@ -526,9 +526,9 @@ button[onclick="toggleAIChat()"].w-14::before{content:"";position:absolute;inset
                             มุ่งมั่นยกระดับบริการสุขภาพเชิงรุกด้วยเทคโนโลยี AI และระบบสารสนเทศทันสมัย เพื่อสุขภาวะที่ดีของพี่น้องชาวตำบลสร้างค้อ อำเภอภูพาน จังหวัดสกลนคร
                         </p>
                         <div class="hero-cta">
-                            <button onclick="switchTab('services')" class="btn-primary">
-                                <i class="fa-solid fa-stethoscope"></i> ตรวจสอบสิทธิ / คลินิกบริการ
-                            </button>
+                            <a href="https://srmcitizen.nhso.go.th/" target="_blank" rel="noopener noreferrer" class="btn-primary">
+                                <i class="fa-solid fa-stethoscope"></i> ตรวจสอบสิทธิ์การรักษาด้วยตนเอง
+                            </a>
                             <button onclick="toggleAIChat()" class="btn-ghost">
                                 <i class="fa-solid fa-robot"></i> สอบถาม AI ผู้ช่วยสุขภาพ
                             </button>
@@ -794,6 +794,17 @@ button[onclick="toggleAIChat()"].w-14::before{content:"";position:absolute;inset
                     <div class="pt-4 border-t border-slate-100 flex items-center justify-between text-xs text-slate-500">
                         <span><i class="fa-regular fa-clock mr-1"></i> ทุกวันศุกร์ 08:30 - 12:00 น.</span>
                         <button onclick="bookQueue('คลินิกแพทย์แผนไทย')" class="text-aiBlue-600 font-semibold hover:underline">จองคิวออนไลน์</button>
+                    </div>
+                </div>
+                <!-- บริการย้ายสิทธิบัตรทอง -->
+                <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200 space-y-4 ai-card-glow">
+                    <div class="w-14 h-14 rounded-2xl bg-cyan-50 text-cyan-600 flex items-center justify-center text-2xl">
+                        <i class="fa-solid fa-id-card"></i>
+                    </div>
+                    <h3 class="text-xl font-bold text-slate-900">บริการย้ายสิทธิบัตรทอง</h3>
+                    <p class="text-slate-600 text-sm">สามารถเปลี่ยนหน่วยบริการได้ปีละ 4 ครั้ง (งบประมาณ) และสิทธิใหม่เกิดทันทีไม่ต้องรอ 15 วัน</p>
+                    <div class="pt-4 border-t border-slate-100 flex items-center justify-between text-xs text-slate-500">
+                        <span><i class="fa-regular fa-clock mr-1"></i> ติดต่อได้ในเวลาราชการ</span>
                     </div>
                 </div>
                 <!-- Clinic 4: LTC system (opens in new tab) -->
@@ -1568,7 +1579,8 @@ button[onclick="toggleAIChat()"].w-14::before{content:"";position:absolute;inset
           ['แบบประเมิน',['แบบประเมินความสะอาด ตามโซนรับผิดชอบ']],
           ['Dashboard และรายงาน',['Dashboard ผลการประเมิน รายเดือน/รายปี','รายงานรายบุคคล ตามโซนที่รับผิดชอบ']],
           ['ตั้งค่า',['กำหนดผู้รับผิดชอบแต่ละโซน']]]},
-        {n:'2.10',t:'จัดการคิวงานส่วนรวม',d:'ตารางคิวทีมเข้าร่วมงานพิธี/กิจกรรมส่วนรวม แยกตามปีงบประมาณ',i:'fa-people-group',c:'teal',g:[]}
+        {n:'2.10',t:'จัดการคิวงานส่วนรวม',d:'ตารางคิวทีมเข้าร่วมงานพิธี/กิจกรรมส่วนรวม แยกตามปีงบประมาณ',i:'fa-people-group',c:'teal',g:[]},
+        {n:'2.11',t:'ระบบจัดการการดูแลผู้สูงอายุและผู้มีภาวะพึ่งพิง',u:'https://nayor05588.github.io/ltc-nayor/',d:'ระบบบริหารจัดการและติดตามการดูแลผู้สูงอายุและผู้มีภาวะพึ่งพิง (เปิดในแท็บใหม่)',i:'fa-hand-holding-heart',c:'amber',g:[]}
         ];
         const ICONS=[
           [/คุมงบ/,'fa-wallet'],[/เสนอ/,'fa-paper-plane'],[/สปสช/,'fa-building-columns'],[/ตัดจ่าย/,'fa-right-left'],[/แจ้งเตือนยา/,'fa-bell'],[/506|ระบาด|ควบคุมโรค/,'fa-virus'],
@@ -1599,7 +1611,7 @@ button[onclick="toggleAIChat()"].w-14::before{content:"";position:absolute;inset
         ];
         function iconFor(t,d){for(const r of ICONS){if(r[0].test(t))return r[1];}return d||'fa-circle-dot';}
         const GICON={'ทะเบียน':'fa-address-book','คิวและจุดบริการ':'fa-list-ol','ส่งออกข้อมูล':'fa-file-export','งานเฉพาะ':'fa-star-of-life','ส่งต่อและนัดหมาย':'fa-truck-medical','ทะเบียนชุมชน':'fa-house-chimney','เชิงรุก':'fa-bullseye','อสม.':'fa-hands-holding-circle','ควบคุมโรคและอนามัย':'fa-virus','รายงาน':'fa-file-lines','ตัวชี้วัด':'fa-chart-pie','แดชบอร์ดผู้บริหาร':'fa-gauge-high','ส่งออก':'fa-file-export','วิเคราะห์':'fa-magnifying-glass-chart','ติดตามผล':'fa-bars-progress','เชื่อมโยง':'fa-link','ปฏิทิน':'fa-calendar-days','ทะเบียนอื่น':'fa-folder-tree','เวลาและเวร':'fa-clock','พัฒนาบุคลากร':'fa-user-graduate','วางแผน':'fa-users-gear','รายรับ':'fa-arrow-down-long','รายจ่าย':'fa-arrow-up-long','บัญชี':'fa-book','คุมงบ/รายงาน':'fa-wallet','พัสดุ':'fa-box','คลังยา: ทะเบียน':'fa-prescription-bottle-medical','คลังยา: เคลื่อนไหว':'fa-right-left','คลังยา: อื่นๆ':'fa-warehouse'};
-        const MOD_HUE=['#0284c7','#0ea5e9','#0891b2','#06b6d4','#0369a1','#0ea5e9','#0284c7','#0891b2','#0369a1','#0891b2'];
+        const MOD_HUE=['#0284c7','#0ea5e9','#0891b2','#06b6d4','#0369a1','#0ea5e9','#0284c7','#0891b2','#0369a1','#0891b2','#0284c7'];
         function renderGrid(a){
             document.getElementById('mod-grid').innerHTML=MODS.map((m,k)=>{
               const n=m.g.reduce((t,g)=>t+g[1].length,0), on=k===a;
