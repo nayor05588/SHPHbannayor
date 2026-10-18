@@ -729,11 +729,35 @@ button[onclick="toggleAIChat()"].w-14::before{content:"";position:absolute;inset
                     <div class="w-14 h-14 rounded-2xl bg-pink-50 text-pink-600 flex items-center justify-center text-2xl">
                         <i class="fa-solid fa-baby"></i>
                     </div>
-                    <h3 class="text-xl font-bold text-slate-900">คลินิกแม่และเด็ก / วัคซีน</h3>
-                    <p class="text-slate-600 text-sm">บริการฝากครรภ์คุณภาพ ฉีดวัคซีนป้องกันโรคตามวัยในเด็ก พัฒนาการเด็ก และให้คำแนะนำโภชนาการแม่ตั้งครรภ์</p>
+                    <h3 class="text-xl font-bold text-slate-900">คลินิกอนามัยแม่และเด็ก</h3>
+                    <p class="text-slate-600 text-sm">บริการฝากครรภ์ ตรวจครรภ์ และติดตามสุขภาพแม่หลังคลอด</p>
                     <div class="pt-4 border-t border-slate-100 flex items-center justify-between text-xs text-slate-500">
                         <span><i class="fa-regular fa-clock mr-1"></i> ทุกวันอังคาร 08:30 - 12:00 น.</span>
-                        <button onclick="bookQueue('คลินิกแม่และเด็ก / วัคซีน')" class="text-aiBlue-600 font-semibold hover:underline">จองคิวออนไลน์</button>
+                        <button onclick="bookQueue('คลินิกอนามัยแม่และเด็ก')" class="text-aiBlue-600 font-semibold hover:underline">จองคิวออนไลน์</button>
+                    </div>
+                </div>
+                <!-- คลินิกสุขภาพเด็กดี (Well-baby Clinic) -->
+                <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200 space-y-4 ai-card-glow">
+                    <div class="w-14 h-14 rounded-2xl bg-cyan-50 text-cyan-600 flex items-center justify-center text-2xl">
+                        <i class="fa-solid fa-syringe"></i>
+                    </div>
+                    <h3 class="text-xl font-bold text-slate-900">คลินิกสุขภาพเด็กดี (Well-baby Clinic)</h3>
+                    <p class="text-slate-600 text-sm">ตรวจพัฒนาการเด็ก และให้บริการฉีดวัคซีนสร้างเสริมภูมิคุ้มกันโรค</p>
+                    <div class="pt-4 border-t border-slate-100 flex items-center justify-between text-xs text-slate-500">
+                        <span><i class="fa-regular fa-clock mr-1"></i> ทุกวันอังคาร 08:30 - 12:00 น.</span>
+                        <button onclick="bookQueue('คลินิกสุขภาพเด็กดี (Well-baby Clinic)')" class="text-aiBlue-600 font-semibold hover:underline">จองคิวออนไลน์</button>
+                    </div>
+                </div>
+                <!-- คลินิกวางแผนครอบครัวและวัยรุ่น -->
+                <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200 space-y-4 ai-card-glow">
+                    <div class="w-14 h-14 rounded-2xl bg-rose-50 text-rose-600 flex items-center justify-center text-2xl">
+                        <i class="fa-solid fa-heart"></i>
+                    </div>
+                    <h3 class="text-xl font-bold text-slate-900">คลินิกวางแผนครอบครัวและวัยรุ่น</h3>
+                    <p class="text-slate-600 text-sm">ให้คำปรึกษาเรื่องการคุมกำเนิด บริการแจกยาเม็ดคุมกำเนิด หรือบริการฝังเข็มคุมกำเนิด</p>
+                    <div class="pt-4 border-t border-slate-100 flex items-center justify-between text-xs text-slate-500">
+                        <span><i class="fa-regular fa-clock mr-1"></i> ทุกวันพุธ 13:00 - 16:00 น.</span>
+                        <button onclick="bookQueue('คลินิกวางแผนครอบครัวและวัยรุ่น')" class="text-aiBlue-600 font-semibold hover:underline">จองคิวออนไลน์</button>
                     </div>
                 </div>
                 <!-- Clinic 3 -->
@@ -746,6 +770,30 @@ button[onclick="toggleAIChat()"].w-14::before{content:"";position:absolute;inset
                     <div class="pt-4 border-t border-slate-100 flex items-center justify-between text-xs text-slate-500">
                         <span><i class="fa-regular fa-clock mr-1"></i> ทุกวันพฤหัสบดี 08:30 - 12:00 น.</span>
                         <button onclick="bookQueue('คลินิกผู้สูงอายุ & กายภาพ')" class="text-aiBlue-600 font-semibold hover:underline">จองคิวออนไลน์</button>
+                    </div>
+                </div>
+                <!-- คลินิกทันตกรรม -->
+                <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200 space-y-4 ai-card-glow">
+                    <div class="w-14 h-14 rounded-2xl bg-violet-50 text-violet-600 flex items-center justify-center text-2xl">
+                        <i class="fa-solid fa-tooth"></i>
+                    </div>
+                    <h3 class="text-xl font-bold text-slate-900">คลินิกทันตกรรม</h3>
+                    <p class="text-slate-600 text-sm">ตรวจสุขภาพช่องปาก ขูดหินปูน อุดฟัน ถอนฟัน เคลือบหลุมร่องฟัน ทาฟลูออไรด์ และให้ทันตสุขศึกษาแก่เด็กและผู้สูงอายุ</p>
+                    <div class="pt-4 border-t border-slate-100 flex items-center justify-between text-xs text-slate-500">
+                        <span><i class="fa-regular fa-clock mr-1"></i> ทุกวันจันทร์ 08:30 - 12:00 น.</span>
+                        <button onclick="bookQueue('คลินิกทันตกรรม')" class="text-aiBlue-600 font-semibold hover:underline">จองคิวออนไลน์</button>
+                    </div>
+                </div>
+                <!-- คลินิกแพทย์แผนไทย -->
+                <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200 space-y-4 ai-card-glow">
+                    <div class="w-14 h-14 rounded-2xl bg-emerald-50 text-emerald-600 flex items-center justify-center text-2xl">
+                        <i class="fa-solid fa-leaf"></i>
+                    </div>
+                    <h3 class="text-xl font-bold text-slate-900">คลินิกแพทย์แผนไทย</h3>
+                    <p class="text-slate-600 text-sm">บริการนวดไทยเพื่อรักษา ประคบสมุนไพร อบสมุนไพร และจ่ายยาสมุนไพร ดูแลอาการปวดเมื่อยกล้ามเนื้อ ออฟฟิศซินโดรม และฟื้นฟูสุขภาพ</p>
+                    <div class="pt-4 border-t border-slate-100 flex items-center justify-between text-xs text-slate-500">
+                        <span><i class="fa-regular fa-clock mr-1"></i> ทุกวันศุกร์ 08:30 - 12:00 น.</span>
+                        <button onclick="bookQueue('คลินิกแพทย์แผนไทย')" class="text-aiBlue-600 font-semibold hover:underline">จองคิวออนไลน์</button>
                     </div>
                 </div>
                 <!-- Clinic 4: LTC system (opens in new tab) -->
@@ -788,8 +836,12 @@ button[onclick="toggleAIChat()"].w-14::before{content:"";position:absolute;inset
                                 <label class="block text-xs font-semibold text-slate-600 mb-1">เลือกบริการ</label>
                                 <select id="booking-service" class="w-full px-4 py-2 rounded-xl border border-slate-200 text-sm focus:outline-none focus:border-aiBlue-500 bg-white">
                                     <option>คลินิกโรคเรื้อรัง (NCD)</option>
-                                    <option>คลินิกแม่และเด็ก / วัคซีน</option>
+                                    <option>คลินิกอนามัยแม่และเด็ก</option>
+                                    <option>คลินิกสุขภาพเด็กดี (Well-baby Clinic)</option>
                                     <option>คลินิกผู้สูงอายุ & กายภาพ</option>
+                                    <option>คลินิกวางแผนครอบครัวและวัยรุ่น</option>
+                                    <option>คลินิกทันตกรรม</option>
+                                    <option>คลินิกแพทย์แผนไทย</option>
                                     <option>ตรวจสุขภาพทั่วไป / รับยาเดิม</option>
                                 </select>
                             </div>
@@ -2268,7 +2320,7 @@ async function crXls(){
             setTimeout(() => {
                 let reply = "ขอบคุณสำหรับคำถามครับ สำหรับ รพ.สต.บ้านนายอ ต.สร้างค้อ อ.ภูพาน จ.สกลนคร เปิดให้บริการวันจันทร์-ศุกร์ 08.30-16.30 น. หากต้องการปรึกษาโรคหรือจองคิว สามารถเลือกเมนูบริการประชาชนด้านบนได้เลยครับ";
                 if(msg.includes('เวลา') || msg.includes('คลินิก')) {
-                    reply = "คลินิกโรคเรื้อรัง (NCD) เปิดวันพุธ, คลินิกแม่และเด็กเปิดวันอังคาร และคลินิกผู้สูงอายุเปิดวันพฤหัสบดี เวลา 08.30 - 12.00 น. ครับ";
+                    reply = "คลินิกทันตกรรมเปิดวันจันทร์, คลินิกอนามัยแม่และเด็กและคลินิกสุขภาพเด็กดี (Well-baby Clinic) เปิดวันอังคาร, คลินิกโรคเรื้อรัง (NCD) เปิดวันพุธ, คลินิกวางแผนครอบครัวและวัยรุ่นเปิดวันพุธ เวลา 13.00 - 16.00 น., คลินิกผู้สูงอายุเปิดวันพฤหัสบดี และคลินิกแพทย์แผนไทยเปิดวันศุกร์ เวลา 08.30 - 12.00 น. ครับ";
                 } else if(msg.includes('จอง')) {
                     reply = "ท่านสามารถเลื่อนไปที่หน้า 'บริการประชาชน' เพื่อกรอกฟอร์มจองคิวออนไลน์ล่วงหน้าได้ทันทีครับ สะดวกและไม่ต้องรอนาน!";
                 } else if(msg.includes('เบอร์') || msg.includes('ติดต่อ')) {
@@ -3333,7 +3385,7 @@ ORIG.staff=SC.map(c=>{const i=c.querySelector('img');IMG0.push(i.src);return{nam
 ORIG.ai={welcome:'สวัสดีครับ! ผมคือ AI ผู้ช่วยสุขภาพประจำ รพ.สต.บ้านนายอ ต.สร้างค้อ อ.ภูพาน จ.สกลนคร มีอะไรให้ผมช่วยวันนี้ครับ? เช่น ตรวจสอบวันฉีดวัคซีน คลินิกเปิดทำการ หรือปรึกษาอาการเบื้องต้น',
  def:'ขอบคุณสำหรับคำถามครับ สำหรับ รพ.สต.บ้านนายอ ต.สร้างค้อ อ.ภูพาน จ.สกลนคร เปิดให้บริการวันจันทร์-ศุกร์ 08.30-16.30 น. หากต้องการปรึกษาโรคหรือจองคิว สามารถเลือกเมนูบริการประชาชนด้านบนได้เลยครับ',
  prompts:[{label:'🕒 เวลาเปิดคลินิก',q:'คลินิกโรคเรื้อรังเปิดวันไหนบ้าง?'},{label:'📅 จองคิวออนไลน์',q:'วิธีจองคิวรับบริการออนไลน์'},{label:'📞 เบอร์ติดต่อ',q:'ติดต่อเจ้าหน้าที่ รพ.สต.'}],
- rules:[{keys:'เวลา,คลินิก',reply:'คลินิกโรคเรื้อรัง (NCD) เปิดวันพุธ, คลินิกแม่และเด็กเปิดวันอังคาร และคลินิกผู้สูงอายุเปิดวันพฤหัสบดี เวลา 08.30 - 12.00 น. ครับ'},{keys:'จอง',reply:"ท่านสามารถเลื่อนไปที่หน้า 'บริการประชาชน' เพื่อกรอกฟอร์มจองคิวออนไลน์ล่วงหน้าได้ทันทีครับ สะดวกและไม่ต้องรอนาน!"},{keys:'เบอร์,ติดต่อ',reply:'ท่านสามารถติดต่อ รพ.สต.บ้านนายอ ได้ที่เบอร์ 042-163-603 หรือติดต่อผ่าน อสม. ประจำคุ้มบ้านของท่านได้เลยครับ'}]};
+ rules:[{keys:'เวลา,คลินิก',reply:'คลินิกทันตกรรมเปิดวันจันทร์, คลินิกอนามัยแม่และเด็กและคลินิกสุขภาพเด็กดี (Well-baby Clinic) เปิดวันอังคาร, คลินิกโรคเรื้อรัง (NCD) เปิดวันพุธ, คลินิกวางแผนครอบครัวและวัยรุ่นเปิดวันพุธ เวลา 13.00 - 16.00 น., คลินิกผู้สูงอายุเปิดวันพฤหัสบดี และคลินิกแพทย์แผนไทยเปิดวันศุกร์ เวลา 08.30 - 12.00 น. ครับ'},{keys:'จอง',reply:"ท่านสามารถเลื่อนไปที่หน้า 'บริการประชาชน' เพื่อกรอกฟอร์มจองคิวออนไลน์ล่วงหน้าได้ทันทีครับ สะดวกและไม่ต้องรอนาน!"},{keys:'เบอร์,ติดต่อ',reply:'ท่านสามารถติดต่อ รพ.สต.บ้านนายอ ได้ที่เบอร์ 042-163-603 หรือติดต่อผ่าน อสม. ประจำคุ้มบ้านของท่านได้เลยครับ'}]};
 // ---- แสดงผลบนหน้าเว็บสาธารณะ ----
 let NEWS=[],AI=null;
 function rStats(l){const g=document.querySelector('.hero-card .grid');if(g)g.innerHTML=arrOf(l).map(s=>`<div class="bg-sky-900/30 p-4 rounded-xl border border-white/20"><p class="text-slate-400 text-xs">${E(s.label)}</p><p class="text-2xl font-bold ${NC[s.color]||NC.cyan} mt-1">${E(s.value)} <span class="text-xs text-slate-300 font-normal">${E(s.unit)}</span></p></div>`).join('')}
