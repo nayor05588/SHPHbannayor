@@ -867,6 +867,18 @@ button[onclick="toggleAIChat()"].w-14::before{content:"";position:absolute;inset
                     </div>
                 </div>
             </div>
+
+            <!-- Booking success + daily queue board -->
+            <div id="booking-success" class="hidden"></div>
+            <section id="booking-board" class="bg-white rounded-3xl border border-slate-200 shadow-sm p-6 sm:p-8 space-y-5">
+                <div class="flex flex-wrap items-end justify-between gap-3">
+                    <div>
+                        <h3 class="text-xl sm:text-2xl font-bold text-slate-900"><i class="fa-solid fa-table-list text-aiBlue-600 mr-2"></i>ตารางจองคิวล่วงหน้า (รายวัน)</h3>
+                        <p class="text-sm text-slate-500 mt-1">แสดงคิวที่จองสำเร็จแล้วตั้งแต่วันนี้เป็นต้นไป แยกตามวัน เพื่อความเป็นส่วนตัว ชื่อผู้จองจะแสดงเพียงบางส่วน และไม่แสดงเบอร์โทรศัพท์</p>
+                    </div>
+                </div>
+                <div id="booking-board-body" class="space-y-5"><p class="text-sm text-slate-400">กำลังโหลดตารางคิว...</p></div>
+            </section>
         </div>
 
         <!-- ==================== TAB: SATISFACTION SURVEY ==================== -->
@@ -2277,17 +2289,8 @@ async function crXls(){
         }
 
         function submitBooking() {
-            const name = document.getElementById('booking-name').value;
-            const phone = document.getElementById('booking-phone').value;
-            const date = document.getElementById('booking-date').value;
-            if(!name || !phone || !date) {
-                showToast('กรุณากรอกข้อมูลการจองให้ครบถ้วน');
-                return;
-            }
-            showToast('จองคิวสำเร็จ! ระบบส่ง SMS ยืนยันแล้ว');
-            document.getElementById('booking-name').value = '';
-            document.getElementById('booking-phone').value = '';
-            document.getElementById('booking-date').value = '';
+            if (window.bookingSubmit) return window.bookingSubmit();
+            showToast('ระบบจองคิวยังไม่พร้อมใช้งาน กรุณาลองใหม่อีกครั้ง');
         }
 
 
@@ -3572,5 +3575,71 @@ try{DB.listen('site',d=>{DATA=d;if(d.stats)rStats(d.stats);if(d.clinics)rClin(d.
 })();
 </script>
 
+
+<script>
+// ===== ระบบจองคิวล่วงหน้า : บันทึกลง Firebase + ตารางรายวัน + แจ้งเตือนกลุ่มไลน์ (ผ่าน Google Apps Script) =====
+(function(){
+// วาง URL ของ Web app (Google Apps Script) ที่นี่ เพื่อให้แจ้งเตือนเข้ากลุ่มไลน์ รพ.สต. (ดูไฟล์ line-booking-relay.gs) ถ้าเว้นว่างจะยังจองคิวและแสดงตารางได้ตามปกติ แต่ไม่ส่งไลน์
+const LINE_RELAY_URL='';
+const $=id=>document.getElementById(id), esc=v=>escapeHTML(String(v==null?'':v));
+const WD=['อาทิตย์','จันทร์','อังคาร','พุธ','พฤหัสบดี','ศุกร์','เสาร์'];
+const MM=['ม.ค.','ก.พ.','มี.ค.','เม.ย.','พ.ค.','มิ.ย.','ก.ค.','ส.ค.','ก.ย.','ต.ค.','พ.ย.','ธ.ค.'];
+const today=()=>{const d=new Date();return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0')};
+const thDate=iso=>{const p=iso.split('-'),d=new Date(+p[0],+p[1]-1,+p[2]);return 'วัน'+WD[d.getDay()]+'ที่ '+(+p[2])+' '+MM[+p[1]-1]+' '+(+p[0]+543)};
+const PRE=/^(นางสาว|นาย|นาง|น\.ส\.|ด\.ช\.|ด\.ญ\.|เด็กชาย|เด็กหญิง)\s*/;
+const mask=n=>Array.from(n.trim().replace(PRE,'')).slice(0,2).join('')+'***';
+let busy=false,DAYS={};const MINE={};
+
+function draw(){
+  const box=$('booking-board-body');if(!box)return;
+  const t=today(),dates=Object.keys(DAYS||{}).filter(d=>d>=t).sort().slice(0,14);
+  if(!dates.length){box.innerHTML='<p class="text-sm text-slate-500 bg-slate-50 border border-dashed border-slate-200 rounded-2xl p-5 text-center">ยังไม่มีการจองคิวล่วงหน้า</p>';return}
+  box.innerHTML=dates.map(d=>{
+    const rows=Object.entries(DAYS[d]||{}).map(([id,v])=>Object.assign({id},v)).sort((a,b)=>String(a.svc||'').localeCompare(String(b.svc||''),'th')||(a.no||0)-(b.no||0));
+    return '<div class="border border-slate-200 rounded-2xl overflow-hidden"><div class="flex items-center justify-between bg-aiBlue-50 px-4 py-3"><h4 class="font-bold text-slate-900 text-sm sm:text-base"><i class="fa-regular fa-calendar-check text-aiBlue-600 mr-2"></i>'+esc(thDate(d))+'</h4><span class="text-xs font-semibold text-aiBlue-600 bg-white rounded-full px-3 py-1 border border-sky-100">'+rows.length+' คิว</span></div>'
+     +'<div class="overflow-x-auto"><table class="w-full text-sm"><thead><tr class="text-left text-xs text-slate-500 border-b border-slate-100"><th class="px-4 py-2 font-semibold">คิวที่</th><th class="px-4 py-2 font-semibold">บริการ</th><th class="px-4 py-2 font-semibold">ผู้จอง</th><th class="px-4 py-2 font-semibold">สถานะ</th></tr></thead><tbody>'
+     +rows.map(r=>'<tr class="border-b border-slate-50 '+(MINE[r.id]?'bg-emerald-50':'')+'"><td class="px-4 py-2.5 font-bold text-aiBlue-600">'+esc(r.no)+'</td><td class="px-4 py-2.5 text-slate-700">'+esc(r.svc)+'</td><td class="px-4 py-2.5 text-slate-700">'+esc(r.nm)+(MINE[r.id]?' <span class="text-xs text-emerald-600 font-semibold">(คิวของท่าน)</span>':'')+'</td><td class="px-4 py-2.5"><span class="inline-flex items-center gap-1 text-xs font-semibold text-emerald-700 bg-emerald-100 rounded-full px-2.5 py-1"><i class="fa-solid fa-circle-check"></i> จองสำเร็จ</span></td></tr>').join('')
+     +'</tbody></table></div></div>';
+  }).join('')}
+
+function relay(b){
+  if(!LINE_RELAY_URL)return;
+  try{fetch(LINE_RELAY_URL,{method:'POST',mode:'no-cors',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify(b)}).catch(()=>{})}catch(e){}
+}
+
+window.bookingSubmit=async function(){
+  if(busy)return;
+  const name=$('booking-name').value.trim(),phone=$('booking-phone').value.replace(/[\s-]/g,''),sel=$('booking-service'),date=$('booking-date').value,svc=sel.value,si=sel.selectedIndex;
+  if(!name||!phone||!date){showToast('กรุณากรอกข้อมูลการจองให้ครบถ้วน');return}
+  if(!/^0\d{8,9}$/.test(phone)){showToast('กรุณากรอกเบอร์โทรศัพท์ให้ถูกต้อง (9-10 หลัก)');return}
+  if(date<today()){showToast('กรุณาเลือกวันที่ตั้งแต่วันนี้เป็นต้นไป');return}
+  if(typeof DB==='undefined'){showToast('ระบบจองคิวยังไม่พร้อมใช้งาน กรุณาติดต่อเจ้าหน้าที่');return}
+  busy=true;const btn=document.querySelector('[onclick="submitBooking()"]');if(btn){btn.disabled=true;btn.classList.add('opacity-60')}
+  try{
+    const tx=await DB.txn('queueCounter/'+date+'/s'+si,n=>(n||0)+1);
+    if(!tx||!tx.committed)throw new Error('ไม่สามารถออกเลขคิวได้ กรุณาลองใหม่');
+    const no=tx.snapshot.val();
+    const ref=DB.push('queue/'+date,{no:no,svc:svc,nm:mask(name)});await ref;
+    MINE[ref.key]=1;
+    try{await DB.push('bookings_private/'+date,{qid:ref.key,no:no,svc:svc,name:name,phone:phone})}catch(e){}
+    relay({date:date,no:no,svc:svc,name:name,phone:phone});
+    const ok=$('booking-success');
+    ok.className='bg-emerald-50 border border-emerald-200 rounded-3xl p-6 sm:p-8 flex flex-col sm:flex-row items-center gap-5 text-center sm:text-left';
+    ok.innerHTML='<div class="w-20 h-20 shrink-0 rounded-2xl bg-white border border-emerald-200 flex flex-col items-center justify-center"><span class="text-[11px] text-emerald-700 font-semibold">คิวที่</span><span class="text-3xl font-extrabold text-emerald-600 leading-none">'+esc(no)+'</span></div>'
+      +'<div class="space-y-1"><h3 class="text-xl font-bold text-emerald-700"><i class="fa-solid fa-circle-check mr-2"></i>จองคิวสำเร็จ</h3><p class="text-slate-700 text-sm">'+esc(svc)+' · '+esc(thDate(date))+'</p><p class="text-slate-500 text-xs">กรุณาจดหรือแคปหน้าจอเลขคิวนี้ และแสดงต่อเจ้าหน้าที่เมื่อมารับบริการ</p></div>';
+    ok.scrollIntoView({behavior:'smooth',block:'center'});
+    $('booking-name').value='';$('booking-phone').value='';$('booking-date').value='';
+    showToast('จองคิวสำเร็จ คิวที่ '+no);
+  }catch(e){showToast('จองคิวไม่สำเร็จ: '+(e&&e.message||e))}
+  finally{busy=false;if(btn){btn.disabled=false;btn.classList.remove('opacity-60')}}
+};
+
+(function init(n){
+  const d=$('booking-date');if(d)d.min=today();
+  if(typeof DB==='undefined'){if(n<20)return setTimeout(()=>init(n+1),500);$('booking-board-body').innerHTML='<p class="text-sm text-rose-600">ไม่สามารถเชื่อมต่อฐานข้อมูลเพื่อแสดงตารางคิวได้</p>';return}
+  try{DB.listen('queue',v=>{DAYS=v||{};draw()},()=>{$('booking-board-body').innerHTML='<p class="text-sm text-rose-600">ไม่สามารถโหลดตารางคิวได้ ตรวจสอบสิทธิ์ (Rules) ของ Firebase</p>'})}catch(e){}
+})(0);
+})();
+</script>
 </body>
 </html>
