@@ -3304,10 +3304,11 @@ function hashPw(user,pw){
         return h+'</table>';
     }
     function cwPickInline(m){const t=cwTeamOf(document.getElementById('cwa-'+m+'-tm').value),w=document.getElementById('cwa-'+m+'-w');if(t&&w)w.value=t.members;}
+    function cwNotify(o){try{if(window.lineRelay)window.lineRelay({kind:'work',date:o.date,time:o.time||'',title:o.title,place:o.place||'',team:cwWho(o)})}catch(e){console.warn('work notify failed',e)}}
     async function cwAddInline(m){
         const g=i=>document.getElementById('cwa-'+m+'-'+i).value.trim(), o={date:g('d'),time:g('t'),title:g('ti'),place:g('p'),team:g('tm'),who:g('w')};
         if(!o.date||!o.title){showToast('กรุณากรอกวันที่และชื่องาน/กิจกรรม');return;}
-        try{await DB.push('commonEvents',o);showToast('เพิ่มกิจกรรมลงตารางแล้ว');}catch(e){showToast('เพิ่มไม่สำเร็จ: '+e.message);}
+        try{await DB.push('commonEvents',o);cwNotify(o);showToast('เพิ่มกิจกรรมลงตารางแล้ว');}catch(e){showToast('เพิ่มไม่สำเร็จ: '+e.message);}
     }
     function cwEditFrom(id){cwOpen('list');cwEvForm(id);}
     function cwDash(){
@@ -3356,7 +3357,7 @@ function hashPw(user,pw){
     async function cwEvSave(id){
         const g=i=>document.getElementById(i).value.trim(), o={date:g('cw-d'),time:g('cw-t'),title:g('cw-ti'),place:g('cw-p'),team:g('cw-tm'),who:g('cw-w')};
         if(!o.date||!o.title){showToast('กรุณากรอกวันที่และชื่องาน/กิจกรรม');return;}
-        try{if(id==='new')await DB.push('commonEvents',o);else await rtdb.ref('commonEvents/'+id).update(o);showToast('บันทึกกิจกรรมแล้ว');cwEvForm('');}catch(e){showToast('บันทึกไม่สำเร็จ: '+e.message);}
+        try{if(id==='new'){await DB.push('commonEvents',o);cwNotify(o);}else await rtdb.ref('commonEvents/'+id).update(o);showToast('บันทึกกิจกรรมแล้ว');cwEvForm('');}catch(e){showToast('บันทึกไม่สำเร็จ: '+e.message);}
     }
     async function cwEvDel(id){if(!confirm('ลบกิจกรรมนี้?'))return;try{await rtdb.ref('commonEvents/'+id).remove();}catch(e){showToast('ลบไม่สำเร็จ: '+e.message);}}
     function cwTeamForm(no){
