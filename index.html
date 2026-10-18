@@ -3604,7 +3604,15 @@ function draw(){
 
 function relay(b){
   if(!LINE_RELAY_URL)return;
-  try{fetch(LINE_RELAY_URL,{method:'POST',mode:'no-cors',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify(b)}).catch(()=>{})}catch(e){}
+  const body=JSON.stringify(b);
+  console.log('relay ->',LINE_RELAY_URL,body);
+  let sent=false;
+  try{
+    if(navigator.sendBeacon){sent=navigator.sendBeacon(LINE_RELAY_URL,new Blob([body],{type:'text/plain;charset=utf-8'}))}
+  }catch(e){console.warn('beacon failed',e)}
+  if(!sent){
+    try{fetch(LINE_RELAY_URL,{method:'POST',mode:'no-cors',keepalive:true,headers:{'Content-Type':'text/plain;charset=utf-8'},body:body}).catch(e=>console.warn('relay failed',e))}catch(e){console.warn('relay failed',e)}
+  }
 }
 
 window.bookingSubmit=async function(){
@@ -3619,10 +3627,10 @@ window.bookingSubmit=async function(){
     const tx=await DB.txn('queueCounter/'+date+'/s'+si,n=>(n||0)+1);
     if(!tx||!tx.committed)throw new Error('ไม่สามารถออกเลขคิวได้ กรุณาลองใหม่');
     const no=tx.snapshot.val();
+    relay({date:date,no:no,svc:svc,name:name,phone:phone});
     const ref=DB.push('queue/'+date,{no:no,svc:svc,nm:mask(name)});await ref;
     MINE[ref.key]=1;
     try{await DB.push('bookings_private/'+date,{qid:ref.key,no:no,svc:svc,name:name,phone:phone})}catch(e){}
-    relay({date:date,no:no,svc:svc,name:name,phone:phone});
     const ok=$('booking-success');
     ok.className='bg-emerald-50 border border-emerald-200 rounded-3xl p-6 sm:p-8 flex flex-col sm:flex-row items-center gap-5 text-center sm:text-left';
     ok.innerHTML='<div class="w-20 h-20 shrink-0 rounded-2xl bg-white border border-emerald-200 flex flex-col items-center justify-center"><span class="text-[11px] text-emerald-700 font-semibold">คิวที่</span><span class="text-3xl font-extrabold text-emerald-600 leading-none">'+esc(no)+'</span></div>'
