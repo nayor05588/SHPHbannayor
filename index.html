@@ -3392,14 +3392,6 @@ function hashPw(user,pw){
         DB.listen('commonTeams',d=>{cwTeams=Object.values(d||{}).filter(t=>t&&t.no).sort((a,b)=>(+a.no)-(+b.no));cwRender();},()=>{});
     }
     document.addEventListener('keydown',e=>{if(e.key==='Escape')cwClose();});
-    // public queue booking -> /bookings
-    window.submitBooking=function(){
-        const g=i=>document.getElementById(i), name=g('booking-name').value.trim(), phone=g('booking-phone').value.trim(), date=g('booking-date').value;
-        if(!name||!phone||!date){showToast('กรุณากรอกข้อมูลการจองให้ครบถ้วน');return;}
-        DB.push('bookings',{name:name,phone:phone,service:g('booking-service').value,date:date,status:'new'})
-          .then(()=>{showToast('จองคิวสำเร็จ! บันทึกข้อมูลเรียบร้อยแล้ว');['booking-name','booking-phone','booking-date'].forEach(i=>g(i).value='');})
-          .catch(e=>showToast('จองคิวไม่สำเร็จ: '+e.message));
-    };
     </script>
 <script>
 // ===== จัดการหน้าเวป (CMS) : เก็บข้อมูลที่ Firebase  site/{stats,clinics,news,staff,ai} =====
