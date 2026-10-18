@@ -1256,9 +1256,16 @@ button[onclick="toggleAIChat()"].w-14::before{content:"";position:absolute;inset
         </div>
     </div>
 
+    <!-- Image Lightbox (ดูภาพขนาดจริง) -->
+    <div id="img-lightbox" class="fixed inset-0 z-[70] bg-slate-900/90 hidden flex items-center justify-center p-4 cursor-zoom-out" onclick="closeImgView()">
+        <button type="button" onclick="closeImgView()" aria-label="ปิดภาพ" class="absolute top-4 right-4 w-10 h-10 rounded-full bg-white/15 text-white text-xl hover:bg-white/30"><i class="fa-solid fa-xmark"></i></button>
+        <img id="img-lightbox-img" src="" alt="" class="max-w-full max-h-full object-contain rounded-xl shadow-2xl" onclick="event.stopPropagation()">
+    </div>
+
     <!-- News Detail Modal -->
     <div id="news-modal" class="fixed inset-0 z-50 bg-slate-900/40 backdrop-blur-sm hidden flex items-center justify-center p-4">
         <div class="bg-white max-w-lg w-full rounded-3xl p-6 space-y-4 shadow-2xl border border-slate-100">
+            <img id="news-modal-img" src="" alt="" onclick="openImgView(this.src)" title="คลิกเพื่อดูภาพขนาดจริง" class="hidden w-full max-h-64 object-cover rounded-2xl cursor-zoom-in">
             <h3 id="news-modal-title" class="text-xl font-bold text-slate-900">หัวข้อข่าว</h3>
             <p id="news-modal-desc" class="text-slate-600 text-sm leading-relaxed">รายละเอียดข่าวสาร...</p>
             <div class="pt-4 border-t border-slate-100 flex justify-end">
@@ -2209,11 +2216,23 @@ async function crXls(){
         function openNewsModal(title, desc) {
             document.getElementById('news-modal-title').innerText = title;
             document.getElementById('news-modal-desc').innerText = desc;
+            const mi = document.getElementById('news-modal-img');
+            if (mi) { mi.classList.add('hidden'); mi.removeAttribute('src'); }
             document.getElementById('news-modal').classList.remove('hidden');
         }
         function closeNewsModal() {
             document.getElementById('news-modal').classList.add('hidden');
         }
+        function openImgView(u) {
+            if (!u) return;
+            document.getElementById('img-lightbox-img').src = u;
+            document.getElementById('img-lightbox').classList.remove('hidden');
+        }
+        function closeImgView() {
+            document.getElementById('img-lightbox').classList.add('hidden');
+            document.getElementById('img-lightbox-img').src = '';
+        }
+        document.addEventListener('keydown', function (e) { if (e.key === 'Escape') closeImgView(); });
 
         // Repair Modal Functions
         function openRepairModal() {
@@ -3390,7 +3409,7 @@ ORIG.ai={welcome:'สวัสดีครับ! ผมคือ AI ผู้�
 let NEWS=[],AI=null;
 function rStats(l){const g=document.querySelector('.hero-card .grid');if(g)g.innerHTML=arrOf(l).map(s=>`<div class="bg-sky-900/30 p-4 rounded-xl border border-white/20"><p class="text-slate-400 text-xs">${E(s.label)}</p><p class="text-2xl font-bold ${NC[s.color]||NC.cyan} mt-1">${E(s.value)} <span class="text-xs text-slate-300 font-normal">${E(s.unit)}</span></p></div>`).join('')}
 function rClin(l){CG.innerHTML=arrOf(l).map(c=>{const k=CN[c.color]?c.color:'aiBlue',u=okUrl(c.url),in_=`<div class="w-14 h-14 rounded-2xl bg-${k}-50 text-${k}-600 flex items-center justify-center text-2xl"><i class="${okIcon(c.icon)?c.icon:'fa-solid fa-stethoscope'}"></i></div><h3 class="text-xl font-bold text-slate-900">${E(c.title)}</h3><p class="text-slate-600 text-sm">${E(c.desc)}</p><div class="pt-4 border-t border-slate-100 flex items-center justify-between text-xs text-slate-500"><span>${u?'<i class="fa-solid fa-arrow-up-right-from-square mr-1"></i>':'<i class="fa-regular fa-clock mr-1"></i>'} ${E(c.time)}</span>${u?'':`<button data-t="${E(c.title)}" onclick="bookQueue(this.dataset.t)" class="text-aiBlue-600 font-semibold hover:underline">จองคิวออนไลน์</button>`}</div>`,cls='bg-white p-6 rounded-2xl shadow-sm border border-slate-200 space-y-4 ai-card-glow';return u?`<a href="${E(c.url)}" target="_blank" rel="noopener" class="${cls} block">${in_}</a>`:`<div class="${cls}">${in_}</div>`}).join('')}
-const imgH=(n,c)=>okImg(n.img)?`<img src="${E(n.img)}" alt="" loading="lazy" class="w-full h-full object-cover">`:`<div class="w-full h-full ai-gradient flex items-center justify-center text-white text-4xl"><i class="fa-solid fa-bullhorn"></i></div>`;
+const imgH=(n,c)=>okImg(n.img)?`<img src="${E(n.img)}" alt="${E(n.title)}" loading="lazy" title="คลิกเพื่อดูภาพขนาดจริง" onclick="openImgView(this.src)" class="w-full h-full object-cover cursor-zoom-in hover:scale-105 transition duration-300">`:`<div class="w-full h-full ai-gradient flex items-center justify-center text-white text-4xl"><i class="fa-solid fa-bullhorn"></i></div>`;
 function rNews(l){NEWS=arrOf(l);
  $('news-grid').innerHTML=NEWS.map((n,i)=>`<div class="news-item bg-white rounded-2xl overflow-hidden shadow-sm border border-slate-200 flex flex-col"><div class="h-48 bg-slate-200">${imgH(n)}</div><div class="p-6 flex-1 flex flex-col justify-between space-y-4"><div><span class="text-xs bg-aiBlue-50 text-aiBlue-600 px-2.5 py-1 rounded-full font-semibold">${E(n.cat)}</span><p class="text-xs text-slate-400 mt-2"><i class="fa-regular fa-calendar mr-1"></i> ${E(n.date)}${n.by?' | โดย '+E(n.by):''}</p><h3 class="font-bold text-slate-900 text-lg mt-1">${E(n.title)}</h3><p class="text-slate-600 text-sm mt-2">${E(n.desc)}</p></div><button onclick="WEB.news(${i})" class="w-full py-2.5 rounded-xl border border-aiBlue-500 text-aiBlue-600 hover:bg-aiBlue-50 text-sm font-medium">อ่านรายละเอียด</button></div></div>`).join('');
  const f=document.querySelector('.news-feature');if(f)f.innerHTML=NEWS.slice(0,3).map((n,i)=>`<div class="bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-md transition border border-slate-200 flex flex-col"><div class="h-48 bg-slate-200 relative overflow-hidden">${imgH(n)}<span class="absolute top-3 left-3 bg-aiBlue-600 text-white text-xs font-semibold px-3 py-1 rounded-full shadow">${E(n.cat)}</span></div><div class="p-6 flex-1 flex flex-col justify-between space-y-4"><div><p class="text-xs text-slate-400 mb-1"><i class="fa-regular fa-calendar mr-1"></i> ${E(n.date)}</p><h3 class="font-bold text-slate-900 text-lg line-clamp-2">${E(n.title)}</h3><p class="text-slate-600 text-sm mt-2 line-clamp-3">${E(n.desc)}</p></div><button onclick="WEB.news(${i})" class="text-aiBlue-600 text-sm font-semibold hover:underline flex items-center gap-1 self-start">อ่านเพิ่มเติม <i class="fa-solid fa-chevron-right text-xs"></i></button></div></div>`).join('')}
@@ -3406,7 +3425,7 @@ window.webAiReply=(m,r)=>{if(!AI)return r;const x=AI.rules.find(u=>String(u.keys
 const TT={stats:['สถานการณ์สุขภาพเดือนนี้','fa-chart-pie'],clinics:['คลินิกและบริการ','fa-user-doctor'],news:['ข่าวประชาสัมพันธ์','fa-bullhorn'],staff:['ทำเนียบบุคลากร','fa-users-rectangle'],ai:['AI หมอประจำบ้าน','fa-robot']};
 const F={stats:[['label','หัวข้อ'],['value','ตัวเลข/ค่าที่แสดง'],['unit','หน่วย'],['color','สีตัวเลข','c']],
  clinics:[['title','ชื่อคลินิก/บริการ'],['time','วัน-เวลาให้บริการ'],['desc','รายละเอียด','a'],['icon','ไอคอน (เช่น fa-solid fa-baby)'],['color','สีการ์ด','c'],['url','ลิงก์ระบบภายนอก (เว้นว่าง = ใช้ปุ่มจองคิว)']],
- news:[['title','หัวข้อข่าว'],['cat','ป้ายหมวด'],['date','วันที่ (เช่น 12 ต.ค. 2569)'],['by','โดย (หน่วยงาน)'],['img','ลิงก์รูปภาพ https://... (เว้นว่างได้)'],['desc','สรุปสั้น','a'],['body','เนื้อหาเต็ม (แสดงตอนกดอ่านรายละเอียด)','a']],
+ news:[['title','หัวข้อข่าว'],['cat','ป้ายหมวด'],['date','วันที่ (เช่น 12 ต.ค. 2569)'],['by','โดย (หน่วยงาน)'],['img','รูปภาพประกอบข่าว (อัปโหลด 1 ภาพ เว้นว่างได้)','i'],['desc','สรุปสั้น','a'],['body','เนื้อหาเต็ม (แสดงตอนกดอ่านรายละเอียด)','a']],
  staff:[['name','ชื่อ-สกุล'],['pos','ตำแหน่ง'],['img','ลิงก์รูป https://... (เว้นว่าง = ใช้รูปเดิม)'],['hide','ซ่อนจากหน้าเว็บ','k']],
  'ai.prompts':[['label','ข้อความบนปุ่ม'],['q','คำถามที่ส่งเมื่อกดปุ่ม']],
  'ai.rules':[['keys','คำที่จับ (คั่นด้วย ,)'],['reply','คำตอบของ AI','a']]};
@@ -3416,6 +3435,7 @@ function cur(k){if(!ST[k]){if(k==='ai'){const a=CL(Object.assign({},ORIG.ai,DATA
 const arr=n=>n.split('.').reduce((o,k)=>o[k],ST);
 function fld(n,i,f,v){const [k,l,t]=f,h=`WEB.set('${n}',${i},'${k}',`;
  if(t==='c')return `<label class="text-xs text-slate-500">${l}<select onchange="${h}this.value)" class="${IC}">${Object.keys(CN).map(c=>`<option value="${c}"${v===c?' selected':''}>${CN[c]}</option>`).join('')}</select></label>`;
+ if(t==='i'){const has=okImg(v);return `<div class="text-xs text-slate-500 md:col-span-2">${l}<div class="mt-1 flex flex-wrap items-center gap-3">${has?`<img src="${E(v)}" alt="" class="w-28 h-20 object-cover rounded-xl border border-sky-200 bg-slate-100">`:'<div class="w-28 h-20 rounded-xl border border-dashed border-sky-300 bg-white flex items-center justify-center text-sky-300 text-2xl"><i class="fa-regular fa-image"></i></div>'}<div class="space-y-2"><input type="file" accept="image/*" onchange="WEB.upImg('${n}',${i},'${k}',this)" class="block text-xs text-slate-600 file:mr-3 file:px-3 file:py-1.5 file:rounded-lg file:border-0 file:bg-sky-100 file:text-sky-800">${has?`<button type="button" class="text-rose-600" onclick="WEB.clrImg('${n}',${i},'${k}')">ลบรูปภาพ</button>`:''}</div></div></div>`}
  if(t==='k')return `<label class="text-sm flex items-center gap-2 pt-5"><input type="checkbox" ${v?'checked':''} onchange="${h}this.checked)"> ${l}</label>`;
  if(t==='a')return `<label class="text-xs text-slate-500 md:col-span-2">${l}<textarea rows="3" oninput="${h}this.value)" class="${IC}">${E(v)}</textarea></label>`;
  return `<label class="text-xs text-slate-500">${l}<input value="${E(v)}" oninput="${h}this.value)" class="${IC}"></label>`}
@@ -3426,7 +3446,7 @@ function draw(){const k=SEC;cur(k);
  let h='<div class="flex flex-wrap gap-2">'+Object.keys(TT).map(s=>`<button type="button" onclick="WEB.open('${s}')" class="px-4 py-2 rounded-xl text-sm font-medium border ${s===k?'ai-gradient text-white border-transparent':'bg-white text-sky-800 border-sky-200'}"><i class="fa-solid ${TT[s][1]} mr-1.5"></i>${TT[s][0]}</button>`).join('')+'</div>';
  if(k==='ai'){const a=ST.ai;h+=`<label class="block text-sm font-medium">ข้อความต้อนรับของ AI<textarea rows="3" oninput="WEB.ai('welcome',this.value)" class="${IC}">${E(a.welcome)}</textarea></label><label class="block text-sm font-medium">คำตอบทั่วไป (เมื่อไม่ตรงคำที่จับข้อใดเลย)<textarea rows="3" oninput="WEB.ai('def',this.value)" class="${IC}">${E(a.def)}</textarea></label>`+listEd('ai.prompts','ปุ่มคำถามด่วน')+listEd('ai.rules','ชุดคำถาม–คำตอบ (ตรวจตามลำดับ ข้อแรกที่ตรงจะถูกใช้)')}
  else{if(k==='stats')h+=panel43();h+=listEd(k,TT[k][0])}
- h+='<div class="flex flex-wrap gap-2 sticky bottom-3"><button type="button" onclick="WEB.save()" class="px-5 py-2.5 rounded-xl ai-gradient text-white font-medium shadow-lg"><i class="fa-solid fa-cloud-arrow-up mr-1.5"></i>บันทึกและเผยแพร่หมวดนี้</button><button type="button" onclick="WEB.reset()" class="px-4 py-2.5 rounded-xl bg-white border border-sky-200 text-sky-800 text-sm shadow">ย้อนกลับเป็นค่าที่เผยแพร่อยู่</button></div><p class="text-xs text-slate-500">รูปภาพใช้ลิงก์ https เท่านั้น • หมวดที่ยังไม่เคยบันทึกจะแสดงข้อมูลเดิมของหน้าเว็บ • บันทึกแล้วผู้เข้าชมเห็นทันที</p>';
+ h+='<div class="flex flex-wrap gap-2 sticky bottom-3"><button type="button" onclick="WEB.save()" class="px-5 py-2.5 rounded-xl ai-gradient text-white font-medium shadow-lg"><i class="fa-solid fa-cloud-arrow-up mr-1.5"></i>บันทึกและเผยแพร่หมวดนี้</button><button type="button" onclick="WEB.reset()" class="px-4 py-2.5 rounded-xl bg-white border border-sky-200 text-sky-800 text-sm shadow">ย้อนกลับเป็นค่าที่เผยแพร่อยู่</button></div><p class="text-xs text-slate-500">รูปภาพข่าวอัปโหลดได้ 1 ภาพต่อข่าว (ทำเนียบบุคลากรใช้ลิงก์ https) • หมวดที่ยังไม่เคยบันทึกจะแสดงข้อมูลเดิมของหน้าเว็บ • บันทึกแล้วผู้เข้าชมเห็นทันที</p>';
  $('web-body').innerHTML=h}
 // ---- ดึงสถิติจาก 43 แฟ้ม (ประมวลผลในเบราว์เซอร์ ไม่ส่งข้อมูลรายบุคคลออก) ----
 let F43=[],R43=null,M43=new Date().toISOString().slice(0,7);
@@ -3479,12 +3499,15 @@ async function calc43(){
  draw()}
 function panel43(){const L=R43&&R43.length?`<div class="overflow-x-auto"><table class="w-full text-sm bg-white rounded-xl border border-sky-100"><tbody>${R43.map(r=>`<tr class="border-b border-sky-50"><td class="p-2 font-medium">${E(r.label)}</td><td class="p-2 font-bold text-sky-700 whitespace-nowrap">${r.skip?'-':E(r.val)+' '+E(r.unit)}</td><td class="p-2 text-xs ${r.skip?'text-rose-600':'text-slate-500'}">${E(r.skip||r.note)}</td></tr>`).join('')}</tbody></table></div>${R43.some(r=>!r.skip)?'<button type="button" onclick="WEB.a43()" class="px-4 py-2 rounded-xl ai-gradient text-white text-sm"><i class="fa-solid fa-arrow-down mr-1.5"></i>นำค่าที่คำนวณได้ไปใส่ในการ์ดด้านล่าง</button>':''}`:'';
  return `<div class="bg-sky-50 border border-sky-200 rounded-2xl p-4 space-y-3"><h4 class="font-bold text-slate-800"><i class="fa-solid fa-file-import mr-1.5 text-sky-600"></i>ดึงข้อมูลจาก 43 แฟ้ม</h4><p class="text-xs text-slate-600">เลือกไฟล์ .csv/.txt โดยตั้งชื่อไฟล์ตามแฟ้ม เช่น service, ncdscreen, person, chronic, community_service, epi, anc ระบบคำนวณในเครื่องของท่านเท่านั้น ไม่ส่งข้อมูลรายบุคคลขึ้นเซิร์ฟเวอร์ เมื่อกดบันทึกจะเก็บเฉพาะตัวเลขสรุปในการ์ด ส่วน "AI ความพึงพอใจ" ระบบคำนวณอัตโนมัติจากแบบประเมินความพึงพอใจผู้ใช้บริการ ไม่ต้องกรอกเอง</p><div class="grid md:grid-cols-3 gap-2"><label class="text-xs text-slate-500">เดือนที่ต้องการสรุป<input type="month" value="${M43}" onchange="WEB.m43(this.value)" class="${IC}"></label><label class="text-xs text-slate-500 md:col-span-2">ไฟล์ 43 แฟ้ม (เลือกได้หลายไฟล์พร้อมกัน)<input type="file" multiple accept=".csv,.txt" onchange="WEB.f43(this)" class="${IC}"></label><label class="text-xs text-slate-500 md:col-span-3">รหัสบริการตรวจเยี่ยมบ้าน (ไม่บังคับ ค่าในคอลัมน์ COMSERVICE ของแฟ้ม community_service คั่นด้วย , เว้นว่าง = นับทุกรหัส) <input value="${E(C43())}" oninput="WEB.c43(this.value)" placeholder="ตรวจรหัสให้ตรงนิยามของหน่วยก่อนใช้" class="${IC}"></label></div>${window.SATSUM?SATSUM.html():''}${F43.length?`<p class="text-xs text-slate-500">ไฟล์ที่เลือก: ${E(F43.map(f=>f.name).join(', '))}</p>`:''}${L}</div>`}
-window.WEB={open(s){SEC=s;draw()},set(n,i,k,v){arr(n)[i][k]=v},ai(k,v){ST.ai[k]=v},
+window.WEB={open(s){SEC=s;draw()},set(n,i,k,v){arr(n)[i][k]=v},
+ async upImg(n,i,k,inp){const f=inp.files[0];if(!f)return;if(!/^image\//.test(f.type)){alert('กรุณาเลือกไฟล์ภาพ');inp.value='';return}
+  try{showToast('กำลังอัปโหลดรูปภาพ...');arr(n)[i][k]=await IMG.upload(f,'news-'+Date.now());draw();showToast('อัปโหลดรูปภาพแล้ว กดบันทึกและเผยแพร่เพื่อแสดงบนหน้าเว็บ')}catch(e){alert('อัปโหลดรูปไม่สำเร็จ: '+e.message);inp.value=''}},
+ clrImg(n,i,k){arr(n)[i][k]='';draw()},ai(k,v){ST.ai[k]=v},
  add(n){arr(n).push(n==='stats'?{color:'cyan'}:n==='clinics'?{color:'aiBlue',icon:'fa-solid fa-stethoscope'}:{});draw()},
  del(n,i){if(confirm('ลบรายการนี้?')){arr(n).splice(i,1);draw()}},
  mv(n,i,d){const a=arr(n),j=i+d;if(j<0||j>=a.length)return;[a[i],a[j]]=[a[j],a[i]];draw()},
  save(){if(!ST[SEC].length&&SEC!=='ai'){alert('ต้องมีอย่างน้อย 1 รายการ');return}DB.set('site/'+SEC,CL(ST[SEC])).then(()=>showToast('บันทึกและเผยแพร่ขึ้นหน้าเว็บแล้ว')).catch(e=>alert('บันทึกไม่ได้: '+e.message+'\nตรวจ Firebase Rules ให้เขียนที่ site/ ได้'))},
- reset(){delete ST[SEC];draw()},news(i){const n=NEWS[i]||{};openNewsModal(n.title||'',n.body||n.desc||'')}};
+ reset(){delete ST[SEC];draw()},news(i){const n=NEWS[i]||{};openNewsModal(n.title||'',n.body||n.desc||'');const mi=$('news-modal-img');if(mi&&okImg(n.img)){mi.src=n.img;mi.classList.remove('hidden')}}};
 Object.assign(WEB,{m43(v){M43=v||M43;calc43()},f43(i){F43=[...i.files];calc43()},c43(v){try{localStorage.setItem('web43codes',v)}catch(e){}if(R43)clearTimeout(WEB._t),WEB._t=setTimeout(calc43,600)},
  a43(){const st=ST.stats;(R43||[]).forEach(r=>{if(r.skip||!r.k)return;const t=st.find(x=>String(x.label||'').includes(r.k));if(t){t.value=r.val;t.unit=r.unit;if(r.k==='เยี่ยมบ้าน')t.label=r.label}else if(r.c)st.push({label:r.label,value:r.val,unit:r.unit,color:r.c})});draw();showToast('ใส่ค่าในการ์ดแล้ว ตรวจแล้วกด บันทึกและเผยแพร่')}});
 const sw=window.switchAdminSub;window.switchAdminSub=function(s){sw(s);if(s==='web')draw()};
