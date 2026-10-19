@@ -870,6 +870,15 @@ button[onclick="toggleAIChat()"].w-14::before{content:"";position:absolute;inset
 
             <!-- Booking success + daily queue board -->
             <div id="booking-success" class="hidden"></div>
+            <!-- หน้าต่างแจ้งเตือน สิทธิ์การจองคิวเต็ม -->
+            <div id="queue-full-modal" class="hidden fixed inset-0 z-[80] bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4" onclick="if(event.target===this)closeQueueFull()">
+                <div class="bg-white rounded-3xl shadow-2xl max-w-md w-full p-6 sm:p-8 text-center space-y-4" role="alertdialog" aria-modal="true" aria-labelledby="queue-full-title">
+                    <div class="w-16 h-16 mx-auto rounded-full bg-amber-100 text-amber-500 flex items-center justify-center text-3xl"><i class="fa-solid fa-triangle-exclamation"></i></div>
+                    <h3 id="queue-full-title" class="text-xl font-bold text-slate-900">สิทธิ์การจองคิวเต็มแล้ว</h3>
+                    <p class="text-slate-600 text-sm leading-relaxed">กราบขออภัยในความไม่สะดวก สิทธิ์การจองคิวเต็มแล้ว สามารถจองคิวได้ 5 คนต่อวัน</p>
+                    <button type="button" onclick="closeQueueFull()" class="w-full py-3 rounded-xl ai-gradient text-white font-bold shadow-md hover:opacity-95 transition">รับทราบ</button>
+                </div>
+            </div>
             <section id="booking-board" class="bg-white rounded-3xl border border-slate-200 shadow-sm p-6 sm:p-8 space-y-5">
                 <div class="flex flex-wrap items-end justify-between gap-3">
                     <div>
@@ -1558,7 +1567,7 @@ button[onclick="toggleAIChat()"].w-14::before{content:"";position:absolute;inset
         // ===== Core modules 2.1-2.9 =====
         const MODS=[
         {n:'2.1',t:'ระบบจัดการการลา',i:'fa-user-injured',c:'blue',g:[
-          ['งานการลา',['เขียนใบลา','ทะเบียนคุมการลา','สรุปการลา']]]},
+          ['งานการลา',['เขียนใบลากิจ','เขียนใบลาพักผ่อน','ทะเบียนคุมการลา','สรุปการลา']]]},
         {n:'2.2',t:'การขออนุญาตใช้รถยนต์ราชการ',d:'ขออนุญาตใช้รถ (พิมพ์แบบ 3) และรายงานการขออนุญาตใช้รถรายครั้ง',i:'fa-car',c:'emerald',g:[
           ['งานขอใช้รถยนต์ราชการ',['ขออนุญาตใช้รถ','รายงานการขออนุญาตใช้รถ']]]},
         {n:'2.3',t:'ผลงานตามตัวชี้วัด ปีงบ 2570',d:'บันทึกผลงาน 3 กลุ่ม พร้อมแดชบอร์ดผู้บริหาร',i:'fa-chart-line',c:'violet',g:[
@@ -1649,7 +1658,7 @@ button[onclick="toggleAIChat()"].w-14::before{content:"";position:absolute;inset
                 '<section class="mod-group"><h5><i class="fa-solid '+(GICON[g[0]]||iconFor(g[0],m.i))+'"></i>'+g[0]+'<span class="cnt">'+g[1].length+'</span></h5><ul>'
                 +g[1].map(x=>'<li><span class="li-ic"><i class="fa-solid '+iconFor(x,m.i)+'"></i></span><span class="tx">'+x+'</span></li>').join('')
                 +'</ul></section>').join('')+'</div>';
-            if(m.n==='2.1') box.querySelectorAll('li').forEach((li,i)=>{li.style.cursor='pointer';li.title='คลิกเพื่อเปิด';li.onclick=()=>openLeave(['form','register','summary'][i]);});
+            if(m.n==='2.1') box.querySelectorAll('li').forEach((li,i)=>{li.style.cursor='pointer';li.title='คลิกเพื่อเปิด';li.onclick=()=>openLeave(['form','vacation','register','summary'][i]);});
             if(m.n==='2.2') box.querySelectorAll('li').forEach((li,i)=>{li.style.cursor='pointer';li.title='คลิกเพื่อเปิด';li.onclick=()=>openCar(['form','report'][i]);});
             if(m.n==='2.3'){box.querySelectorAll('li').forEach((li,i)=>{li.style.cursor='pointer';li.title='คลิกเพื่อเปิด';li.onclick=()=>{if(i<3)kpOpen(i+1);else{const e=document.getElementById('kpi-exec');if(e)e.scrollIntoView({behavior:'smooth'});}};});box.insertAdjacentHTML('beforeend','<div id="kpi-exec"></div>');if(window.kpRenderExec)kpRenderExec();}
             if(m.n==='2.9') box.querySelectorAll('li').forEach((li,i)=>{li.style.cursor='pointer';li.title='คลิกเพื่อเปิด';li.onclick=()=>openClean(['form','dash','person','zones'][i]);});
@@ -1668,7 +1677,7 @@ button[onclick="toggleAIChat()"].w-14::before{content:"";position:absolute;inset
             const sd=document.getElementById('stat-docs'); if(sd) sd.textContent=document.querySelectorAll('#admin-sub-doc .doc-row').length;
         })();
 
-        // ===== ระบบจัดการการลา (เขียนใบลา / ทะเบียนคุม / สรุป) =====
+        // ===== ระบบจัดการการลา (เขียนใบลากิจ / ทะเบียนคุม / สรุป) =====
 const LV_TYPES=['ป่วย','กิจส่วนตัว','พักผ่อน','สาย','คลอดบุตร','ศึกษาอบรมดูงาน'], LV_KEY='rpst_leaves';
 let lvView='form', lvFYsel=null, lvEditId='';
 const lvEsc=x=>String(x==null?'':x).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
@@ -1704,7 +1713,7 @@ function lvEnsure(){
   document.head.appendChild(st);
   const m=document.createElement('div');m.id='lv-modal';
   m.innerHTML='<div class="lv-box"><div class="lv-top"><b id="lv-title"></b>'
-    +[['form','เขียนใบลา'],['register','ทะเบียนคุมการลา'],['summary','สรุปการลา']].map(v=>'<button type="button" class="lv-tab" id="lv-tab-'+v[0]+'" onclick="lvShow(\''+v[0]+'\')">'+v[1]+'</button>').join('')
+    +[['form','เขียนใบลากิจ'],['vacation','เขียนใบลาพักผ่อน'],['register','ทะเบียนคุมการลา'],['summary','สรุปการลา']].map(v=>'<button type="button" class="lv-tab" id="lv-tab-'+v[0]+'" onclick="lvShow(\''+v[0]+'\')">'+v[1]+'</button>').join('')
     +'<button type="button" class="lv-x" onclick="lvClose()">✕</button></div><div id="lv-body" oninput="lvChange(event)" onchange="lvChange(event)"></div></div>';
   document.body.appendChild(m);
   m.addEventListener('click',e=>{if(e.target===m)lvClose()});
@@ -1718,9 +1727,10 @@ function lvFYopts(recs){
 }
 function lvShow(v,keep){
   if(!keep)lvEditId='';lvView=v;const recs=lvLoad();
-  ['form','register','summary'].forEach(k=>$lv('lv-tab-'+k).classList.toggle('on',k===v));
-  $lv('lv-title').textContent={form:'แบบฟอร์มใบลา',register:'ทะเบียนคุมการลา',summary:'สรุปการลา'}[v];
+  ['form','vacation','register','summary'].forEach(k=>$lv('lv-tab-'+k).classList.toggle('on',k===v));
+  $lv('lv-title').textContent={form:'แบบฟอร์มใบลากิจ',vacation:'แบบใบลาพักผ่อน',register:'ทะเบียนคุมการลา',summary:'สรุปการลา'}[v];
   let h='';
+  if(v==='vacation'){vcForm(recs);return}
   if(v==='form'){
     const names=[...new Set(LV_ROSTER.map(x=>x[0]).concat(recs.map(r=>r.name)))];
     h='<datalist id="lv-names">'+names.map(n=>'<option value="'+lvEsc(n)+'">').join('')+'</datalist>'
@@ -1729,7 +1739,7 @@ function lvShow(v,keep){
     +'<div class="lv-g"><label>ชื่อ-สกุล (ข้าพเจ้า)<input id="lv-name" list="lv-names" placeholder="เช่น นางสมศรี ใจดี" autocomplete="off"></label>'
     +'<label>ตำแหน่ง<input id="lv-pos"></label><label>สังกัด<input id="lv-dept" value="รพ.สต.บ้านนายอ"></label>'
     +'<label>วันที่เขียนใบลา<input type="date" id="lv-written" value="'+lvToday()+'"></label></div>'
-    +'<div class="lv-sec">ประเภทการลา</div><div class="lv-seg">'+LV_TYPES.map((t,i)=>'<label><input type="radio" name="lv-type" value="'+t+'"'+(i?'':' checked')+'><span>'+lvName(t)+'</span></label>').join('')+'</div>'
+    +'<div class="lv-sec">ประเภทการลา</div><div class="lv-seg">'+['กิจส่วนตัว','ป่วย','คลอดบุตร','สาย','ศึกษาอบรมดูงาน'].map((t,i)=>'<label><input type="radio" name="lv-type" value="'+t+'"'+(i?'':' checked')+'><span>'+lvName(t)+'</span></label>').join('')+'</div>'
     +'<label style="margin-bottom:12px">เนื่องจาก (เหตุผลการลา)<textarea id="lv-reason" rows="2"></textarea></label>'
     +'<div class="lv-g"><label>ตั้งแต่วันที่<input type="date" id="lv-from"></label><label>ถึงวันที่<input type="date" id="lv-to"></label>'
     +'<label>มีกำหนด (วันทำการ)<input type="number" id="lv-days" min="0" step="0.5" placeholder="คำนวณอัตโนมัติ"></label></div>'
@@ -1813,7 +1823,7 @@ function lvSummary(recs){
     +'<div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:14px"><button '+pb+'0,11)">ทั้งปีงบประมาณ</button><button '+pb+'0,5)">รอบที่ 1 (ต.ค.–มี.ค.)</button><button '+pb+'6,11)">รอบที่ 2 (เม.ย.–ก.ย.)</button>'
     +'<span style="flex:1"></span><button class="lv-btn" style="margin:0;padding:6px 14px;font-size:13px" onclick="lvPrint()">🖨 พิมพ์ / บันทึก PDF</button><button class="lv-btn" style="margin:0;padding:6px 14px;font-size:13px;background:#16a34a" onclick="lvXls()">⬇ ดาวน์โหลด Excel</button></div>'
     +'<div style="font-weight:700;text-align:center;margin-bottom:8px">'+lvTitle()+'</div><div class="lv-wrap">'+lvTableHtml(lvData(recs))+'</div>'
-    +'<div style="font-size:12px;color:#64748b;margin-top:8px">นับวันลาตามช่วงเดือนที่เลือก (ใบลาที่คาบเกี่ยวหลายเดือนจะแบ่งวันตามเดือน) · ลาคลอดบุตร/ลาศึกษาอบรมดูงานแสดงในช่องหมายเหตุ · ดึงข้อมูลจากใบลาที่บันทึกในหน้า "เขียนใบลา" อัตโนมัติ</div>'+lvSigHtml;
+    +'<div style="font-size:12px;color:#64748b;margin-top:8px">นับวันลาตามช่วงเดือนที่เลือก (ใบลาที่คาบเกี่ยวหลายเดือนจะแบ่งวันตามเดือน) · ลาคลอดบุตร/ลาศึกษาอบรมดูงานแสดงในช่องหมายเหตุ · ดึงข้อมูลจากใบลาที่บันทึกในหน้า "เขียนใบลากิจ" อัตโนมัติ</div>'+lvSigHtml;
 }
 function lvPrint(h,css){
   const f=document.createElement('iframe');f.style.cssText='position:fixed;width:0;height:0;border:0';document.body.appendChild(f);
@@ -1892,7 +1902,7 @@ function lvRegHtml(name,recs,pr){
     const r=rs[i];
     if(r){const x=lvRegCells(r);
       body+='<tr style="height:26px"><td>'+(i+1)+'</td>'+x.c.map(t=>'<td>'+t+'</td>').join('')+'<td>'+x.period+'</td><td>'+r.days+'</td><td class="l">'+lvEsc(x.rem)+'</td>'
-        +(pr?'':'<td style="border:0"><button type="button" class="lv-del" style="color:#d97706" title="แก้ไขใบลา" onclick="lvEdit(\''+r.id+'\')">✏️</button><button type="button" class="lv-del" title="ลบ" onclick="lvDel(\''+r.id+'\')">🗑</button><button type="button" class="lv-del" style="color:#0284c7" title="พิมพ์ใบลา" onclick="lvPrintRec(\''+r.id+'\')">🖨</button></td>')+'</tr>';
+        +(pr?'':'<td style="border:0">'+(lvAdm()?'<button type="button" class="lv-del" style="color:#d97706" title="แก้ไขใบลา" onclick="lvEdit(\''+r.id+'\')">✏️</button><button type="button" class="lv-del" title="ลบ" onclick="lvDel(\''+r.id+'\')">🗑</button>':'')+'<button type="button" class="lv-del" style="color:#0284c7" title="พิมพ์ใบลา" onclick="lvPrintRec(\''+r.id+'\')">🖨</button></td>')+'</tr>';
     }else body+='<tr style="height:26px">'+'<td>&nbsp;</td>'.repeat(9)+(pr?'':'<td style="border:0"></td>')+'</tr>';
   }
   if(rs.length)body+='<tr style="height:26px;font-weight:700"><td></td>'+T.t.map(v=>'<td>'+(v||'')+'</td>').join('')+'<td>รวม</td><td>'+T.all+'</td><td class="l">'+(T.late?'มาสาย '+T.late+' วัน':'')+'</td>'+(pr?'':'<td style="border:0"></td>')+'</tr>';
@@ -1915,7 +1925,8 @@ function lvRegister(recs){
     +'<button class="lv-btn" style="margin:0;padding:6px 14px;font-size:13px" onclick="lvPrint(lvRegDoc())">🖨 พิมพ์ / บันทึก PDF'+(one?'':' (ทุกคน)')+'</button>'
     +'<button class="lv-btn" style="margin:0;padding:6px 14px;font-size:13px;background:#16a34a" onclick="lvRegXls()">⬇ ดาวน์โหลด Excel'+(one?'':' (คนละชีต)')+'</button></div>';
   h+=lvRegNames(recs).map(n=>'<div class="lv-wrap" style="margin-bottom:30px">'+lvRegHtml(n,recs,false)+'</div>').join('');
-  return h+'<div style="font-size:12px;color:#64748b">กรอกอัตโนมัติจากใบลาที่บันทึกในหน้า "เขียนใบลา" ตามปีงบประมาณที่เลือก · มาสายแสดงในช่องหมายเหตุ · ลาศึกษาอบรมดูงาน/ศึกษาต่อ ดึงจากใบลาประเภท "ลาศึกษาอบรมดูงาน"</div>';
+  h+=lvAdm()?'':'<div class="lv-note" style="background:#fff7ed;border-color:#fdba74;color:#9a3412">🔒 การแก้ไข/ลบใบลาในทะเบียนคุม ทำได้เฉพาะผู้ดูแลระบบ (admin) เท่านั้น</div>';
+  return h+'<div style="font-size:12px;color:#64748b">กรอกอัตโนมัติจากใบลาที่บันทึกในหน้า "เขียนใบลากิจ" ตามปีงบประมาณที่เลือก · มาสายแสดงในช่องหมายเหตุ · ลาศึกษาอบรมดูงาน/ศึกษาต่อ ดึงจากใบลาประเภท "ลาศึกษาอบรมดูงาน"</div>';
 }
 async function lvRegXls(){
   try{await lvLoadXJ()}catch(e){showToast('โหลดตัวสร้าง Excel ไม่ได้ กรุณาใช้ปุ่มพิมพ์ / PDF แทน');return}
@@ -1962,13 +1973,14 @@ function lvLast(){
   $lv('lv-lf').value=l.from||'';$lv('lv-lt').value=l.to||'';$lv('lv-ld').value=l.days||'';
 }
 function lvChange(e){
-  const id=e.target.id||e.target.name;if(!$lv('lv-name'))return;
+  const id=e.target.id||e.target.name;if(String(id).indexOf('vc-')===0)return vcChange(e);if(!$lv('lv-name'))return;
   if(id==='lv-name'){const nm=e.target.value.trim(),r=lvLoad().filter(x=>x.name===nm).pop(),ro=LV_ROSTER.find(x=>x[0]===nm);if(r){$lv('lv-pos').value=(ro&&ro[1])||r.pos||'';$lv('lv-dept').value=r.dept||'';}else if(ro){$lv('lv-pos').value=ro[1];}lvLast()}
   if(id==='lv-type')lvLast();
   if(id==='lv-from'||id==='lv-to'){if($lv('lv-from').value&&!$lv('lv-to').value)$lv('lv-to').value=$lv('lv-from').value;$lv('lv-days').value=lvDays($lv('lv-from').value,$lv('lv-to').value)||''}
   if(String(id).indexOf('lv-')===0||id==='lv-type')lvStats();
 }
 function lvSubmit(pr){
+  if(lvEditId&&!lvAdm()){lvEditId='';showToast('การแก้ไขใบลาทำได้เฉพาะผู้ดูแลระบบ (admin) เท่านั้น');lvShow('register');return}
   const g=id=>$lv(id).value.trim(), type=document.querySelector('input[name=lv-type]:checked').value;
   const r={id:lvEditId||'l'+Date.now(),name:g('lv-name'),pos:g('lv-pos'),dept:g('lv-dept'),written:g('lv-written'),type,reason:g('lv-reason'),from:g('lv-from'),to:g('lv-to'),days:+g('lv-days'),lf:g('lv-lf'),lt:g('lv-lt'),ld:g('lv-ld'),contact:g('lv-contact')};
   if(!r.name||!r.from||!r.to||!(r.days>0)||r.to<r.from){showToast('กรุณากรอก ชื่อ-สกุล วันที่ลา และจำนวนวัน ให้ครบถ้วนและถูกต้อง');return}
@@ -2025,14 +2037,105 @@ function lvLeaveHtml(r){
    +'<div class="c" style="margin-top:6px">(ลงชื่อ) ..............................................<br>( นายตะวัน กุดวงค์แก้ว )<br>ตำแหน่ง ผอ.รพ.สต.บ้านนายอ<br>วันที่ ........../............../..............</div>'
    +'<div style="margin-top:8px;font-weight:700;text-align:center">คำสั่ง</div>'
    +'<div class="c"><span class="ck">&#9744;</span> อนุญาต &nbsp;&nbsp;&nbsp; <span class="ck">&#9744;</span> ไม่อนุญาต</div>'
-   +'<div class="c" style="margin-top:6px">(ลงชื่อ) ..............................................<br>( นายตะวัน กุดวงค์แก้ว )<br>ตำแหน่ง รักษาการในตำแหน่ง ผอ.รพ.สต.บ้านนายอ<br>ปฏิบัติราชการแทน นายกองค์การบริหารส่วนจังหวัดสกลนคร<br>ตามคำสั่งองค์การบริหารส่วนจังหวัดสกลนครที่ 829/2568<br>ลงวันที่ 11 เม.ย. 2568<br>วันที่ ........../............../..............</div>'
+   +'<div class="c" style="margin-top:6px">(ลงชื่อ) ..............................................<br>( นายตะวัน กุดวงค์แก้ว )<br>ตำแหน่ง ผอ.รพ.สต.บ้านนายอ<br>ปฏิบัติราชการแทน นายกองค์การบริหารส่วนจังหวัดสกลนคร<br>ตามคำสั่งองค์การบริหารส่วนจังหวัดสกลนครที่ 829/2568<br>ลงวันที่ 11 เม.ย. 2568<br>วันที่ ........../............../..............</div>'
+   +'</td></tr></table></div>';
+}
+
+// ===== เขียนใบลาพักผ่อน (ตามแบบ "แบบใบลาพักผ่อน") =====
+const VC_DEPT='กองสาธารณสุข องค์การบริหารส่วนจังหวัดสกลนคร';
+function vcForm(recs){
+  const names=[...new Set(LV_ROSTER.map(x=>x[0]).concat(recs.map(r=>r.name)))];
+  const h='<datalist id="vc-names">'+names.map(n=>'<option value="'+lvEsc(n)+'">').join('')+'</datalist>'
+  +(lvEditId?'<div class="lv-note" style="background:#fff7ed;border-color:#fdba74;color:#9a3412">✏️ กำลังแก้ไขใบลาพักผ่อนที่บันทึกไว้ แก้ข้อมูลที่ต้องการแล้วกด "บันทึกการแก้ไข" (สถิติ "ลามาแล้ว" ไม่นับใบลานี้ซ้ำ)</div>':'')
+  +'<div class="lv-note">เขียนที่ รพ.สต.บ้านนายอ · เรื่อง ขออนุญาตลาพักผ่อน · เรียน นายกองค์การบริหารส่วนจังหวัดสกลนคร</div>'
+  +'<div class="lv-g"><label>ชื่อ-สกุล (ข้าพเจ้า)<input id="vc-name" list="vc-names" placeholder="เช่น นางสมศรี ใจดี" autocomplete="off"></label>'
+  +'<label>ตำแหน่ง<input id="vc-pos"></label><label>สังกัด<input id="vc-dept" value="'+VC_DEPT+'"></label>'
+  +'<label>วันที่เขียนใบลา<input type="date" id="vc-written" value="'+lvToday()+'"></label></div>'
+  +'<div class="lv-sec">วันลาพักผ่อน</div>'
+  +'<div class="lv-g"><label>มีวันลาพักผ่อนสะสม (วันทำการ)<input type="number" id="vc-acc" min="0" step="0.5"></label>'
+  +'<label>มีสิทธิลาพักผ่อนประจำปีนี้อีก (วัน)<input type="number" id="vc-ent" min="0" step="0.5"></label>'
+  +'<label>รวมเป็น (วันทำการ)<input type="number" id="vc-total" readonly style="background:#f1f5f9"></label></div>'
+  +'<div class="lv-g"><label>ขอลาพักผ่อนตั้งแต่วันที่<input type="date" id="vc-from"></label><label>ถึงวันที่<input type="date" id="vc-to"></label>'
+  +'<label>มีกำหนด (วัน)<input type="number" id="vc-days" min="0" step="0.5" placeholder="คำนวณอัตโนมัติ"></label></div>'
+  +'<div class="lv-g"><label style="grid-column:span 2">ในระหว่างลาจะติดต่อข้าพเจ้าได้ที่<input id="vc-contact" placeholder="ที่อยู่"></label><label>โทร.<input id="vc-tel"></label></div>'
+  +'<label style="margin-bottom:12px">ในระหว่างลาข้าพเจ้าได้มอบหมายงานให้ (ผู้ทำหน้าที่แทน)<input id="vc-deputy" list="vc-names" autocomplete="off"></label>'
+  +'<div class="lv-sec">สถิติการลาพักผ่อนในปีงบประมาณนี้ (กรอกอัตโนมัติ)</div><div class="lv-wrap"><table class="lv-t"><thead><tr><th>ลามาแล้ว</th><th>ลาครั้งนี้</th><th>รวมเป็น</th></tr></thead><tbody id="vc-stats"></tbody></table></div>'
+  +'<div style="display:flex;gap:8px;flex-wrap:wrap"><button type="button" class="lv-btn" onclick="vcSubmit()">'+(lvEditId?'💾 บันทึกการแก้ไข':'บันทึกใบลา')+'</button>'
+  +'<button type="button" class="lv-btn" style="background:#16a34a" onclick="vcSubmit(true)">🖨 '+(lvEditId?'บันทึกการแก้ไขและพิมพ์ใบลา':'บันทึกและพิมพ์ใบลา')+'</button>'
+  +'<button type="button" class="lv-btn" style="background:#64748b" onclick="vcPrintForm()">พิมพ์ใบลา (ไม่บันทึก)</button>'
+  +(lvEditId?'<button type="button" class="lv-btn" style="background:#fff;color:#475569;border:1px solid #cbd5e1" onclick="lvEditCancel()">ยกเลิกการแก้ไข</button>':'')+'</div>';
+  $lv('lv-body').innerHTML=h;
+  if(lvEditId){const r=recs.find(x=>x.id===lvEditId);
+    if(r){const set=(id,v)=>{$lv(id).value=v==null?'':v};set('vc-name',r.name);set('vc-pos',r.pos);set('vc-dept',r.dept);set('vc-written',r.written);set('vc-acc',r.acc);set('vc-ent',r.ent);set('vc-from',r.from);set('vc-to',r.to);set('vc-days',r.days);set('vc-contact',r.contact);set('vc-tel',r.tel);set('vc-deputy',r.deputy)}
+    else lvEditId='';}
+  vcTotal();vcStats();
+}
+function vcTotal(){const a=+$lv('vc-acc').value||0,e=+$lv('vc-ent').value||0;$lv('vc-total').value=(a||e)?+(a+e).toFixed(2):''}
+function vcPrev(name,from,exId){const fy=lvFY(from);return +lvLoad().filter(r=>r.id!==exId&&r.name===name&&r.type==='พักผ่อน'&&lvFY(r.from)===fy).reduce((a,r)=>a+(+r.days||0),0).toFixed(2)}
+function vcStats(){
+  const name=($lv('vc-name').value||'').trim(),from=$lv('vc-from').value||$lv('vc-written').value||lvToday(),d=+$lv('vc-days').value||0,p=vcPrev(name,from,lvEditId);
+  $lv('vc-stats').innerHTML='<tr class="hl"><td>'+p+'</td><td>'+d+'</td><td>'+(+(p+d).toFixed(2))+'</td></tr>';
+}
+function vcChange(e){
+  const id=e.target.id;if(!$lv('vc-name'))return;
+  if(id==='vc-name'){const nm=e.target.value.trim(),ro=LV_ROSTER.find(x=>x[0]===nm),r=lvLoad().filter(x=>x.name===nm).pop();
+    if(ro)$lv('vc-pos').value=ro[1];else if(r)$lv('vc-pos').value=r.pos||'';
+    const v=lvLoad().filter(x=>x.name===nm&&x.type==='พักผ่อน').pop();if(v&&v.dept)$lv('vc-dept').value=v.dept}
+  if(id==='vc-from'||id==='vc-to'){if($lv('vc-from').value&&!$lv('vc-to').value)$lv('vc-to').value=$lv('vc-from').value;$lv('vc-days').value=lvDays($lv('vc-from').value,$lv('vc-to').value)||''}
+  if(id==='vc-acc'||id==='vc-ent')vcTotal();
+  vcStats();
+}
+function vcRec(){
+  const g=id=>$lv(id).value.trim();
+  return {name:g('vc-name'),pos:g('vc-pos'),dept:g('vc-dept'),written:g('vc-written'),type:'พักผ่อน',reason:'',from:g('vc-from'),to:g('vc-to'),days:+g('vc-days'),lf:'',lt:'',ld:'',contact:g('vc-contact'),tel:g('vc-tel'),acc:g('vc-acc'),ent:g('vc-ent'),deputy:g('vc-deputy')};
+}
+function vcSubmit(pr){
+  if(lvEditId&&!lvAdm()){lvEditId='';showToast('การแก้ไขใบลาทำได้เฉพาะผู้ดูแลระบบ (admin) เท่านั้น');lvShow('register');return}
+  const r=Object.assign({id:lvEditId||'l'+Date.now()},vcRec());
+  if(!r.name||!r.from||!r.to||!(r.days>0)||r.to<r.from){showToast('กรุณากรอก ชื่อ-สกุล วันที่ลา และจำนวนวัน ให้ครบถ้วนและถูกต้อง');return}
+  const a=lvLoad(),ix=lvEditId?a.findIndex(x=>x.id===lvEditId):-1,was=ix>=0;
+  if(was)a[ix]=Object.assign({},a[ix],r);else a.push(r);
+  if(!lvSave(a)){showToast('บันทึกไม่สำเร็จ (เบราว์เซอร์ไม่อนุญาตให้เก็บข้อมูล)');return}
+  if(!was){try{if(window.lineRelay)window.lineRelay({kind:'leave',name:r.name,from:r.from,to:r.to,days:r.days})}catch(e){console.warn('leave notify failed',e)}}
+  lvEditId='';lvFYsel=lvFY(r.from);lvPerson=r.name;showToast(was?'แก้ไขใบลาเรียบร้อย':'บันทึกใบลาเรียบร้อย');lvShow('register');if(pr)lvPrint(lvVacHtml(r),LV_LFCSS);
+}
+function vcPrintForm(){const r=vcRec();if(!r.name){showToast('กรุณากรอกชื่อ-สกุลก่อนพิมพ์ใบลา');return}r.id=lvEditId||'';lvPrint(lvVacHtml(r),LV_LFCSS)}
+function lvVacHtml(r){
+  const u=(t,w)=>'<span class="u" style="min-width:'+w+'">'+(t===''||t==null?'&nbsp;':lvEsc(t))+'</span>';
+  const w=r.written?lvD(r.written):null, from=r.from||r.written||lvToday();
+  const p=vcPrev(r.name,from,r.id), n=+r.days||0, tot=(+r.acc||0)+(+r.ent||0);
+  const dots=(k,c)=>(('.'.repeat(k))+'<br>').repeat(c);
+  return '<div class="lf">'
+   +'<div class="c" style="font-weight:700;font-size:18pt">แบบใบลาพักผ่อน</div>'
+   +'<div style="text-align:right;margin-top:6px;padding-right:40px">เขียนที่ โรงพยาบาลส่งเสริมสุขภาพตำบลบ้านนายอ</div>'
+   +'<div style="text-align:right;padding-right:20px">วันที่ '+u(w?w.getDate():'','50px')+' เดือน '+u(w?LV_TM[w.getMonth()]:'','130px')+' พ.ศ. '+u(w?w.getFullYear()+543:'','70px')+'</div>'
+   +'<div style="margin-top:6px">เรื่อง&nbsp; ขออนุญาตลาพักผ่อน</div>'
+   +'<div>เรียน&nbsp; นายกองค์การบริหารส่วนจังหวัดสกลนคร</div>'
+   +'<div style="margin-top:8px;text-indent:2.5em;line-height:1.7">ข้าพเจ้า '+u(r.name,'260px')+' ตำแหน่ง '+u(r.pos,'200px')+' สังกัด '+lvEsc(r.dept||VC_DEPT)+' มีวันลาพักผ่อนสะสม '+u(r.acc,'50px')+' วันทำการ มีสิทธิลาพักผ่อนประจำปีนี้อีก '+u(r.ent,'50px')+' วัน รวมเป็น '+u(tot||'','50px')+' วันทำการ ขอลาพักผ่อนตั้งแต่วันที่ '+u(lvThL(r.from),'190px')+' ถึงวันที่ '+u(lvThL(r.to),'190px')+' มีกำหนด '+u(n||'','45px')+' วัน</div>'
+   +'<div style="margin-top:8px">ในระหว่างลาจะติดต่อข้าพเจ้าได้ที่ '+u(r.contact,'330px')+' โทร. '+u(r.tel,'140px')+'</div>'
+   +'<table style="margin-top:12px"><tr><td style="width:50%;padding-right:10px">'
+   +'<div style="text-decoration:underline;font-weight:700;text-align:center">สถิติการลาในปีงบประมาณนี้</div>'
+   +'<table class="st"><thead><tr><th>ลามาแล้ว</th><th>ลาครั้งนี้</th><th>รวมเป็น</th></tr></thead><tbody><tr><td>'+(p||'')+'</td><td>'+(n||'')+'</td><td>'+((+(p+n).toFixed(2))||'')+'</td></tr></tbody></table>'
+   +'<div class="c" style="margin-top:12px;font-size:14pt;line-height:1.3">(ลงชื่อ) ................................................. เจ้าหน้าที่ตรวจสอบ<br>( นางสาวจินตหรา ภูสำรอง )<br>ตำแหน่ง นักวิชาการสาธารณสุขชำนาญการ<br>หัวหน้ากลุ่มงานบริหาร<br>วันที่ ........../............../..............</div>'
+   +'<div style="margin-top:12px;font-size:14pt;line-height:1.4">ในระหว่างลาข้าพเจ้าได้มอบหมายงานให้ '+u(r.deputy,'150px')+' ทำหน้าที่แทน</div>'
+   +'<div class="c" style="margin-top:10px;font-size:14pt;line-height:1.3">(ลงชื่อ) ........................................... ผู้มอบ<br>( '+u(r.name,'170px')+' )</div>'
+   +'<div class="c" style="margin-top:10px;font-size:14pt;line-height:1.3">(ลงชื่อ) ........................................... ผู้รับมอบ<br>( '+u(r.deputy,'170px')+' )</div>'
+   +'</td><td style="width:50%;font-size:14pt;line-height:1.3">'
+   +'<div class="c">ขอแสดงความนับถือ<br><br>(ลงชื่อ) '+u('','190px')+'<br>( '+u(r.name,'190px')+' )</div>'
+   +'<div style="margin-top:8px;font-weight:700;text-align:center;text-decoration:underline">ความเห็นของผู้บังคับบัญชา</div>'
+   +'<div>'+dots(52,2)+'</div>'
+   +'<div class="c" style="margin-top:6px">(ลงชื่อ) ..............................................<br>( นายตะวัน กุดวงค์แก้ว )<br>ตำแหน่ง ผอ.รพ.สต.บ้านนายอ<br>วันที่ ........../............../..............</div>'
+   +'<div style="margin-top:8px;font-weight:700;text-align:center;text-decoration:underline">คำสั่ง</div>'
+   +'<div class="c">( &nbsp;&nbsp; ) อนุญาต &nbsp;&nbsp;&nbsp; ( &nbsp;&nbsp; ) ไม่อนุญาต</div>'
+   +'<div class="c" style="margin-top:6px">(ลงชื่อ) ..............................................<br>( นายตะวัน กุดวงค์แก้ว )<br>ตำแหน่ง ผอ.รพ.สต.บ้านนายอ<br>ปฏิบัติราชการแทน นายกองค์การบริหารส่วนจังหวัดสกลนคร<br>ตามคำสั่งองค์การบริหารส่วนจังหวัดสกลนครที่ 829/2568<br>ลงวันที่ 11 เม.ย. 2568<br>วันที่ ........../............../..............</div>'
    +'</td></tr></table></div>';
 }
 function lvPrintForm(){const r=lvFormRec();if(!r.name){showToast('กรุณากรอกชื่อ-สกุลก่อนพิมพ์ใบลา');return}lvPrint(lvLeaveHtml(r),LV_LFCSS)}
-function lvPrintRec(id){const r=lvLoad().find(x=>x.id===id);if(r)lvPrint(lvLeaveHtml(r),LV_LFCSS)}
-function lvEdit(id){if(!lvLoad().some(r=>r.id===id))return;lvEditId=id;lvShow('form',true);const b=$lv('lv-body');if(b)b.scrollTop=0;}
+function lvPrintRec(id){const r=lvLoad().find(x=>x.id===id);if(r)lvPrint(r.type==='พักผ่อน'?lvVacHtml(r):lvLeaveHtml(r),LV_LFCSS)}
+const lvAdm=()=>{try{return !!(window.lvIsAdmin&&window.lvIsAdmin())}catch(e){return false}};
+function lvEdit(id){if(!lvAdm()){showToast('การแก้ไขใบลาทำได้เฉพาะผู้ดูแลระบบ (admin) เท่านั้น');return}const rr=lvLoad().find(r=>r.id===id);if(!rr)return;lvEditId=id;lvShow(rr.type==='พักผ่อน'?'vacation':'form',true);const b=$lv('lv-body');if(b)b.scrollTop=0;}
 function lvEditCancel(){lvEditId='';lvShow('register');}
-function lvDel(id){if(confirm('ลบรายการลานี้?')){lvSave(lvLoad().filter(r=>r.id!==id));lvShow(lvView)}}
+function lvDel(id){if(!lvAdm()){showToast('การลบใบลาทำได้เฉพาะผู้ดูแลระบบ (admin) เท่านั้น');return}if(confirm('ลบรายการลานี้?')){lvSave(lvLoad().filter(r=>r.id!==id));lvShow(lvView)}}
 
 
 // ===== ขออนุญาตใช้รถยนต์ราชการ (ขออนุญาตใช้รถ / รายงานการขออนุญาตใช้รถ) =====
@@ -2495,6 +2598,7 @@ function hashPw(user,pw){
         sdel('sessionStorage',AUTH.SESSION); closePw(true); closeUsers();
         _origSwitchTab('home');
     }
+    window.lvIsAdmin=function(){ const x=getSession(); return !!(x&&x.user&&x.user.role==='admin'); };
     function applyAuthUI(){
         const x=getSession(); if(!x) return;
         document.getElementById('auth-name').textContent=x.user.name;
@@ -3586,6 +3690,10 @@ const thDate=iso=>{const p=iso.split('-'),d=new Date(+p[0],+p[1]-1,+p[2]);return
 const PRE=/^(นางสาว|นาย|นาง|น\.ส\.|ด\.ช\.|ด\.ญ\.|เด็กชาย|เด็กหญิง)\s*/;
 const mask=n=>Array.from(n.trim().replace(PRE,'')).slice(0,2).join('')+'***';
 let busy=false,DAYS={};const MINE={};
+// จำกัดสิทธิ์จองคิว เฉพาะ คลินิกทันตกรรม และ คลินิกแพทย์แผนไทย ไม่เกิน 5 คนต่อวัน (ต่อคลินิก)
+const DAILY_LIMIT=5,LIMITED_SVC=['คลินิกทันตกรรม','คลินิกแพทย์แผนไทย'];
+window.openQueueFull=function(){const m=$('queue-full-modal');if(m)m.classList.remove('hidden')};
+window.closeQueueFull=function(){const m=$('queue-full-modal');if(m)m.classList.add('hidden')};
 
 function draw(){
   const box=$('booking-board-body');if(!box)return;
@@ -3622,8 +3730,12 @@ window.bookingSubmit=async function(){
   if(typeof DB==='undefined'){showToast('ระบบจองคิวยังไม่พร้อมใช้งาน กรุณาติดต่อเจ้าหน้าที่');return}
   busy=true;const btn=document.querySelector('[onclick="submitBooking()"]');if(btn){btn.disabled=true;btn.classList.add('opacity-60')}
   try{
-    const tx=await DB.txn('queueCounter/'+date+'/s'+si,n=>(n||0)+1);
-    if(!tx||!tx.committed)throw new Error('ไม่สามารถออกเลขคิวได้ กรุณาลองใหม่');
+    const limited=LIMITED_SVC.indexOf(svc)>-1;
+    const tx=await DB.txn('queueCounter/'+date+'/s'+si,n=>{n=n||0;if(limited&&n>=DAILY_LIMIT)return;return n+1});
+    if(!tx||!tx.committed){
+      if(limited){window.openQueueFull();return}
+      throw new Error('ไม่สามารถออกเลขคิวได้ กรุณาลองใหม่');
+    }
     const no=tx.snapshot.val();
     relay({date:date,no:no,svc:svc,name:name,phone:phone});
     const ref=DB.push('queue/'+date,{no:no,svc:svc,nm:mask(name)});await ref;
