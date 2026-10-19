@@ -153,6 +153,10 @@ main:has(#tab-admin:not(.hidden)){background:linear-gradient(180deg,#e0f2fe 0,#f
 .kp-gh{display:flex;align-items:center;justify-content:space-between;gap:.5rem;flex-wrap:wrap;margin:1.2rem 0 .5rem}
 .kp-lnk{display:inline-flex;align-items:center;gap:.4rem;padding:.3rem .8rem;border-radius:999px;border:1px solid #D6E4F7;background:#fff;color:#0A2540;font-size:.8125rem;font-weight:600;cursor:pointer}
 .kp-lnk:hover{background:#F0F6FF}
+.kp-eb{padding:.25rem .65rem;font-size:.78rem;white-space:nowrap}.kp-eb i{color:#1F6FEB}
+#kp-em{position:fixed;inset:0;background:rgba(10,37,64,.55);z-index:90;display:none;align-items:flex-start;justify-content:center;padding:16px;overflow:auto}#kp-em.on{display:flex}
+#kp-em .kp-box{max-width:760px}#kp-em textarea{resize:vertical;font-family:inherit}
+.kp-em-tb input:disabled{background:#F1F4F9;color:#9AA8BD;cursor:not-allowed}
 .kp-dot{display:inline-block;width:.6rem;height:.6rem;border-radius:50%;margin-right:.5rem}
 .kp-tb tr.kp-none td{color:#8aa0bd}
 .kp-tb tr[onclick]:hover td{background:#F5F9FF}
@@ -3000,6 +3004,72 @@ function hashPw(user,pw){
     const kpWhoList=g=>[...new Set(KP_FORMS[g].rows.filter(r=>!r.sec).map(r=>r.who))];
     const kpQ=(id,f)=>document.querySelector('[data-id="'+id+'"][data-f="'+f+'"]');
 
+    // ---- แก้ไขตัวชี้วัดรายข้อ (ชื่อ/อัตรา/ผู้รับผิดชอบ + ผลงานรายเดือนทั้งปี) เก็บที่ /kpiRes คีย์ d_<รหัสแถว> และ p_<รหัสแถว>_<เดือน> ----
+    const KP_ORIG=JSON.parse(JSON.stringify(KP_FORMS)); let kpDef={}, kpEd=null;
+    function kpApplyDefs(){[1,2,3].forEach(g=>KP_FORMS[g].rows.forEach((r,i)=>{if(r.sec)return;
+        const o=KP_ORIG[g].rows[i], d=kpDef[kpFid(g,r.id)];
+        r.name=o.name; r.rate=o.rate; r.who=o.who;
+        if(d){if(d.name)r.name=d.name; if(d.rate!=null&&d.rate!=='')r.rate=d.rate; if(d.who)r.who=d.who;}}));}
+    const kpRow=(g,id)=>KP_FORMS[g].rows.find(r=>!r.sec&&String(r.id)===String(id));
+    function kpEdEnsure(){
+        if(document.getElementById('kp-em'))return;
+        const d=document.createElement('div'); d.id='kp-em'; d.setAttribute('role','dialog'); d.setAttribute('aria-modal','true'); d.onclick=e=>{if(e.target===d)kpEdClose()};
+        d.innerHTML='<div class="kp-box"><div class="kp-top"><h3 id="kpe-title">แก้ไขตัวชี้วัด</h3><button type="button" class="kp-x" aria-label="ปิด" onclick="kpEdClose()"><i class="fa-solid fa-xmark"></i></button></div><div id="kpe-body" class="kp-body"></div></div>';
+        document.body.appendChild(d);
+    }
+    function kpEdClose(){const m=document.getElementById('kp-em');if(m)m.classList.remove('on');kpEd=null;}
+    function kpEdRate(){
+        const t=(document.getElementById('kpe-rate').value||'').trim(), num=t!==''&&!isNaN(+t);
+        document.querySelectorAll('#kp-em .kpe-a').forEach(x=>x.disabled=num);
+        const n=document.getElementById('kpe-ratenote'); if(n)n.textContent=num?'อัตราเป็นตัวเลข ระบบคำนวณ อัตรา × ผลงาน ให้อัตโนมัติ':'อัตราเป็นข้อความ (เช่น ตามเกณฑ์ / ตามจริง) ให้กรอกจำนวนเงิน/แต้มของแต่ละเดือนเอง';
+    }
+    function kpEdit(g,id){
+        const r=kpRow(g,id); if(!r)return; kpEdEnsure(); kpEd={g:+g,id:String(id)};
+        const F=KP_FORMS[g], fid=kpFid(g,id), recs=kpRecs(g,r), pt=g===3, edited=!!kpDef[fid];
+        document.getElementById('kpe-title').textContent='แก้ไขตัวชี้วัด ข้อ '+r.n+' · '+KP_GROUPS[g];
+        let h='<div class="kp-row"><div style="flex:1 1 100%"><label for="kpe-name">ชื่อตัวชี้วัด</label><textarea id="kpe-name" rows="3">'+escapeHTML(r.name)+'</textarea></div></div>'
+          +'<div class="kp-row"><div><label for="kpe-rate">'+escapeHTML(F.rateHead)+'</label><input type="text" id="kpe-rate" value="'+escapeHTML(String(r.rate))+'" oninput="kpEdRate()"></div>'
+          +'<div><label for="kpe-who">ผู้รับผิดชอบตัวชี้วัด</label><input type="text" id="kpe-who" list="kpe-wl" value="'+escapeHTML(String(r.who||''))+'"><datalist id="kpe-wl">'+[1,2,3].reduce((a,x)=>a.concat(kpWhoList(x)),[]).filter((v,i,a)=>a.indexOf(v)===i).map(w=>'<option value="'+escapeHTML(w)+'">').join('')+'</datalist></div></div>'
+          +'<p class="kp-note" id="kpe-ratenote" style="margin:-.3rem 0 .9rem"></p>'
+          +'<h5 class="kp-sh" style="margin:.2rem 0 .5rem">ผลงานรายเดือน ปีงบ '+KP_FY+' <span class="kp-note" style="font-weight:400">(แก้ไขหรือเคลียร์ช่องเพื่อลบข้อมูลเดือนนั้น)</span></h5>'
+          +'<div class="kp-tbw"><table class="kp-tb kp-em-tb"><tr><th>เดือน</th><th class="num">ผลงาน (จำนวน)</th><th class="num">'+(pt?'แต้ม':'เงิน (บาท)')+' <small>(กรณีอัตราเป็นข้อความ)</small></th></tr>'
+          +KP_M.map((n,i)=>{const m=i+1,c=recs[m]||{};
+              return '<tr><td>'+kpLbl(m)+'</td><td class="num"><input class="kp-in kpe-v" type="number" min="0" step="any" data-m="'+m+'" value="'+(c.v!=null?c.v:'')+'" aria-label="ผลงาน '+kpLbl(m)+'"></td>'
+                +'<td class="num"><input class="kp-in kpe-a" type="number" min="0" step="any" data-m="'+m+'" value="'+(c.amt!=null?c.amt:'')+'" aria-label="'+(pt?'แต้ม':'เงิน')+' '+kpLbl(m)+'"></td></tr>';}).join('')
+          +'</table></div>'
+          +'<div style="display:flex;flex-wrap:wrap;gap:.5rem;justify-content:space-between">'
+          +'<div>'+(edited?'<button type="button" class="kp-btn dg" onclick="kpEdReset()"><i class="fa-solid fa-rotate-left"></i> คืนค่าเดิมของตัวชี้วัด</button>':'')+'</div>'
+          +'<div style="display:flex;gap:.5rem"><button type="button" class="kp-btn ln" onclick="kpEdClose()">ยกเลิก</button><button type="button" class="kp-btn" onclick="kpEdSave()"><i class="fa-solid fa-floppy-disk"></i> บันทึกการแก้ไข</button></div></div>';
+        document.getElementById('kpe-body').innerHTML=h;
+        document.getElementById('kp-em').classList.add('on');
+        kpEdRate();
+    }
+    async function kpEdSave(){
+        if(!kpEd)return; const g=kpEd.g,id=kpEd.id,fid=kpFid(g,id),row=kpRow(g,id); if(!row)return;
+        let by='-';try{by=getSession().user.name}catch(e){}
+        const name=document.getElementById('kpe-name').value.trim(), rt=document.getElementById('kpe-rate').value.trim(), who=document.getElementById('kpe-who').value.trim();
+        if(!name||!rt||!who){showToast('กรุณากรอกชื่อตัวชี้วัด อัตรา และผู้รับผิดชอบ');return;}
+        const num=!isNaN(+rt), rate=num?+rt:rt;
+        if(num&&rate<0){showToast('อัตราต้องไม่ติดลบ');return;}
+        const recs=kpRecs(g,row), up={}; let bad=false;
+        up['d_'+fid]={d:1,rid:fid,g:g,name:name,rate:rate,who:who,by:by,t:Date.now()};
+        for(let m=1;m<=12;m++){
+            const v=document.querySelector('#kp-em .kpe-v[data-m="'+m+'"]').value, ia=document.querySelector('#kp-em .kpe-a[data-m="'+m+'"]');
+            const a=num?'':ia.value, key='p_'+fid+'_'+m;
+            if((v!==''&&+v<0)||(a!==''&&+a<0)){bad=true;break;}
+            if(v===''&&a===''){if(recs[m])up[key]=null;}
+            else{const o={p:1,rid:fid,g:g,m:m,by:by,t:Date.now()};if(v!=='')o.v=+v;if(a!=='')o.amt=+a;up[key]=o;}
+        }
+        if(bad){showToast('ผลงานและจำนวนเงินต้องไม่ติดลบ');return;}
+        try{await rtdb.ref('kpiRes').update(up);kpEdClose();showToast('บันทึกการแก้ไขตัวชี้วัดข้อ '+row.n+' แล้ว');}
+        catch(e){showToast('บันทึกไม่สำเร็จ: '+e.message);}
+    }
+    async function kpEdReset(){
+        if(!kpEd)return; const fid=kpFid(kpEd.g,kpEd.id);
+        if(!confirm('คืนชื่อ อัตรา และผู้รับผิดชอบ ของตัวชี้วัดนี้เป็นค่าเดิมหรือไม่? (ข้อมูลผลงานรายเดือนไม่ถูกลบ)'))return;
+        try{await rtdb.ref('kpiRes/d_'+fid).remove();kpEdClose();showToast('คืนค่าเดิมแล้ว');}catch(e){showToast('ไม่สำเร็จ: '+e.message);}
+    }
+
     // ---- แดชบอร์ดผู้บริหาร ----
     let kpPerson='', kpPersons=[];
     const KP_PC=['#0284c7','#7c3aed','#0891b2','#db2777','#059669','#d97706','#4f46e5','#0d9488','#e11d48','#65a30d'];
@@ -3019,7 +3089,7 @@ function hashPw(user,pw){
             if(has)withData++; totals[g]+=s.money;
             const w=r.who||'(ไม่ระบุ)'; if(!P[w]){P[w]={rows:[],1:0,2:0,3:0,wd:0,all:0,mon:Array(12).fill(0),pt:Array(12).fill(0)};order.push(w);}
             const p=P[w]; p.all++; if(has)p.wd++; p[g]+=s.money;
-            p.rows.push({g:g,n:r.n,name:r.name,rate:r.rate,v:s.v,money:s.money,has:has});
+            p.rows.push({g:g,id:r.id,n:r.n,name:r.name,rate:r.rate,v:s.v,money:s.money,has:has});
             for(let i=1;i<=12;i++){const x=recs[i];if(x){const m=kpIsNum(r)?r.rate*(+x.v||0):(+x.amt||0);if(g<3)p.mon[i-1]+=m;else p.pt[i-1]+=m;}}
             if(g<3)items.push({g:g,name:r.name,who:w,v:s.v,money:s.money});}));
         kpPersons=order; if(kpPerson&&!P[kpPerson])kpPerson='';
@@ -3053,8 +3123,8 @@ function hashPw(user,pw){
             [1,2,3].forEach(g=>{const rs=p.rows.filter(r=>r.g===g); if(!rs.length)return;
                 const unit=g===3?'Point':'บาท';
                 h+='<div class="kp-gh"><h5 class="kp-sh" style="margin:0">'+escapeHTML(KP_GROUPS[g])+'</h5><button type="button" class="kp-lnk" onclick="kpOpen('+g+')"><i class="fa-solid fa-pen-to-square"></i> บันทึกผลงานกลุ่มนี้</button></div>'
-                  +'<div class="kp-tbw"><table class="kp-tb"><tr><th>ข้อ</th><th>ตัวชี้วัด</th><th style="text-align:right">อัตรา</th><th style="text-align:right">ผลงานสะสม</th><th style="text-align:right">'+(g===3?'แต้ม':'เงินที่ได้ (บาท)')+'</th></tr>'
-                  +rs.map(r=>'<tr'+(r.has?'':' class="kp-none"')+'><td>'+r.n+'</td><td>'+escapeHTML(r.name)+'</td><td class="num">'+(kpIsNum(r)?kpFmt(r.rate):escapeHTML(String(r.rate)))+'</td><td class="num">'+(r.has?kpFmt(r.v):'–')+'</td><td class="num">'+(r.has?'<b>'+kpFmt(r.money)+'</b>':'–')+'</td></tr>').join('')+'</table></div>';});
+                  +'<div class="kp-tbw"><table class="kp-tb"><tr><th>ข้อ</th><th>ตัวชี้วัด</th><th style="text-align:right">อัตรา</th><th style="text-align:right">ผลงานสะสม</th><th style="text-align:right">'+(g===3?'แต้ม':'เงินที่ได้ (บาท)')+'</th><th></th></tr>'
+                  +rs.map(r=>'<tr'+(r.has?'':' class="kp-none"')+'><td>'+r.n+'</td><td>'+escapeHTML(r.name)+'</td><td class="num">'+(kpIsNum(r)?kpFmt(r.rate):escapeHTML(String(r.rate)))+'</td><td class="num">'+(r.has?kpFmt(r.v):'–')+'</td><td class="num">'+(r.has?'<b>'+kpFmt(r.money)+'</b>':'–')+'</td><td><button type="button" class="kp-lnk kp-eb" onclick="kpEdit('+r.g+',\''+r.id+'\')" aria-label="แก้ไขตัวชี้วัด '+escapeHTML(r.name)+'"><i class="fa-solid fa-pen-to-square"></i> แก้ไข</button></td></tr>').join('')+'</table></div>';});
             h+='<p class="kp-note">แถวสีจางคือยังไม่มีการบันทึกผลงานถึงเดือนที่เลือก</p></div></section>';
             return el.innerHTML=h;
         }
@@ -3096,7 +3166,7 @@ function hashPw(user,pw){
         if(g===3)h+='<div class="kp-banner"><i class="fa-solid fa-circle-info"></i> กลุ่มนี้นับจาก 43 แฟ้มได้ กด "นำเข้า 43 แฟ้ม" เลือกไฟล์ service, procedure_opd, drug_opd พร้อมกัน ระบบนับเดือนที่เลือก แยกสิทธิ UC (0100) กับ อปท. (4200) ให้ แล้วตรวจก่อนกดบันทึก <input type="file" id="kp-imp3" accept=".csv,.txt,.dat" multiple hidden onchange="kpImportTM(this)"> <button type="button" class="kp-btn ln" onclick="document.getElementById(\'kp-imp3\').click()"><i class="fa-solid fa-file-import"></i> นำเข้า 43 แฟ้ม</button> <input type="file" id="kp-cd-in" accept=".csv,.txt,.dat" hidden onchange="kpCodes(this)"> <button type="button" class="kp-btn ln" onclick="document.getElementById(\'kp-cd-in\').click()"><i class="fa-solid fa-magnifying-glass"></i> ดูรหัสในแฟ้ม</button></div>';
         let body='', pend='';
         F.rows.forEach(r=>{
-            if(r.sec){pend='<tr class="kp-sec"><td colspan="7">'+escapeHTML(r.sec)+'</td></tr>';return;}
+            if(r.sec){pend='<tr class="kp-sec"><td colspan="8">'+escapeHTML(r.sec)+'</td></tr>';return;}
             if(kpWho&&r.who!==kpWho)return;
             body+=pend;pend='';
             const id=kpFid(g,r.id), cur=kpRecs(g,r)[kpM]||{}, num=kpIsNum(r);
@@ -3104,11 +3174,11 @@ function hashPw(user,pw){
               +'<td><input class="kp-in" type="number" min="0" step="any" data-id="'+id+'" data-f="v" value="'+(cur.v!=null?cur.v:'')+'" oninput="kpIn()" aria-label="ผลงานเดือนนี้ '+escapeHTML(r.name)+'"></td>'
               +'<td class="num" id="kc-'+id+'">0</td>'
               +(num?'<td class="num"><b id="km-'+id+'">0</b></td>':'<td class="num"><input class="kp-in" type="number" min="0" step="any" data-id="'+id+'" data-f="amt" value="'+(cur.amt!=null?cur.amt:'')+'" oninput="kpIn()" placeholder="'+(pt?'แต้มเดือนนี้':'เงินเดือนนี้')+'" aria-label="'+(pt?'แต้ม':'เงิน')+'เดือนนี้ '+escapeHTML(r.name)+'"><small class="kp-note" style="display:block">สะสม <span id="km-'+id+'">0</span></small></td>')
-              +'<td>'+escapeHTML(r.who)+'</td></tr>';
+              +'<td>'+escapeHTML(r.who)+'</td><td><button type="button" class="kp-lnk kp-eb" onclick="kpEdit('+g+',\''+r.id+'\')" aria-label="แก้ไขตัวชี้วัด '+escapeHTML(r.name)+'"><i class="fa-solid fa-pen-to-square"></i> แก้ไข</button></td></tr>';
         });
-        h+='<div class="kp-tbw"><table class="kp-tb kp-form"><tr><th class="num">ลำดับ</th><th>'+escapeHTML(F.head)+'</th><th class="num">'+F.rateHead+'<br><small>'+(pt?'(Point)':'(บาท)')+'</small></th><th class="num">ผลงาน<br><small>(เดือนนี้)</small></th><th class="num">ผลงาน<br><small>(สะสม)</small></th><th class="num">'+F.moneyHead+'</th><th>ผู้รับผิดชอบ<br><small>ตัวชี้วัด</small></th></tr>'
-          +(body||'<tr><td colspan="7" class="kp-note">ไม่พบรายการ</td></tr>')
-          +'<tr class="kp-tot"><td></td><td>รวม'+(kpWho?' (ทุกรายการในกลุ่มนี้)':'')+'</td><td></td><td></td><td></td><td class="num" id="kp-tot">0</td><td></td></tr></table></div>'
+        h+='<div class="kp-tbw"><table class="kp-tb kp-form"><tr><th class="num">ลำดับ</th><th>'+escapeHTML(F.head)+'</th><th class="num">'+F.rateHead+'<br><small>'+(pt?'(Point)':'(บาท)')+'</small></th><th class="num">ผลงาน<br><small>(เดือนนี้)</small></th><th class="num">ผลงาน<br><small>(สะสม)</small></th><th class="num">'+F.moneyHead+'</th><th>ผู้รับผิดชอบ<br><small>ตัวชี้วัด</small></th><th>แก้ไข</th></tr>'
+          +(body||'<tr><td colspan="8" class="kp-note">ไม่พบรายการ</td></tr>')
+          +'<tr class="kp-tot"><td></td><td>รวม'+(kpWho?' (ทุกรายการในกลุ่มนี้)':'')+'</td><td></td><td></td><td></td><td class="num" id="kp-tot">0</td><td></td><td></td></tr></table></div>'
           +'<div style="text-align:right"><button type="button" class="kp-btn" onclick="kpSave()"><i class="fa-solid fa-floppy-disk"></i> บันทึกผลงานเดือน '+kpLbl(kpM)+'</button></div>';
         document.getElementById('kp-body').innerHTML=h;
         kpCalc();
@@ -3355,9 +3425,9 @@ function hashPw(user,pw){
         a.download='ผลงานตามตัวชี้วัด_กลุ่ม'+g+'_ปี'+KP_FY+'_ถึง'+KP_M[kpM-1]+'.csv';document.body.appendChild(a);a.click();a.remove();
     }
     if(rtdb){
-        DB.listen('kpiRes',d=>{kpRes=Object.entries(d||{}).filter(([id,v])=>v&&v.p).map(([id,v])=>Object.assign({id},v));kpBy={};kpRes.forEach(r=>{(kpBy[r.rid]=kpBy[r.rid]||{})[r.m]=r;});kpRenderExec();if(!kpDirty)kpShow();},()=>{});
+        DB.listen('kpiRes',d=>{d=d||{};kpDef={};Object.values(d).forEach(v=>{if(v&&v.d&&v.rid)kpDef[v.rid]=v;});kpApplyDefs();kpRes=Object.entries(d||{}).filter(([id,v])=>v&&v.p).map(([id,v])=>Object.assign({id},v));kpBy={};kpRes.forEach(r=>{(kpBy[r.rid]=kpBy[r.rid]||{})[r.m]=r;});kpRenderExec();if(!kpDirty)kpShow();},()=>{});
     }
-    document.addEventListener('keydown',e=>{if(e.key==='Escape')kpClose();});
+    document.addEventListener('keydown',e=>{if(e.key==='Escape'){if(kpEd)kpEdClose();else kpClose();}});
     // ===== จัดการคิวงานส่วนรวม (/commonEvents, /commonTeams) ต้นแบบจากไฟล์ Excel "คิวงานส่วนรวม" =====
     const CW_SEED={"teams":[{"no":"1","hl":false,"members":"ตุ๊ก, มิล","note":"ผอ.รพ.สต.จะไปร่วมในงานพิธีสำคัญ"},{"no":"2","hl":true,"members":"เอิร์น, พี่น้อย, พี่ดี้","note":"พี่เจี๊ยบ ป๊าก พี่ดี้ ไปงานบริจาคเลือด ทุกครั้ง"},{"no":"3","hl":true,"members":"โอ๋, นิด, โนรา","note":"พี่ดี้ รับผิดชอบหลัก ไปร่วมงานฌาปณกิจศพ"}],"events":[{"date":"2022-06-23","time":"06.30-08.30 น.","title":"ร่วมงานใสบาตรทำบุญงานวันแม่ แห่งชาติ","place":"วัดถ้ำช้าง","team":"1","who":"ตะวัน, ปอนด์"},{"date":"2022-07-28","time":"09.00-12.00 น.","title":"ร่วมงานจิตอาสาวันพ่อ","place":"วัดพระพุทบาท","team":"4","who":"มิล, พี่น้อย"},{"date":"2022-08-12","time":"06.30-08.30 น.","title":"ร่วมงานใสบาตรทำบุญงานวันแม่ แห่งชาติ","place":"ศูนย์ศิลปะชีพ บ้านบ่อ","team":"2","who":"พี่เจี๊ยบ, นิด, ป๊าก"},{"date":"2023-06-26","time":"13.00-16.00 น.","title":"ไปเดินรณรงค์ ยาเสพติด","place":"อ.ภูพาน","team":"","who":"พี่เจี๊ยบ, มิล, กานต์, พี่ดี้"},{"date":"2023-07-28","time":"07.00-08.30 น.","title":"ไปงานวันเกิดในหลวง","place":"อ.ภูพาน","team":"1","who":"ตะวัน, ปอนด์"},{"date":"2023-10-23","time":"08.00-10.00 น.","title":"ร่วมงานวันปิยะมหาราช","place":"ที่ว่าการอำเภอภูพาน","team":"2","who":"กานต์, โนรา, ป๊าก, พี่ดี้"},{"date":"2024-06-03","time":"07.00-09.00 น.","title":"ไปงานวันเกิดพระราชินี","place":"ที่ว่าการอำเภอภูพาน","team":"1","who":"ตะวัน, ปอนด์"},{"date":"2024-07-28","time":"07.00-09.00 น.","title":"ไปงานวันเกิดในหลวง","place":"ที่ว่าการอำเภอภูพาน","team":"2","who":"กานต์, โนรา, มิล, พี่ดี้"},{"date":"2024-10-13","time":"07.00-10.00 น.","title":"วันนวมิน","place":"ที่ว่าการอำเภอภูพาน","team":"3","who":"พลอย, พี่น้อย, พี่ดี้"},{"date":"2024-11-15","time":"18.00 -22.00น.","title":"วันลอยกระทง","place":"ห้วยขี้หิน","team":"4","who":"นิด, โอ๋, โนรา"},{"date":"2024-12-05","time":"07.00-10.00 น.","title":"งานวันพ่อแห่งชาติ","place":"ที่ว่าการอำเภอภูพาน","team":"1","who":"ตะวัน, ปอนด์"},{"date":"2025-03-11","time":"08.30-10.00 น.","title":"งานกีฬา สร้างค้อเกม","place":"รร.ท่านผู้หญิง","team":"2","who":"กานต์, มิล, พี่ดี้"},{"date":"2025-07-28","time":"07.00 น.","title":"งานวันพ่อแห่งชาติ","place":"ที่ว่าการอำเภอภูพาน","team":"3","who":"พลอย, พี่น้อย, พี่ดี้"},{"date":"2025-10-13","time":"07.00-10.00 น.","title":"ร่วมงานวันนวมินทรมหาราช ปี 2568","place":"ที่ว่าการอำเภอภูพาน","team":"3","who":"โอ๋, นิด, โนรา"},{"date":"2025-11-05","time":"15.00 น. - 22.00 น.","title":"หน่วยปฐมพยาบาล งานลอยกระทง","place":"ห้วนขี้หิน ม. 2 ต.สร้างค้อ","team":"1","who":"ตะวัน, มิล, พี่ดี้"},{"date":"2025-12-05","time":"07.00 น. - 10.00 น.","title":"วันพ่อแห่งชาติ","place":"ที่ว่าการ อำเภอภูพาน","team":"2","who":"พลอย, พี่น้อย, พี่ดี้"},{"date":"2025-12-25","time":"07.00 น. - 10.00 น.","title":"หน่วยปฐมพยาบาล งานกีฬาภายใน รร.","place":"รร.ท่านผู้หญิง","team":"3","who":"โอ๋, นิด, โนรา"},{"date":"2026-04-15","time":"11.00-16.00 น.","title":"หน่วยปฐมพยาบาล งานสงกรานต์ วัดโพธิ์ศรี","place":"วัดโพธิ์ศรี หมู่ที่ 1","team":"1","who":"ตะวัน, พี่ดี้"},{"date":"2026-07-28","time":"11.00-16.00 น.","title":"ร่วมพิธี วันเฉลิมพระชนพรรษาพระบาทสมเด็จพระเจ้าอยู่หัว 2569","place":"ที่ว่าการอำเภอภูพาน","team":"2","who":"เอิร์น, พี่น้อย, พี่ดี้"},{"date":"2026-10-03","time":"08.30 น. - 12.00 น.","title":"หน่วยปฐมพยาบาล และคัดกรองไข้หวัดใหญ่ที่ รร.ท่านผู้หญิง","place":"รร.ท่านผู้หญิง","team":"3","who":"โอ๋, นิด, โนรา"},{"date":"2026-10-13","time":"08.00 น. - 10.00 น.","title":"งานวันนวมินทร์","place":"ที่ว่าการอำเภอภูพาน","team":"1","who":"ตะวัน, พี่ดี้"},{"date":"2026-10-16","time":"07.30-09.00","title":"งานวันตำรวจแหน่งชาติ","place":"สภ.สร้างค้อ","team":"2","who":"เอิร์น, พี่น้อย, พี่ดี้"}]};
     let cwEv=[], cwTeams=[], cwFY=null, cwQ='', cwSt='all';
