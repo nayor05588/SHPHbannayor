@@ -850,7 +850,7 @@ button[onclick="toggleAIChat()"].w-14::before{content:"";position:absolute;inset
                             </div>
                             <div>
                                 <label class="block text-xs font-semibold text-slate-600 mb-1">เลือกบริการ</label>
-                                <select id="booking-service" class="w-full px-4 py-2 rounded-xl border border-slate-200 text-sm focus:outline-none focus:border-aiBlue-500 bg-white">
+                                <select id="booking-service" onchange="updateBookingItems()" class="w-full px-4 py-2 rounded-xl border border-slate-200 text-sm focus:outline-none focus:border-aiBlue-500 bg-white">
                                     <option>คลินิกโรคเรื้อรัง (NCD)</option>
                                     <option>คลินิกอนามัยแม่และเด็ก</option>
                                     <option>คลินิกสุขภาพเด็กดี (Well-baby Clinic)</option>
@@ -862,6 +862,11 @@ button[onclick="toggleAIChat()"].w-14::before{content:"";position:absolute;inset
                                     <option>ตรวจสุขภาพทั่วไป / รับยาเดิม</option>
                                 </select>
                             </div>
+                        </div>
+                        <div id="booking-item-wrap" class="hidden space-y-2">
+                            <label class="block text-xs font-semibold text-slate-600 mb-1" for="booking-item">บริการที่ต้องการจอง</label>
+                            <select id="booking-item" onchange="updateBookingItems()" class="w-full px-4 py-2 rounded-xl border border-slate-200 text-sm focus:outline-none focus:border-aiBlue-500 bg-white"></select>
+                            <input type="text" id="booking-item-other" maxlength="80" placeholder="ระบุบริการที่ต้องการ" class="hidden w-full px-4 py-2 rounded-xl border border-slate-200 text-sm focus:outline-none focus:border-aiBlue-500">
                         </div>
                         <div>
                             <label class="block text-xs font-semibold text-slate-600 mb-1">วันที่ต้องการมารับบริการ</label>
@@ -2145,7 +2150,7 @@ function lvDel(id){if(!lvAdm()){showToast('การลบใบลาทำไ�
 // ===== ขออนุญาตใช้รถยนต์ราชการ (ขออนุญาตใช้รถ / รายงานการขออนุญาตใช้รถ) =====
 const CR_KEY='rpst_carreq', CR_ST=['รออนุมัติ','อนุญาต','ไม่อนุญาต'];
 const CR_DEF={plate:'บษ 1663 สกลนคร',driver:'นายวีระชัย วรรณสังข์'};
-const CR_HEAD='นางทิตยา กุดวงค์แก้ว', CR_DIR='นายตะวัน กุดวงค์แก้ว';
+const CR_HEAD='นางจินตหรา ภูสำรอง', CR_DIR='นายตะวัน กุดวงค์แก้ว';
 let crView='form', crFYsel=null, crMon='*';
 function crLoad(){return window.SYNC?SYNC.cr.load():[]}
 function crSave(a){try{return window.SYNC?SYNC.cr.save(a):false}catch(e){return false}}
@@ -2279,21 +2284,22 @@ function crSetSt(id,v){const a=crLoad(),r=a.find(x=>x.id===id);if(r){r.status=v;
 function crDel(id){if(confirm('ลบรายการขอใช้รถนี้?')){crSave(crLoad().filter(r=>r.id!==id));crShow('report')}}
 
 // ----- พิมพ์ "แบบ 3 ใบขออนุญาตใช้รถยนต์ราชการส่วนกลาง" -----
-const CR_CSS='@page{size:A4 portrait;margin:14mm 20mm}body{font-family:"TH SarabunPSK","TH Sarabun New","Sarabun",Tahoma,sans-serif;font-size:16pt;line-height:1.45}.cf .u{display:inline-block;border-bottom:1px dotted #000;padding:0 4px;text-align:center;min-height:1.2em}.cf .ub{flex:1;border-bottom:1px dotted #000;padding:0 4px;min-height:1.3em}.cf .fl{display:flex;gap:6px;align-items:flex-end}.cf .ck{font-family:"Segoe UI Symbol","DejaVu Sans",Arial,sans-serif}.cf .c{text-align:center}.cf .sg{margin-left:40%;text-align:center;margin-top:16px}';
+const CR_CSS='@page{size:A4 portrait;margin:16mm 25mm}body{font-family:"TH SarabunPSK","TH Sarabun New","Sarabun",Tahoma,sans-serif;font-size:16pt;line-height:1.45}.cf .u{display:inline-block;border-bottom:1px dotted #000;padding:0 4px;text-align:center;min-height:1.2em}.cf .ub{flex:1;border-bottom:1px dotted #000;padding:0 4px;min-height:1.3em}.cf .fl{display:flex;gap:6px;align-items:flex-end}.cf .ck{font-family:"Segoe UI Symbol","DejaVu Sans",Arial,sans-serif}.cf .c{text-align:center}.cf .sg{margin-left:40%;text-align:center;margin-top:16px}';
 function crFormHtml(r){
   const u=(t,w)=>'<span class="u" style="min-width:'+w+'">'+(t===''||t==null?'&nbsp;':lvEsc(t))+'</span>';
   const fl=(l,t)=>'<div class="fl"><span>'+l+'</span><span class="ub">'+(t?lvEsc(t):'&nbsp;')+'</span></div>';
+  const fl2=(l,t)=>fl(l,t)+((t||'').length<48?'<div class="ub" style="flex:none">&nbsp;</div>':'');
   const P=d=>{if(!d)return {d:'',m:'',y:''};const x=lvD(d);return {d:x.getDate(),m:LV_TM[x.getMonth()],y:x.getFullYear()+543}};
   const w=P(r.written),a=P(r.d1),b=P(r.d2), ok=s=>'<span class="ck">'+(r.status===s?'&#9745;':'&#9744;')+'</span>';
   const dl=(lab,p,t)=>'<div style="margin-top:2px">'+lab+' '+u(p.d,'46px')+' เดือน '+u(p.m,'120px')+' พ.ศ. '+u(p.y,'64px')+' เวลา '+u(crT(t),'70px')+' น.</div>';
   return '<div class="cf">'
-   +'<div style="text-align:right;font-weight:700">แบบ 3</div>'
-   +'<div class="c" style="font-weight:700;font-size:20pt">ใบขออนุญาตใช้รถยนต์ราชการส่วนกลาง</div>'
+   +'<div class="c" style="font-weight:700;font-size:20pt">แบบ 3</div>'
+   +'<div class="c" style="font-weight:700;font-size:18pt">ใบขออนุญาตใช้รถยนต์ราชการส่วนกลาง</div>'
    +'<div style="text-align:right;margin-top:8px">วันที่ '+u(w.d,'46px')+' เดือน '+u(w.m,'120px')+' พ.ศ. '+u(w.y,'64px')+'</div>'
    +'<div style="margin-top:6px"><b>เรียน</b>&nbsp; ผู้อำนวยการโรงพยาบาลส่งเสริมสุขภาพตำบลบ้านนายอ</div>'
    +'<div class="fl" style="margin-top:6px"><span style="padding-left:2.5em">ข้าพเจ้า</span><span class="ub">'+lvEsc(r.name)+'</span><span>ตำแหน่ง</span><span class="ub" style="flex:.8">'+lvEsc(r.pos)+'</span></div>'
-   +fl('ขออนุญาตใช้รถยนต์ไปที่',r.dest)
-   +fl('เพื่อติดต่อราชการในเรื่อง',r.purpose)
+   +fl2('ขออนุญาตใช้รถยนต์ไปที่',r.dest)
+   +fl2('เพื่อติดต่อราชการในเรื่อง',r.purpose)
    +'<div class="fl"><span>ในท้องที่จังหวัด</span><span class="ub">'+lvEsc(r.prov)+'</span><span>มีคนนั่ง</span><span class="ub" style="flex:.5;text-align:center">'+lvEsc(r.pax)+'</span><span>คน</span></div>'
    +dl('ในวันที่',a,r.t1)+dl('กลับวันที่',b,r.t2)
    +'<div class="sg" style="margin-top:22px">(ลงชื่อ)............................................ผู้ขออนุญาต<br>( '+(r.name?lvEsc(r.name):'..............................................')+' )</div>'
@@ -2392,6 +2398,7 @@ async function crXls(){
         function bookQueue(serviceName) {
             switchTab('services');
             document.getElementById('booking-service').value = serviceName;
+            if (window.updateBookingItems) updateBookingItems();
             document.getElementById('booking-name').scrollIntoView({ behavior: 'smooth', block: 'center' });
             showToast('เลือกบริการ: ' + serviceName);
         }
@@ -3875,7 +3882,7 @@ function draw(){
     const rows=Object.entries(DAYS[d]||{}).map(([id,v])=>Object.assign({id},v)).sort((a,b)=>String(a.svc||'').localeCompare(String(b.svc||''),'th')||(a.no||0)-(b.no||0));
     return '<div class="border border-slate-200 rounded-2xl overflow-hidden"><div class="flex items-center justify-between bg-aiBlue-50 px-4 py-3"><h4 class="font-bold text-slate-900 text-sm sm:text-base"><i class="fa-regular fa-calendar-check text-aiBlue-600 mr-2"></i>'+esc(thDate(d))+'</h4><span class="text-xs font-semibold text-aiBlue-600 bg-white rounded-full px-3 py-1 border border-sky-100">'+rows.length+' คิว</span></div>'
      +'<div class="overflow-x-auto"><table class="w-full text-sm"><thead><tr class="text-left text-xs text-slate-500 border-b border-slate-100"><th class="px-4 py-2 font-semibold">คิวที่</th><th class="px-4 py-2 font-semibold">บริการ</th><th class="px-4 py-2 font-semibold">ผู้จอง</th><th class="px-4 py-2 font-semibold">สถานะ</th></tr></thead><tbody>'
-     +rows.map(r=>'<tr class="border-b border-slate-50 '+(MINE[r.id]?'bg-emerald-50':'')+'"><td class="px-4 py-2.5 font-bold text-aiBlue-600">'+esc(r.no)+'</td><td class="px-4 py-2.5 text-slate-700">'+esc(r.svc)+'</td><td class="px-4 py-2.5 text-slate-700">'+esc(r.nm)+(MINE[r.id]?' <span class="text-xs text-emerald-600 font-semibold">(คิวของท่าน)</span>':'')+'</td><td class="px-4 py-2.5"><span class="inline-flex items-center gap-1 text-xs font-semibold text-emerald-700 bg-emerald-100 rounded-full px-2.5 py-1"><i class="fa-solid fa-circle-check"></i> จองสำเร็จ</span></td></tr>').join('')
+     +rows.map(r=>'<tr class="border-b border-slate-50 '+(MINE[r.id]?'bg-emerald-50':'')+'"><td class="px-4 py-2.5 font-bold text-aiBlue-600">'+esc(r.no)+'</td><td class="px-4 py-2.5 text-slate-700">'+esc(r.svc)+(r.item?' <span class="text-xs text-slate-500">('+esc(r.item)+')</span>':'')+'</td><td class="px-4 py-2.5 text-slate-700">'+esc(r.nm)+(MINE[r.id]?' <span class="text-xs text-emerald-600 font-semibold">(คิวของท่าน)</span>':'')+'</td><td class="px-4 py-2.5"><span class="inline-flex items-center gap-1 text-xs font-semibold text-emerald-700 bg-emerald-100 rounded-full px-2.5 py-1"><i class="fa-solid fa-circle-check"></i> จองสำเร็จ</span></td></tr>').join('')
      +'</tbody></table></div></div>';
   }).join('')}
 
@@ -3893,12 +3900,34 @@ function relay(b){
 }
 
 window.lineRelay=relay;
+// บริการย่อยที่ให้เลือกเมื่อจอง คลินิกทันตกรรม / คลินิกแพทย์แผนไทย
+const SVC_ITEMS={'คลินิกทันตกรรม':['ตรวจสุขภาพฟัน','ขูดฟัน','อุดฟัน','ถอนฟัน'],'คลินิกแพทย์แผนไทย':['นวด','นวดและประคบ','อบสมุนไพร','ทับหม้อเกลือ','พอกเข่า']};
+const OTHER='อื่นๆ (ระบุ)';
+window.updateBookingItems=function(){
+  const sv=$('booking-service'),wrap=$('booking-item-wrap'),it=$('booking-item'),ot=$('booking-item-other');
+  if(!sv||!wrap||!it||!ot)return;
+  const list=SVC_ITEMS[sv.value];
+  if(!list){wrap.classList.add('hidden');ot.classList.add('hidden');it.innerHTML='';it.dataset.for='';return}
+  wrap.classList.remove('hidden');
+  if(it.dataset.for!==sv.value){ // เปลี่ยนคลินิก → สร้างรายการใหม่
+    it.innerHTML='<option value="">-- เลือกบริการที่ต้องการจอง --</option>'+list.concat([OTHER]).map(x=>'<option value="'+esc(x)+'">'+esc(x)+'</option>').join('');
+    it.dataset.for=sv.value;ot.value='';
+  }
+  ot.classList.toggle('hidden',it.value!==OTHER);
+};
 window.bookingSubmit=async function(){
   if(busy)return;
+  const itemSel=$('booking-item'),itemOther=$('booking-item-other');
   const name=$('booking-name').value.trim(),phone=$('booking-phone').value.replace(/[\s-]/g,''),sel=$('booking-service'),date=$('booking-date').value,svc=sel.value,si=sel.selectedIndex;
   if(!name||!phone||!date){showToast('กรุณากรอกข้อมูลการจองให้ครบถ้วน');return}
   if(!/^0\d{8,9}$/.test(phone)){showToast('กรุณากรอกเบอร์โทรศัพท์ให้ถูกต้อง (9-10 หลัก)');return}
   if(date<today()){showToast('กรุณาเลือกวันที่ตั้งแต่วันนี้เป็นต้นไป');return}
+  let item='';
+  if(SVC_ITEMS[svc]){
+    item=itemSel.value;
+    if(!item){showToast('กรุณาเลือกบริการที่ต้องการจอง');itemSel.focus();return}
+    if(item===OTHER){item=itemOther.value.trim();if(!item){showToast('กรุณาระบุบริการที่ต้องการ');itemOther.focus();return}item='อื่นๆ: '+item}
+  }
   if(typeof DB==='undefined'){showToast('ระบบจองคิวยังไม่พร้อมใช้งาน กรุณาติดต่อเจ้าหน้าที่');return}
   busy=true;const btn=document.querySelector('[onclick="submitBooking()"]');if(btn){btn.disabled=true;btn.classList.add('opacity-60')}
   try{
@@ -3909,16 +3938,18 @@ window.bookingSubmit=async function(){
       throw new Error('ไม่สามารถออกเลขคิวได้ กรุณาลองใหม่');
     }
     const no=tx.snapshot.val();
-    relay({date:date,no:no,svc:svc,name:name,phone:phone});
-    const ref=DB.push('queue/'+date,{no:no,svc:svc,nm:mask(name)});await ref;
+    relay({date:date,no:no,svc:item?svc+' ('+item+')':svc,item:item,name:name,phone:phone});
+    let ref;
+    try{ref=DB.push('queue/'+date,item?{no:no,svc:svc,item:item,nm:mask(name)}:{no:no,svc:svc,nm:mask(name)});await ref;}
+    catch(e){ if(!item)throw e; ref=DB.push('queue/'+date,{no:no,svc:svc,nm:mask(name)});await ref; } // กฎฐานข้อมูลเดิมไม่รับฟิลด์ใหม่ → บันทึกแบบไม่มีรายละเอียด
     MINE[ref.key]=1;
-    try{await DB.push('bookings_private/'+date,{qid:ref.key,no:no,svc:svc,name:name,phone:phone})}catch(e){}
+    try{await DB.push('bookings_private/'+date,{qid:ref.key,no:no,svc:svc,item:item,name:name,phone:phone})}catch(e){}
     const ok=$('booking-success');
     ok.className='bg-emerald-50 border border-emerald-200 rounded-3xl p-6 sm:p-8 flex flex-col sm:flex-row items-center gap-5 text-center sm:text-left';
     ok.innerHTML='<div class="w-20 h-20 shrink-0 rounded-2xl bg-white border border-emerald-200 flex flex-col items-center justify-center"><span class="text-[11px] text-emerald-700 font-semibold">คิวที่</span><span class="text-3xl font-extrabold text-emerald-600 leading-none">'+esc(no)+'</span></div>'
-      +'<div class="space-y-1"><h3 class="text-xl font-bold text-emerald-700"><i class="fa-solid fa-circle-check mr-2"></i>จองคิวสำเร็จ</h3><p class="text-slate-700 text-sm">'+esc(svc)+' · '+esc(thDate(date))+'</p><p class="text-slate-500 text-xs">กรุณาจดหรือแคปหน้าจอเลขคิวนี้ และแสดงต่อเจ้าหน้าที่เมื่อมารับบริการ</p></div>';
+      +'<div class="space-y-1"><h3 class="text-xl font-bold text-emerald-700"><i class="fa-solid fa-circle-check mr-2"></i>จองคิวสำเร็จ</h3><p class="text-slate-700 text-sm">'+esc(svc)+(item?' · '+esc(item):'')+' · '+esc(thDate(date))+'</p><p class="text-slate-500 text-xs">กรุณาจดหรือแคปหน้าจอเลขคิวนี้ และแสดงต่อเจ้าหน้าที่เมื่อมารับบริการ</p></div>';
     ok.scrollIntoView({behavior:'smooth',block:'center'});
-    $('booking-name').value='';$('booking-phone').value='';$('booking-date').value='';
+    $('booking-name').value='';$('booking-phone').value='';$('booking-date').value='';if(itemSel){itemSel.value='';itemOther.value='';window.updateBookingItems()}
     showToast('จองคิวสำเร็จ คิวที่ '+no);
   }catch(e){showToast('จองคิวไม่สำเร็จ: '+(e&&e.message||e))}
   finally{busy=false;if(btn){btn.disabled=false;btn.classList.remove('opacity-60')}}
