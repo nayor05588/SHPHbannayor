@@ -1685,8 +1685,8 @@ button[onclick="toggleAIChat()"].w-14::before{content:"";position:absolute;inset
 const LV_TYPES=['ป่วย','กิจส่วนตัว','พักผ่อน','สาย','คลอดบุตร','ศึกษาอบรมดูงาน'], LV_KEY='rpst_leaves';
 let lvView='form', lvFYsel=null, lvEditId='';
 const lvEsc=x=>String(x==null?'':x).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
-function lvLoad(){try{return JSON.parse(localStorage.getItem(LV_KEY)||'[]')}catch(e){return []}}
-function lvSave(a){try{localStorage.setItem(LV_KEY,JSON.stringify(a));return true}catch(e){return false}}
+function lvLoad(){return window.SYNC?SYNC.lv.load():[]}
+function lvSave(a){try{return window.SYNC?SYNC.lv.save(a):false}catch(e){return false}}
 const lvName=t=>t==='สาย'?'มาสาย':'ลา'+t;
 const lvD=d=>new Date(d+'T00:00');
 function lvFY(d){const x=lvD(d);return x.getFullYear()+(x.getMonth()>=9?1:0)+543}
@@ -1880,8 +1880,8 @@ async function lvXls(){
 }
 // ===== ทะเบียนคุมการลารายบุคคล (ตามแบบ "ทะเบียนวันลา") =====
 const LV_POSKEY='rpst_lv_posno';let lvPerson=null;
-function lvPosNo(){try{return JSON.parse(localStorage.getItem(LV_POSKEY)||'{}')}catch(e){return {}}}
-function lvSetPosNo(n,v){const m=lvPosNo();m[n]=v.trim();try{localStorage.setItem(LV_POSKEY,JSON.stringify(m))}catch(e){}}
+function lvPosNo(){try{return window.SYNC?SYNC.posMap():{}}catch(e){return {}}}
+function lvSetPosNo(n,v){try{if(window.SYNC)SYNC.setPos(n,String(v||'').trim())}catch(e){}}
 function lvPeople(recs){return [...new Set(LV_ROSTER.map(x=>x[0]).concat(recs.map(r=>r.name)))]}
 function lvInfo(name,recs){
   const rs=recs.filter(r=>r.name===name), l=rs[rs.length-1]||{}, ro=LV_ROSTER.find(x=>x[0]===name);
@@ -2147,8 +2147,8 @@ const CR_KEY='rpst_carreq', CR_ST=['รออนุมัติ','อนุญ�
 const CR_DEF={plate:'บษ 1663 สกลนคร',driver:'นายวีระชัย วรรณสังข์'};
 const CR_HEAD='นางทิตยา กุดวงค์แก้ว', CR_DIR='นายตะวัน กุดวงค์แก้ว';
 let crView='form', crFYsel=null, crMon='*';
-function crLoad(){try{return JSON.parse(localStorage.getItem(CR_KEY)||'[]')}catch(e){return []}}
-function crSave(a){try{localStorage.setItem(CR_KEY,JSON.stringify(a));return true}catch(e){return false}}
+function crLoad(){return window.SYNC?SYNC.cr.load():[]}
+function crSave(a){try{return window.SYNC?SYNC.cr.save(a):false}catch(e){return false}}
 const crT=t=>t?String(t).replace(':','.'):'';
 const crGo=(d,t)=>d?lvTH(d)+(t?' '+crT(t)+' น.':''):'-';
 
@@ -2534,7 +2534,7 @@ function hashPw(user,pw){
     function sget(kind,key){ const t=store(kind); try{ return t? t.getItem(key) : (_mem[kind+key]||null); }catch(e){ return null; } }
     function sset(kind,key,val){ const t=store(kind); try{ if(t) t.setItem(key,val); else _mem[kind+key]=val; }catch(e){ _mem[kind+key]=val; } }
     function sdel(kind,key){ const t=store(kind); try{ if(t) t.removeItem(key); }catch(e){} delete _mem[kind+key]; }
-    function loadUsers(){
+    function loadUsersLocal(){
         let list=null;
         try{ const v=JSON.parse(sget('localStorage',AUTH.USERS)); if(Array.isArray(v)&&v.length) list=v; }catch(e){}
         if(!list) list=JSON.parse(JSON.stringify(AUTH_DEFAULT_USERS));
@@ -2545,7 +2545,14 @@ function hashPw(user,pw){
         }
         return list;
     }
-    function saveUsers(list){ sset('localStorage',AUTH.USERS,JSON.stringify(list)); }
+    function loadUsers(){
+        try{ if(window.SYNC&&SYNC.users.ready&&SYNC.users.items.length) return SYNC.users.load(); }catch(e){}
+        return loadUsersLocal();
+    }
+    function saveUsers(list){
+        sset('localStorage',AUTH.USERS,JSON.stringify(list));
+        try{ if(window.SYNC&&SYNC.users.ready) SYNC.users.save(list); }catch(e){ console.warn('users sync failed',e); }
+    }
     function getSession(){
         try{ const x=JSON.parse(sget('sessionStorage',AUTH.SESSION)); if(!x) return null;
              if(Date.now()-x.t>AUTH.IDLE_MS){ sdel('sessionStorage',AUTH.SESSION); return null; }
@@ -2585,6 +2592,7 @@ function hashPw(user,pw){
         if(!uname||!pass){ showErr('login-error','กรุณากรอกชื่อผู้ใช้และรหัสผ่าน'); return; }
         const user=loadUsers().find(a=>a.u===uname);
         const ok = user && hashPw(uname,pass)===user.h;
+        if(!ok && window.SYNC && SYNC.usersPending()){ showErr('login-error','กำลังโหลดรายชื่อผู้ใช้จากฐานข้อมูลกลาง กรุณารอสักครู่แล้วกดเข้าสู่ระบบอีกครั้ง'); return; }
         if(!ok){
             let f=parseInt(sget('sessionStorage','nayo_fail')||'0',10)+1;
             if(f>=AUTH.MAX_FAIL){ f=0; sset('localStorage',AUTH.LOCK,String(Date.now()+AUTH.LOCK_MS)); }
@@ -2718,6 +2726,99 @@ function hashPw(user,pw){
         listen:(path,cb,err)=>rtdb.ref(path).on('value',sn=>cb(sn.val()||{}),err),
         txn:(path,fn)=>rtdb.ref(path).transaction(fn)
     };
+    // ===== SYNC: ข้อมูลใบลา / ขอใช้รถ / เลขที่ตำแหน่ง / บัญชีผู้ใช้ เก็บที่ Firebase (ทุกเครื่องเห็นตรงกัน) =====
+    window.SYNC=(function(){
+        const enc=k=>encodeURIComponent(String(k)).replace(/\./g,'%2E');
+        const stable=v=>JSON.stringify(v,(k,x)=>x&&typeof x==='object'&&!Array.isArray(x)?Object.keys(x).sort().reduce((o,i)=>(o[i]=x[i],o),{}):x);
+        const clean=o=>JSON.parse(JSON.stringify(o));
+        const lsGet=k=>{try{return localStorage.getItem(k)}catch(e){return null}};
+        const lsSet=(k,v)=>{try{localStorage.setItem(k,v)}catch(e){}};
+        const toast=m=>{try{showToast(m)}catch(e){}};
+        const idNum=r=>+String(r.id||'').replace(/\D/g,'')||0;
+        function mk(path,keyOf,opts){
+            opts=opts||{};
+            const o={path,items:[],snap:{},ready:false,failed:false};
+            o.load=()=>JSON.parse(JSON.stringify(o.items));
+            o.save=function(arr){
+                if(typeof rtdb==='undefined'||!rtdb) return false;
+                const up={},next={};
+                arr.forEach(r=>{const k=keyOf(r),c=clean(r);next[k]=stable(c);if(o.snap[k]!==next[k])up[path+'/'+k]=c;});
+                Object.keys(o.snap).forEach(k=>{if(!(k in next))up[path+'/'+k]=null;});
+                if(!Object.keys(up).length) return true;
+                o.items=clean(arr); o.snap=next;
+                rtdb.ref().update(up).catch(e=>{console.error(path,e);alert('บันทึกลงฐานข้อมูลกลางไม่สำเร็จ: '+e.message+'\nตรวจ Firebase Rules ให้เขียนที่ '+path+'/ ได้');});
+                return true;
+            };
+            o.start=function(){
+                if(typeof rtdb==='undefined'||!rtdb){o.failed=true;return;}
+                rtdb.ref(path).on('value',sn=>{
+                    const v=sn.val()||{};
+                    let arr=Object.keys(v).map(k=>v[k]).filter(x=>x&&typeof x==='object');
+                    if(opts.sort) arr.sort(opts.sort);
+                    o.items=arr; o.snap={}; arr.forEach(r=>{o.snap[keyOf(r)]=stable(r)});
+                    const first=!o.ready; o.ready=true;
+                    if(first&&opts.onFirst){try{opts.onFirst(o)}catch(e){console.error(e)}}
+                    if(opts.onChange){try{opts.onChange(first)}catch(e){console.error(e)}}
+                },err=>{o.failed=true;console.warn(path,err);if(typeof setDbStatus==='function')setDbStatus(false,'สิทธิ์ถูกปฏิเสธ ('+path+')');});
+            };
+            return o;
+        }
+        // ย้ายข้อมูลเดิมที่ค้างในเครื่องนี้ (localStorage) ขึ้นฐานข้อมูลกลางครั้งเดียว
+        function migrateList(o,lsKey,label){
+            const flag=lsKey+'_cloud_v1'; if(lsGet(flag)==='1') return;
+            let loc=[]; try{loc=JSON.parse(lsGet(lsKey)||'[]')}catch(e){}
+            const up={}; let n=0;
+            (Array.isArray(loc)?loc:[]).forEach(r=>{if(r&&r.id&&!o.snap[r.id]){up[o.path+'/'+r.id]=clean(r);n++;}});
+            if(!n){lsSet(flag,'1');return;}
+            rtdb.ref().update(up).then(()=>{lsSet(flag,'1');toast('ย้าย'+label+'เดิมในเครื่องนี้ขึ้นฐานข้อมูลกลางแล้ว '+n+' รายการ');}).catch(e=>console.warn('migrate '+lsKey,e));
+        }
+        const byId=(a,b)=>idNum(a)-idNum(b);
+        let usersWaitDone=false; setTimeout(()=>{usersWaitDone=true},8000);
+        const S={};
+        S.lv=mk('leaves',r=>r.id,{sort:byId,
+            onFirst:o=>migrateList(o,'rpst_leaves','ใบลา'),
+            onChange:()=>{clearTimeout(S._lt);S._lt=setTimeout(()=>{try{if(['register','summary'].indexOf(lvView)>=0)lvShow(lvView,true)}catch(e){}},250)}});
+        S.cr=mk('carRequests',r=>r.id,{sort:byId,
+            onFirst:o=>migrateList(o,'rpst_carreq','คำขอใช้รถ'),
+            onChange:()=>{clearTimeout(S._ct);S._ct=setTimeout(()=>{try{if(crView==='report')crShow('report')}catch(e){}},250)}});
+        // เลขที่ตำแหน่ง: {k:ชื่อ, v:เลขที่}
+        S.pos=mk('leavePosNo',r=>enc(r.k),{
+            onFirst:o=>{
+                const flag='rpst_lv_posno_cloud_v1'; if(lsGet(flag)==='1') return;
+                let loc={}; try{loc=JSON.parse(lsGet('rpst_lv_posno')||'{}')}catch(e){}
+                const up={}; Object.keys(loc).forEach(n=>{if(loc[n]&&!o.snap[enc(n)])up['leavePosNo/'+enc(n)]={k:n,v:loc[n]}});
+                if(!Object.keys(up).length){lsSet(flag,'1');return;}
+                rtdb.ref().update(up).then(()=>lsSet(flag,'1')).catch(e=>console.warn('migrate posno',e));
+            },
+            onChange:()=>{clearTimeout(S._pt);S._pt=setTimeout(()=>{try{if(lvView==='register')lvShow('register',true)}catch(e){}},250)}});
+        S.posMap=()=>{const m={};S.pos.items.forEach(r=>{m[r.k]=r.v});return m;};
+        S.setPos=(n,v)=>{const a=S.pos.load().filter(r=>r.k!==n);if(v)a.push({k:n,v});S.pos.save(a);};
+        // บัญชีผู้ใช้
+        S.users=mk('appUsers',r=>enc(r.u),{
+            onFirst:o=>{
+                let local=[]; try{local=loadUsersLocal()}catch(e){}
+                const up={};
+                if(!o.items.length){
+                    local.forEach(a=>{up['appUsers/'+enc(a.u)]=clean(a)});
+                } else if(lsGet('nayo_users_cloud_v1')!=='1'){
+                    // เครื่องนี้มีบัญชีที่เพิ่มเองและยังไม่อยู่บนฐานข้อมูลกลาง → เพิ่มขึ้นไป (ไม่ดึงบัญชีเริ่มต้น/บัญชีที่ถูกลบกลับมา)
+                    local.forEach(a=>{
+                        const isSeed=a.u==='admin'||AUTH_SEED_USERS.some(s=>s.u===a.u);
+                        if(!isSeed&&!o.snap[enc(a.u)])up['appUsers/'+enc(a.u)]=clean(a);
+                    });
+                }
+                if(Object.keys(up).length) rtdb.ref().update(up).then(()=>lsSet('nayo_users_cloud_v1','1')).catch(e=>console.warn('migrate users',e));
+                else lsSet('nayo_users_cloud_v1','1');
+            },
+            onChange:()=>{ // สำเนาไว้ในเครื่องเผื่อออฟไลน์
+                if(S.users.items.length){sset('localStorage',AUTH.USERS,JSON.stringify(S.users.items));sset('localStorage','nayo_seed_v1','1');}
+                try{ if(!document.getElementById('users-modal').classList.contains('hidden')) renderUsers(); }catch(e){}
+            }});
+        S.usersPending=()=>!S.users.ready&&!S.users.failed&&!usersWaitDone;
+        S.start=()=>{S.lv.start();S.cr.start();S.pos.start();S.users.start();};
+        return S;
+    })();
+    SYNC.start();
     const EV_CATS=[['งานป้องกันควบคุมโรค','#0284c7'],['งานบริหารทั่วไป','#06b6d4'],['คลินิกผู้สูงอายุ','#38bdf8'],['ยุทธศาสตร์ AI','#3b82f6'],['อื่นๆ','#5b7a8c']];
     const TH_M=['ม.ค.','ก.พ.','มี.ค.','เม.ย.','พ.ค.','มิ.ย.','ก.ค.','ส.ค.','ก.ย.','ต.ค.','พ.ย.','ธ.ค.'];
     document.getElementById('ev-cat').innerHTML=EV_CATS.map(c=>'<option>'+c[0]+'</option>').join('');
