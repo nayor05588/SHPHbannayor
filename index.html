@@ -2541,7 +2541,7 @@ function hashPw(user,pw){
         // one-time import of staff accounts (does not re-add accounts an admin deletes later)
         if(sget('localStorage','nayo_seed_v1')!=='1'||!sget('localStorage',AUTH.USERS)){
             AUTH_SEED_USERS.forEach(s=>{ if(!list.some(a=>a.u===s.u)) list.push(Object.assign({},s)); });
-            saveUsers(list); sset('localStorage','nayo_seed_v1','1');
+            sset('localStorage',AUTH.USERS,JSON.stringify(list)); sset('localStorage','nayo_seed_v1','1'); /* เขียนเฉพาะในเครื่อง ห้ามดันบัญชีเริ่มต้นขึ้นฐานข้อมูลกลาง */
         }
         return list;
     }
