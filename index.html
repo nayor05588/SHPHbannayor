@@ -2759,7 +2759,7 @@ function hashPw(user,pw){
                     const first=!o.ready; o.ready=true;
                     if(first&&opts.onFirst){try{opts.onFirst(o)}catch(e){console.error(e)}}
                     if(opts.onChange){try{opts.onChange(first)}catch(e){console.error(e)}}
-                },err=>{o.failed=true;console.warn(path,err);if(typeof setDbStatus==='function')setDbStatus(false,'สิทธิ์ถูกปฏิเสธ ('+path+')');});
+                },err=>{o.failed=true;console.warn(path,err);if(typeof setDbStatus==='function')setDbStatus(false,'สิทธิ์ถูกปฏิเสธ ('+path+')');if(!window._syncErrShown){window._syncErrShown=1;alert('อ่านข้อมูล "'+path+'" จากฐานข้อมูลกลางไม่ได้ ('+(err&&err.message||err)+')\nต้องเปิด Firebase Rules ให้ path: leaves, carRequests, leavePosNo, appUsers อ่าน/เขียนได้ ข้อมูลจึงจะเห็นตรงกันทุกเครื่อง');}});
             };
             return o;
         }
