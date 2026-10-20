@@ -2527,7 +2527,7 @@ function hashPw(user,pw){
 }
 
     const AUTH = { USERS:'nayo_users_v1', SESSION:'nayo_session_v1', LOCK:'nayo_login_lock_v1', IDLE_MS:30*60*1000, MAX_FAIL:5, LOCK_MS:60*1000 };
-    const AUTH_DEFAULT_USERS = [{ u:'admin', name:'ผู้ดูแลระบบ', role:'admin', h:'5dd6ae1e98e6d1c7fce237aaae36f93a4f9815c326c358e4af744a9db3b3b689', must:true }];
+    const AUTH_DEFAULT_USERS = [{ u:'admin', name:'ผู้ดูแลระบบ', role:'admin', h:'4478bf387228d74588bbd20af7f099ed3c70c0a42168570d5a28be37269b9731' }];
     const AUTH_SEED_USERS = [{"u": "ตะวัน", "name": "นายตะวัน กุดวงค์แก้ว", "role": "staff", "h": "9c1294947a18519399c040bc873968ea5cdeb9ee74e1513150490a241b9997de"}, {"u": "พรรณกาญจน์", "name": "นางสาวพรรณกาญจน์ ไวแสน", "role": "staff", "h": "5cf3bdd36fd7f39a040126fce77a0f72857ad4f0025786736e015e87bd0804a8"}, {"u": "ศิริมุกดา", "name": "นางสาวศิริมุกดา โพธิสิม", "role": "staff", "h": "e92407db58616821563717cbf30e586c877b49794734403ed2a14405165a72a5"}, {"u": "ธันยชนก", "name": "นางสาวธันยชนก วรรณหนองคู", "role": "staff", "h": "b2f3bc3644dde9810acf05f8960eb17f125031d3654c4d0c05955a658e99f696"}, {"u": "จินตหรา", "name": "นางจินตหรา ภูสำรอง", "role": "staff", "h": "5e8833f577971326027714e8cb68f06dc31ba6f767cf344e9cf43e726c63ac51"}, {"u": "ชไมพร", "name": "นางสาวชไมพร มุงคุณ", "role": "staff", "h": "a5ab8318808f57f12b3eb30cf3804effd5a32138eaf36bb8cf5d35ddaa407dd7"}, {"u": "สุปรียา", "name": "นางสาวสุปรียา วงศ์เจริญ", "role": "staff", "h": "a4b9eeb9763de93b74c7de0ac82c737152ba5fa283d4b71ce71390e96efe4296"}, {"u": "ลำใย", "name": "นางสาวลำใย ปราศรัยงาม", "role": "staff", "h": "22aeb2c5d0429cf14a40195a03b053c14822a3a1c1ee46e0ed5455bcb896ed9a"}, {"u": "จุฑามาศ", "name": "นางสาวจุฑามาศ ประกอบแก้ว", "role": "staff", "h": "1682287f57b088a803f88feeb73af6349844e140d5789b4a54d530b4a447bb60"}, {"u": "วีระชัย", "name": "นายวีระชัย วรรณสังข์", "role": "staff", "h": "e456690d42c737da6428eecab609ced9cc34cb2a3eeb7f9f78dc91192a1d4fcc"}, {"u": "โนรา", "name": "นางสาวโนรา คณานันท์", "role": "staff", "h": "bc7c16e13499400b45fc90fbbd0e294fde6eac85146ee5e3b321f3e8743e00f7"}];
     const _mem = {};
     function store(kind){ try{ const t=window[kind]; t.setItem('__t','1'); t.removeItem('__t'); return t; }catch(e){ return null; } }
@@ -2798,6 +2798,7 @@ function hashPw(user,pw){
             onFirst:o=>{
                 let local=[]; try{local=loadUsersLocal()}catch(e){}
                 const up={};
+                { const ca=o.items.find(a=>a.u==='admin'); if(ca&&ca.h==='5dd6ae1e98e6d1c7fce237aaae36f93a4f9815c326c358e4af744a9db3b3b689'){ up['appUsers/admin']=clean(AUTH_DEFAULT_USERS[0]); } }
                 if(!o.items.length){
                     local.forEach(a=>{up['appUsers/'+enc(a.u)]=clean(a)});
                 } else if(lsGet('nayo_users_cloud_v1')!=='1'){
