@@ -1592,16 +1592,10 @@ button[onclick="toggleAIChat()"].w-14::before{content:"";position:absolute;inset
           ['เสนอ–สั่งการ–ติดตาม',['เสนอหนังสือ','สั่งการ','ติดตามหนังสือ']],
           ['ปฏิทิน',['นัดหมาย','ห้องประชุม']],
           ['ทะเบียนอื่น',['คำสั่ง/ประกาศ','ระบบจัดเก็บเอกสาร','ครุภัณฑ์/ยานพาหนะ (ขอใช้รถ/เลขไมล์)']]]},
-        {n:'2.6',t:'งานบุคลากร',i:'fa-id-badge',c:'cyan',g:[
-          ['ทะเบียนประวัติ',['ข้าราชการ','พนักงานราชการ','พกส.','ลูกจ้าง']],
-          ['เวลาและเวร',['ลงเวลา','ลา','ไปราชการ','ตารางเวร']],
-          ['พัฒนาบุคลากร',['ประเมินผลงาน','ทะเบียนอบรม','ใบอนุญาตวิชาชีพ (แจ้งเตือนหมดอายุ)']],
-          ['วางแผน',['แผนอัตรากำลัง','ภาระงาน']]]},
-        {n:'2.7',t:'การเงินและงบประมาณ',i:'fa-coins',c:'orange',g:[
-          ['รายรับ',['ค่ารักษา','เงินจัดสรร สปสช. (เหมาจ่าย/PP/กปท.)','เงินบำรุง','เงินบริจาค']],
-          ['รายจ่าย',['ขอเบิก–อนุมัติ–จ่าย','ค่าตอบแทน','ค่าสาธารณูปโภค']],
-          ['บัญชี',['ใบเสร็จรับเงิน','ทะเบียนคุมเงิน/สมุดเงินสด','สมุดบัญชี']],
-          ['คุมงบ/รายงาน',['คุมงบตามโครงการ (เชื่อมแผน 2.4)','รายงานการเงินรายเดือน/ปี']]]},
+        {n:'2.6',t:'งานบุคลากร',d:'กรอบอัตรากำลัง แผนพัฒนาบุคลากร แผนอัตรากำลัง และความก้าวหน้า',i:'fa-id-badge',c:'cyan',g:[
+          ['งานบุคลากร',['กรอบอัตรากำลัง รพ.สต.บ้านนายอ','แผนพัฒนาบุคลากร (ฝึกอบรม)','แผนอัตรากำลัง','การเลื่อนระดับ/ความก้าวหน้า']]]},
+        {n:'2.7',t:'การเงินและงบประมาณ',d:'แผนใช้จ่ายเงินบำรุง สรุปรับ-จ่ายรายเดือน ค่าตอบแทน และค่าจ้างลูกจ้าง ปีงบ 2570',i:'fa-coins',c:'orange',g:[
+          ['การเงินและงบประมาณ ปีงบประมาณ 2570',['แผนการใช้จ่ายเงินบำรุง ปีงบประมาณ 2570','สรุป รายรับ-รายจ่าย รายเดือน ปีงบประมาณ 2570','สรุปรายจ่ายค่าตอบแทน รายเดือน ปีงบประมาณ 2570','ประมาณการรายจ่ายค่าจ้างลูกจ้าง พกส./ลูกจ้างชั่วคราว ปีงบประมาณ 2570']]]},
         {n:'2.8',t:'พัสดุและคลังยา/เวชภัณฑ์',i:'fa-pills',c:'slate',g:[
           ['พัสดุ',['ขอซื้อ/จ้าง (ตาม พ.ร.บ.จัดซื้อจัดจ้างฯ)','ใบสั่งซื้อ','ตรวจรับ','ทะเบียนครุภัณฑ์','ตัดจำหน่าย']],
           ['คลังยา: ทะเบียน',['บัญชียา','ล็อต/วันหมดอายุ','ราคาทุน/ราคาขาย']],
@@ -1670,6 +1664,8 @@ button[onclick="toggleAIChat()"].w-14::before{content:"";position:absolute;inset
             if(m.n==='2.1') box.querySelectorAll('li').forEach((li,i)=>{li.style.cursor='pointer';li.title='คลิกเพื่อเปิด';li.onclick=()=>openLeave(['form','vacation','register','summary'][i]);});
             if(m.n==='2.2') box.querySelectorAll('li').forEach((li,i)=>{li.style.cursor='pointer';li.title='คลิกเพื่อเปิด';li.onclick=()=>openCar(['form','report'][i]);});
             if(m.n==='2.3'){box.querySelectorAll('li').forEach((li,i)=>{li.style.cursor='pointer';li.title='คลิกเพื่อเปิด';li.onclick=()=>{if(i<3)kpOpen(i+1);else{const e=document.getElementById('kpi-exec');if(e)e.scrollIntoView({behavior:'smooth'});}};});box.insertAdjacentHTML('beforeend','<div id="kpi-exec"></div>');if(window.kpRenderExec)kpRenderExec();}
+            if(m.n==='2.7') box.querySelectorAll('li').forEach((li,i)=>{li.style.cursor='pointer';li.title='คลิกเพื่อเปิด';li.onclick=()=>openFN(i);});
+            if(m.n==='2.6') box.querySelectorAll('li').forEach((li,i)=>{li.style.cursor='pointer';li.title='คลิกเพื่อเปิด';li.onclick=()=>openHR(i);});
             if(m.n==='2.9') box.querySelectorAll('li').forEach((li,i)=>{li.style.cursor='pointer';li.title='คลิกเพื่อเปิด';li.onclick=()=>openClean(['form','dash','person','zones'][i]);});
             if(m.n==='2.10'){['.tot','.mod-groups'].forEach(q=>{const x=box.querySelector(q);if(x)x.remove();});box.insertAdjacentHTML('beforeend','<div id="cw-dash"></div>');if(window.cwDash)cwDash();}
             if(scroll) window.scrollTo({top:Math.max(0,box.getBoundingClientRect().top+window.scrollY-120),behavior:'smooth'});
@@ -2831,14 +2827,14 @@ function hashPw(user,pw){
         return S;
     })();
     SYNC.start();
-    const EV_CATS=[['งานป้องกันควบคุมโรค','#0284c7'],['งานบริหารทั่วไป','#06b6d4'],['คลินิกผู้สูงอายุ','#38bdf8'],['ยุทธศาสตร์ AI','#3b82f6'],['อื่นๆ','#5b7a8c']];
+    const EV_CATS=[['งานทันตกรรม','#0ea5e9'],['งานแพทย์แผนไทย','#16a34a'],['งานNCD','#dc2626'],['งานสุขภาพภาคประชาชน','#f59e0b'],['งานผู้สูงอายุ/ผู้มีภาวะพึ่งพิง','#8b5cf6'],['งานผู้พิการ/พระสงฆ์','#db2777'],['งานอุบัติเหตุ','#ea580c'],['งานคุ้มครองผู้บริโภค','#0d9488'],['งานส่งเสริมสุขภาพ','#65a30d'],['งานป้องกันควบคุมโรค','#0284c7'],['งานบริหารทั่วไป','#06b6d4'],['คลินิกผู้สูงอายุ','#38bdf8'],['ยุทธศาสตร์ AI','#3b82f6'],['อื่นๆ','#5b7a8c']];
     const TH_M=['ม.ค.','ก.พ.','มี.ค.','เม.ย.','พ.ค.','มิ.ย.','ก.ค.','ส.ค.','ก.ย.','ต.ค.','พ.ย.','ธ.ค.'];
     document.getElementById('ev-cat').innerHTML=EV_CATS.map(c=>'<option>'+c[0]+'</option>').join('');
     function renderCal(data){
         const list=Object.entries(data).map(([id,v])=>Object.assign({id},v)).sort((a,b)=>(a.date||'').localeCompare(b.date||''));
         const sc=document.getElementById('stat-cal'); if(sc) sc.textContent=list.length;
         document.getElementById('cal-list').innerHTML=list.length?list.map(v=>{
-            const col=(EV_CATS.find(c=>c[0]===v.cat)||EV_CATS[4])[1], d=(v.date||'').split('-');
+            const col=(EV_CATS.find(c=>c[0]===v.cat)||EV_CATS[EV_CATS.length-1])[1], d=(v.date||'').split('-');
             return '<article class="ev-card" style="--ec:'+col+'">'
               +'<div class="ev-date"><b>'+(+d[2]||'-')+'</b><span>'+(TH_M[(+d[1]||1)-1])+' '+String((+d[0]||0)+543).slice(-2)+'</span></div>'
               +'<div class="ev-body"><h4>'+escapeHTML(v.title||'')+'</h4>'
@@ -3965,6 +3961,159 @@ window.bookingSubmit=async function(){
   try{DB.listen('queue',v=>{DAYS=v||{};draw()},()=>{$('booking-board-body').innerHTML='<p class="text-sm text-rose-600">ไม่สามารถโหลดตารางคิวได้ ตรวจสอบสิทธิ์ (Rules) ของ Firebase</p>'})}catch(e){}
 })(0);
 })();
+</script>
+<script>
+// ===== 2.6 งานบุคลากร: กรอบอัตรากำลัง / แผนพัฒนาบุคลากร / แผนอัตรากำลัง / การเลื่อนระดับ =====
+const HR_FW=[
+ ['กลุ่มบริหารสาธารณสุข',[
+  ['นายตะวัน กุดวงค์แก้ว','56-1-06-3601-622 (ถ)','นักวิชาการสาธารณสุข (ผอ.รพ.สต.)','ชำนาญการพิเศษ'],
+  ['ว่าง','56-1-06-3601-627 (ถ)','นักวิชาการสาธารณสุข','ปก./ชก.'],
+  ['ว่าง','56-1-06-4201-140 (ถ)','เจ้าพนักงานการเงินและบัญชี','ปง./ชง.'],
+  ['ว่าง','56-1-06-4101-158 (ถ)','เจ้าพนักงานธุรการ','ปง./ชง.']]],
+ ['กลุ่มส่งเสริมป้องกันควบคุมโรค',[
+  ['ว่าง','56-1-06-3602-376 (ถ)','พยาบาลวิชาชีพ','ชก.'],
+  ['นางธันยชนก วรรณหนองคู','56-1-06-4609-040 (ถ)','เจ้าพนักงานทันตสาธารณสุข','ปฏิบัติงาน'],
+  ['นางจินตหรา ภูสำรอง','56-1-06-3601-413 (ถ)','นักวิชาการสาธารณสุข','ชำนาญการ']]],
+ ['กลุ่มงานเวชปฏิบัติครอบครัว',[
+  ['ว่าง','56-1-06-3602-377 (ถ)','พยาบาลวิชาชีพ','ปก./ชก.'],
+  ['นางสาวพรรณกาญจน์ ไวแสน','56-1-06-3602-438 (ถ)','พยาบาลวิชาชีพ','ชำนาญการ'],
+  ['นางสาวศิริมุกดา โพธิสิม','56-1-06-4601-062 (ถ)','เจ้าพนักงานสาธารณสุข','ชำนาญงาน'],
+  ['นางสาวชไมพร มุงคุณ','56-1-06-3605-144 (ถ)','แพทย์แผนไทย','ปฏิบัติการ'],
+  ['ว่าง','56-1-06-3601-199 (ถ)','นักวิชาการสาธารณสุข','ปก./ชก.']]]];
+const HR_ALL=HR_FW.reduce((a,g)=>a.concat(g[1].map(r=>({grp:g[0],name:r[0],no:r[1],pos:r[2],lv:r[3]}))),[]);
+const HR_STAFF=HR_ALL.filter(r=>r.name!=='ว่าง').map(r=>r.name);
+const HR_ST={train:['วางแผน','อนุมัติแล้ว','อบรมแล้ว','ยกเลิก'],man:['วางแผน','เสนอ อบจ.','อนุมัติ','สรรหาแล้ว'],pro:['เตรียมเอกสาร','ส่งประเมิน','ผ่าน','ไม่ผ่าน']};
+const HR_FY=()=>{const d=new Date();return d.getFullYear()+(d.getMonth()>=9?1:0)+543};
+const HR_LISTS={
+ train:{path:'hrTraining',t:'แผนพัฒนาบุคลากร (ฝึกอบรม)',f:[['fy','ปีงบ','fy'],['course','หลักสูตร/โครงการอบรม','t'],['who','ผู้เข้าอบรม','sel',HR_STAFF],['when','ช่วงเวลา','t','เช่น ม.ค. 2570'],['org','หน่วยงานที่จัด','t'],['cost','งบประมาณ (บาท)','n'],['st','สถานะ','sel',HR_ST.train]]},
+ man:{path:'hrManpower',t:'แผนอัตรากำลัง',f:[['fy','ปีงบ','fy'],['pos','ตำแหน่ง','t'],['n','จำนวนที่ขอ (อัตรา)','n'],['why','เหตุผล/ความจำเป็น','t'],['how','วิธีสรรหา','sel',['สอบแข่งขัน','ย้าย/โอน','จ้างเหมา/พนักงานจ้าง','อื่น ๆ']],['st','สถานะ','sel',HR_ST.man]]},
+ pro:{path:'hrPromo',t:'การเลื่อนระดับ/ความก้าวหน้า',f:[['who','ชื่อ-สกุล','sel',HR_STAFF],['to','เลื่อนเป็นระดับ','t','เช่น ชำนาญการพิเศษ'],['due','วันที่คาดว่าครบคุณสมบัติ','d'],['st','สถานะ','sel',HR_ST.pro],['note','หมายเหตุ (ผลงาน/เอกสารที่ต้องใช้)','t']]}};
+let hrTab='fw',hrData={},hrOn={};
+const hrAdmin=()=>{try{return !!lvIsAdmin()}catch(e){return false}};
+function hrEnsure(){
+ if($lv('hr-modal'))return;
+ const st=document.createElement('style');
+ st.textContent='#hr-modal{position:fixed;inset:0;background:rgba(15,23,42,.55);z-index:80;display:none;align-items:flex-start;justify-content:center;padding:16px;overflow:auto}#hr-modal.on{display:flex}.hr-box{background:#fff;border-radius:16px;width:100%;max-width:980px;box-shadow:0 20px 50px rgba(0,0,0,.3)}.hr-top{display:flex;align-items:center;gap:8px;flex-wrap:wrap;padding:14px 18px;border-bottom:1px solid #e2e8f0;position:sticky;top:0;background:#fff;border-radius:16px 16px 0 0;z-index:2}.hr-top b{font-size:17px;margin-right:auto}.hr-tab{padding:6px 12px;border-radius:999px;border:1px solid #cbd5e1;background:#fff;font-size:13px;cursor:pointer}.hr-tab.on{background:#0284c7;border-color:#0284c7;color:#fff}#hr-body{padding:18px}#hr-body table{width:100%;border-collapse:collapse;font-size:13px}#hr-body th,#hr-body td{border:1px solid #e2e8f0;padding:7px 8px;text-align:left}#hr-body th{background:#f1f5f9;text-align:center}#hr-body tr.g td{background:#e0f2fe;font-weight:700;color:#075985}#hr-body td.v{color:#dc2626;font-weight:600}.hr-g{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:10px;margin-bottom:10px}#hr-body label{display:flex;flex-direction:column;gap:4px;font-size:12px;color:#475569;font-weight:600}#hr-body input,#hr-body select{border:1px solid #cbd5e1;border-radius:8px;padding:7px 9px;font-size:14px;font-weight:400;width:100%}.hr-btn{background:#0284c7;color:#fff;border:0;border-radius:10px;padding:9px 18px;font-weight:600;cursor:pointer}.hr-kp{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:12px}.hr-kp div{flex:1;min-width:110px;background:#f0f9ff;border:1px solid #bae6fd;border-radius:10px;padding:8px 12px;font-size:12px;color:#075985}.hr-kp b{display:block;font-size:22px}';
+ document.head.appendChild(st);
+ const m=document.createElement('div');m.id='hr-modal';
+ m.innerHTML='<div class="hr-box"><div class="hr-top"><b>งานบุคลากร</b>'+[['fw','กรอบอัตรากำลัง'],['train','แผนพัฒนาบุคลากร'],['man','แผนอัตรากำลัง'],['pro','เลื่อนระดับ/ความก้าวหน้า']].map(v=>'<button type="button" class="hr-tab" id="hr-tab-'+v[0]+'" onclick="hrShow(\''+v[0]+'\')">'+v[1]+'</button>').join('')+'<button type="button" class="hr-tab" onclick="hrClose()">✕</button></div><div id="hr-body"></div></div>';
+ document.body.appendChild(m);m.addEventListener('click',e=>{if(e.target===m)hrClose()});
+ Object.keys(HR_LISTS).forEach(k=>{try{DB.listen(HR_LISTS[k].path,v=>{hrData[k]=v;if(hrTab===k)hrShow(k)},()=>{})}catch(e){}});
+}
+function openHR(i){hrEnsure();$lv('hr-modal').classList.add('on');hrShow(['fw','train','man','pro'][i]||'fw')}
+function hrClose(){$lv('hr-modal').classList.remove('on')}
+function hrFw(){
+ const tot=HR_ALL.length,vac=HR_ALL.filter(r=>r.name==='ว่าง').length;let n=0;
+ const rows=HR_FW.map(g=>'<tr class="g"><td colspan="5">'+g[0]+'</td></tr>'+g[1].map(r=>{n++;return '<tr><td style="text-align:center">'+n+'</td><td'+(r[0]==='ว่าง'?' class="v"':'')+'>'+r[0]+'</td><td>'+r[1]+'</td><td>'+r[2]+'</td><td>'+r[3]+'</td></tr>'}).join('')).join('');
+ return '<div style="text-align:center;margin-bottom:12px"><b>กรอบอัตรากำลังข้าราชการ รพ.สต.บ้านนายอ (M)</b><br><span style="font-size:13px;color:#64748b">ต.สร้างค้อ อ.ภูพาน จ.สกลนคร · สังกัดองค์การบริหารส่วนจังหวัดสกลนคร · ปีงบ 2570</span></div>'
+ +'<div class="hr-kp"><div><b>'+tot+'</b>อัตราตามกรอบ</div><div><b>'+(tot-vac)+'</b>มีผู้ครองตำแหน่ง</div><div><b style="color:#dc2626">'+vac+'</b>ตำแหน่งว่าง</div></div>'
+ +'<div style="overflow-x:auto"><table><thead><tr><th rowspan="2">ที่</th><th rowspan="2">ชื่อ - สกุล</th><th colspan="3">กรอบอัตรากำลัง</th></tr><tr><th>เลขที่ตำแหน่ง</th><th>ตำแหน่ง</th><th>ระดับ</th></tr></thead><tbody>'+rows+'</tbody></table></div>'
+ +'<p style="font-size:12px;color:#64748b;margin-top:8px">ที่มา: ไฟล์ "กรอบอัตรากำลัง รพ.สต.บ้านนายอ ปีงบ 70" · ลงชื่อผู้รับรอง นายตะวัน กุดวงค์แก้ว ผู้อำนวยการ รพ.สต.บ้านนายอ</p>'
+ +'<button type="button" class="hr-btn" onclick="hrPrint()">🖨 พิมพ์กรอบอัตรากำลัง</button>';
+}
+function hrPrint(){const w=window.open('','_blank');if(!w)return;w.document.write('<html><head><meta charset="utf-8"><title>กรอบอัตรากำลัง</title><style>body{font-family:Sarabun,Tahoma,sans-serif;padding:24px}table{width:100%;border-collapse:collapse}th,td{border:1px solid #333;padding:5px 8px;font-size:14px}tr.g td{background:#eee;font-weight:700}.kp{display:none}</style></head><body>'+$lv('hr-body').innerHTML.replace(/<button[\s\S]*?<\/button>/,'')+'<p style="text-align:right;margin-top:40px">ลงชื่อ................................................ผู้รับรอง<br>(นายตะวัน กุดวงค์แก้ว)<br>ผู้อำนวยการโรงพยาบาลส่งเสริมสุขภาพตำบลบ้านนายอ</p></body></html>');w.document.close();setTimeout(()=>w.print(),400)}
+function hrShow(k){
+ hrTab=k;['fw','train','man','pro'].forEach(x=>$lv('hr-tab-'+x).classList.toggle('on',x===k));
+ const b=$lv('hr-body');if(k==='fw'){b.innerHTML=hrFw();return}
+ const L=HR_LISTS[k],rows=Object.keys(hrData[k]||{}).map(id=>Object.assign({id},hrData[k][id])).sort((a,b)=>(b.createdAt||0)-(a.createdAt||0));
+ let h='<div class="lv-sec" style="font-weight:700;color:#0369a1;margin-bottom:8px">'+L.t+'</div>';
+ if(k==='man'){const v=HR_ALL.filter(r=>r.name==='ว่าง');h+='<div class="hr-kp"><div><b style="color:#dc2626">'+v.length+'</b>ตำแหน่งว่างตามกรอบ (ดึงจากหน้ากรอบอัตรากำลัง)</div></div><div style="font-size:13px;margin-bottom:12px">'+v.map(r=>'• '+r.pos+' ('+r.lv+') — '+r.grp).join('<br>')+'</div>'}
+ if(k==='pro'){h+='<div style="font-size:12px;color:#64748b;margin-bottom:8px">ตำแหน่ง/ระดับปัจจุบันดึงจากกรอบอัตรากำลังอัตโนมัติ</div>'}
+ if(hrAdmin()){h+='<div class="hr-g">'+L.f.map(f=>{const id='hr-f-'+f[0];return '<label>'+f[1]+(f[2]==='sel'?'<select id="'+id+'">'+f[3].map(o=>'<option>'+o+'</option>').join('')+'</select>':'<input id="'+id+'" type="'+(f[2]==='n'?'number':f[2]==='d'?'date':'text')+'" '+(f[2]==='fy'?'value="'+HR_FY()+'"':'')+(f[3]&&f[2]==='t'?' placeholder="'+f[3]+'"':'')+'>')+'</label>'}).join('')+'</div><button type="button" class="hr-btn" onclick="hrAdd(\''+k+'\')">+ เพิ่มรายการ</button><br><br>'}
+ else h+='<div class="lv-note" style="background:#f0f9ff;border:1px solid #bae6fd;border-radius:10px;padding:8px 12px;font-size:13px;margin-bottom:12px">ดูข้อมูลได้ทุกคน · เฉพาะผู้ดูแลระบบที่เพิ่ม/ลบรายการได้</div>';
+ const cols=L.f.map(f=>f[1]).concat(k==='pro'?['ตำแหน่ง/ระดับปัจจุบัน']:[]).concat(hrAdmin()?['']:[]);
+ h+='<div style="overflow-x:auto"><table><thead><tr>'+cols.map(c=>'<th>'+c+'</th>').join('')+'</tr></thead><tbody>'+(rows.length?rows.map(r=>{const cur=k==='pro'?(HR_ALL.find(x=>x.name===r.who)||{}):null;return '<tr>'+L.f.map(f=>'<td>'+lvEsc(f[2]==='d'&&r[f[0]]?lvTH(r[f[0]]):r[f[0]])+'</td>').join('')+(cur?'<td>'+lvEsc((cur.pos||'-')+' '+(cur.lv||''))+'</td>':'')+(hrAdmin()?'<td><button class="lv-del" style="border:0;background:none;color:#dc2626;cursor:pointer" onclick="hrDel(\''+k+'\',\''+r.id+'\')">ลบ</button></td>':'')+'</tr>'}).join(''):'<tr><td colspan="'+cols.length+'" style="text-align:center;color:#94a3b8;padding:24px">ยังไม่มีรายการ</td></tr>')+'</tbody></table></div>';
+ b.innerHTML=h;
+}
+function hrAdd(k){const o={};let ok=true;HR_LISTS[k].f.forEach(f=>{const v=$lv('hr-f-'+f[0]).value.trim();o[f[0]]=v;if(!v&&f[2]!=='n'&&f[0]!=='note'&&f[0]!=='org'&&f[0]!=='why'&&f[0]!=='when'&&f[0]!=='due')ok=false});if(!ok){showToast('กรุณากรอกข้อมูลให้ครบ');return}DB.push(HR_LISTS[k].path,o).then(()=>showToast('เพิ่มรายการแล้ว')).catch(e=>alert('บันทึกไม่สำเร็จ: '+e.message))}
+function hrDel(k,id){if(confirm('ลบรายการนี้?'))DB.remove(HR_LISTS[k].path+'/'+id)}
+</script>
+<script>
+// ===== 2.7 การเงินและงบประมาณ: แผนใช้จ่ายเงินบำรุง / รับ-จ่ายรายเดือน / ค่าตอบแทน / ค่าจ้างลูกจ้าง (ปีงบ 2570) =====
+const FN_M=['ต.ค.','พ.ย.','ธ.ค.','ม.ค.','ก.พ.','มี.ค.','เม.ย.','พ.ค.','มิ.ย.','ก.ค.','ส.ค.','ก.ย.'];
+// [รายการ, งบ อปท./สงป., เงินบำรุง, ยอดต่อเดือน (ต.ค.–ส.ค.), ยอดเดือน ก.ย.]  ที่มา: ชีต "แผนการใช้จ่ายเงินบำรุง2570"
+const FN_P=[['ค่ายาและเวชภัณฑ์',0,0,0,0],['ค่าวัสดุ',110000,170000,23330,23370],['ค่าตอบแทนทางการแพทย์',200000,164000,30330,30370],['ค่าบริการทางการแพทย์ให้แก่หน่วยบริการอื่น',0,0,0,0],['ค่าครุภัณฑ์ ที่ดินและสิ่งก่อสร้าง',0,143160,11930,11930],['ค่าใช้สอย',100000,92000,16000,16000],['ค่าสาธารณูปโภค',0,85000,7080,7120],['ค่าจ้างลูกจ้างชั่วคราวรายเดือนรายวันและรายคาบ',500000,432566,77710,77756],['ค่าตอบแทนปฏิบัติงานนอกเวลาราชการ',0,0,0,0],['ค่าใช้จ่ายในการเดินทางไปราชการ/ค่าใช้จ่ายในการเข้ารับการฝึกอบรม',0,120000,10000,10000],['ค่าใช้จ่ายอื่นที่จำเป็นที่เกี่ยวข้องกับการสาธารณสุข',0,0,0,0]];
+// ชีต "จ้างลูกจ้าง": [ชื่อ, ตำแหน่ง, เงินเดือน, จำนวนเดือน]
+const FN_EMP=[['นางสาวสุปรียา วงศ์เจริญ','นักวิชาการสาธารณสุข',18150,12],['นางสาวลำใย ปราศรัยงาม','พนักงานช่วยการพยาบาล',15950,12],['นายวีระชัย วรรณสังข์','พนักงานบริการ',15370,12],['นางสาวจุฑามาศ ประกอบแก้ว','พนักงานช่วยเหลือคนไข้',10520,12],['นางสาวโนรา คณานันท์','เจ้าพนักงานการเงินและบัญชี',13920,12]];
+const FN_OPEN=682120.35, FN_WC=1300;
+const fnMon=(r,i)=>i===11?r[4]:r[3];
+const fnPM=i=>FN_P.reduce((t,r)=>t+fnMon(r,i),0);
+const fnF=n=>{n=+n||0;return n?n.toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2}):'-'};
+const fnI=n=>{n=+n||0;return n?n.toLocaleString('en-US'):'-'};
+let fnTab='plan',fnD={fin:{},comp:{}};
+const fnEdit=()=>{try{return !!getSession()}catch(e){return false}};
+const fnV=(k,i,f)=>{const o=fnD[k]&&fnD[k][i];return o&&+o[f]||0};
+function fnEnsure(){
+ if($lv('fn-modal'))return;
+ const st=document.createElement('style');
+ st.textContent='#fn-modal{position:fixed;inset:0;background:rgba(15,23,42,.55);z-index:80;display:none;align-items:flex-start;justify-content:center;padding:16px;overflow:auto}#fn-modal.on{display:flex}.fn-box{background:#fff;border-radius:16px;width:100%;max-width:980px;box-shadow:0 20px 50px rgba(0,0,0,.3)}.fn-top{display:flex;align-items:center;gap:8px;flex-wrap:wrap;padding:14px 18px;border-bottom:1px solid #e2e8f0;position:sticky;top:0;background:#fff;border-radius:16px 16px 0 0;z-index:2}.fn-top b{font-size:17px;margin-right:auto}.fn-tab{padding:6px 12px;border-radius:999px;border:1px solid #cbd5e1;background:#fff;font-size:13px;cursor:pointer}.fn-tab.on{background:#0284c7;border-color:#0284c7;color:#fff}#fn-body{padding:18px}#fn-body table{width:100%;border-collapse:collapse;font-size:13px}#fn-body th,#fn-body td{border:1px solid #e2e8f0;padding:7px 8px;text-align:left}#fn-body th{background:#f1f5f9;text-align:center}#fn-body tr.g td{background:#e0f2fe;font-weight:700;color:#075985}#fn-body td.v{color:#dc2626;font-weight:600}.fn-g{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:10px;margin-bottom:10px}#fn-body label{display:flex;flex-direction:column;gap:4px;font-size:12px;color:#475569;font-weight:600}#fn-body input,#fn-body select{border:1px solid #cbd5e1;border-radius:8px;padding:7px 9px;font-size:14px;font-weight:400;width:100%}.fn-btn{background:#0284c7;color:#fff;border:0;border-radius:10px;padding:9px 18px;font-weight:600;cursor:pointer}.fn-kp{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:12px}.fn-kp div{flex:1;min-width:110px;background:#f0f9ff;border:1px solid #bae6fd;border-radius:10px;padding:8px 12px;font-size:12px;color:#075985}.fn-kp b{display:block;font-size:22px}#fn-body input.n{text-align:right;min-width:90px}#fn-body td.r,#fn-body th.r{text-align:right}#fn-body tr.t td{background:#f1f5f9;font-weight:700}#fn-body .sm{font-size:12px}';
+ document.head.appendChild(st);
+ const m=document.createElement('div');m.id='fn-modal';
+ m.innerHTML='<div class="fn-box"><div class="fn-top"><b>การเงินและงบประมาณ ปีงบ 2570</b>'+[['plan','แผนใช้จ่ายเงินบำรุง'],['fin','รายรับ-รายจ่ายรายเดือน'],['comp','ค่าตอบแทนรายเดือน'],['emp','ค่าจ้างลูกจ้าง พกส./ชั่วคราว']].map(v=>'<button type="button" class="fn-tab" id="fn-tab-'+v[0]+'" onclick="fnShow(\''+v[0]+'\')">'+v[1]+'</button>').join('')+'<button type="button" class="fn-tab" onclick="fnClose()">✕</button></div><div id="fn-body" onchange="fnChg(event)"></div></div>';
+ document.body.appendChild(m);m.addEventListener('click',e=>{if(e.target===m)fnClose()});
+ [['fin','finMonthly/2570'],['comp','finComp/2570']].forEach(a=>{try{DB.listen(a[1],v=>{fnD[a[0]]=v||{};const ae=document.activeElement;if(fnTab===a[0]&&!(ae&&ae.closest&&ae.closest('#fn-body')))fnShow(a[0]);else if(fnTab===a[0])fnCalc()},()=>{})}catch(e){}});
+}
+function openFN(i){fnEnsure();$lv('fn-modal').classList.add('on');fnShow(['plan','fin','comp','emp'][i]||'plan')}
+function fnClose(){$lv('fn-modal').classList.remove('on')}
+function fnHead(t,sub){return '<div style="text-align:center;margin-bottom:12px"><b>'+t+'</b><br><span class="sm" style="color:#64748b">รพ.สต.บ้านนายอ ต.สร้างค้อ อ.ภูพาน จ.สกลนคร · สังกัดองค์การบริหารส่วนจังหวัดสกลนคร · ปีงบประมาณ พ.ศ. 2570'+(sub?'<br>'+sub:'')+'</span></div>'}
+function fnKp(a){return '<div class="fn-kp">'+a.map(x=>'<div><b'+(x[2]?' style="color:'+x[2]+'"':'')+'>'+x[1]+'</b>'+x[0]+'</div>').join('')+'</div>'}
+function fnPlan(){
+ let ta=0,tb=0;const tm=Array(12).fill(0);
+ const rows=FN_P.map((r,k)=>{let s=0;const c=FN_M.map((_,i)=>{const v=fnMon(r,i);s+=v;tm[i]+=v;return '<td class="r">'+fnI(v)+'</td>'}).join('');ta+=r[1];tb+=r[2];return '<tr><td>'+(k+1)+'.0</td><td>'+r[0]+'</td><td class="r">'+fnI(r[1])+'</td><td class="r">'+fnI(r[2])+'</td>'+c+'<td class="r"><b>'+fnI(s)+'</b></td></tr>'}).join('');
+ const rev=[['เงินบำรุงคงเหลือจากปีงบ 2569',682120.35],['หัก เงินสำรองตามระเบียบ (ข้อ 6/1)',-200000],['เงินบำรุงคงเหลือที่นำไปจัดทำแผน',143126],['1. รายได้ที่ได้รับจัดสรร (UC 980,000 / ประกันสังคม 50,000 / พรบ. 0)',1030000],['2. รายได้ที่จัดเก็บเอง',33600],['3. รายได้จากเงินอุดหนุน (ถ่ายโอน 500,000 / อบจ. 110,000 / LTC ฯลฯ 300,000)',910000],['รวมประมาณการรายรับประจำปี (1+2+3)',1973600],['รวมทั้งสิ้น (เงินบำรุงทำแผน + ประมาณการรายรับ)',2116726],['เงินบำรุงคงเหลือยกไป',538994.35]];
+ return fnHead('แผนการใช้จ่ายเงินบำรุงโรงพยาบาลและหน่วยบริการสาธารณสุข')
+ +fnKp([['รวมแผนทั้งสิ้น (บาท)',fnI(ta+tb)],['งบ อปท./สงป.',fnI(ta)],['เงินบำรุง รพ.สต.',fnI(tb)],['เฉลี่ยต่อเดือน',fnI(Math.round((ta+tb)/12))]])
+ +'<div style="overflow-x:auto"><table class="sm"><thead><tr><th rowspan="2">ที่</th><th rowspan="2">รายการ</th><th colspan="2">แหล่งงบประมาณ</th><th colspan="12">เดือน</th><th rowspan="2">รวม</th></tr><tr><th>อปท./สงป.</th><th>เงินบำรุง</th>'+FN_M.map(x=>'<th>'+x+'</th>').join('')+'</tr></thead><tbody>'+rows+'<tr class="t"><td></td><td>รวม</td><td class="r">'+fnI(ta)+'</td><td class="r">'+fnI(tb)+'</td>'+tm.map(v=>'<td class="r">'+fnI(v)+'</td>').join('')+'<td class="r">'+fnI(tm.reduce((a,b)=>a+b,0))+'</td></tr></tbody></table></div>'
+ +'<div class="lv-sec" style="font-weight:700;color:#0369a1;margin:16px 0 6px">สรุปประมาณการรายรับเงินบำรุง ปีงบ 2570</div><table class="sm"><tbody>'+rev.map(r=>'<tr><td>'+r[0]+'</td><td class="r" style="white-space:nowrap">'+fnF(r[1])+'</td></tr>').join('')+'</tbody></table>'
+ +'<p class="sm" style="color:#64748b;margin-top:8px">ที่มา: ไฟล์ "แผนเงินบำรุง 05588 รพ.สต.บ้านนายอ ปี 2570" · ผู้รายงาน นางสาวพรรณกาญจน์ ไวแสน · หัวหน้าหน่วยงาน นายตะวัน กุดวงค์แก้ว</p><button type="button" class="fn-btn" onclick="fnPrint()">🖨 พิมพ์</button>';
+}
+const fnIn=(k,i,f)=>'<input class="n" type="number" step="0.01" min="0" data-k="'+k+'" data-i="'+i+'" data-f="'+f+'" value="'+(fnV(k,i,f)||'')+'"'+(fnEdit()?'':' disabled')+'>';
+const fnNote=()=>fnEdit()?'<div class="sm" style="color:#64748b;margin-bottom:8px">กรอกตัวเลขในช่องแล้วระบบบันทึกอัตโนมัติและคำนวณยอดให้ทันที</div>':'<div class="lv-note" style="background:#fff7ed;border:1px solid #fdba74;border-radius:10px;padding:8px 12px;font-size:13px;margin-bottom:10px;color:#9a3412">เข้าสู่ระบบก่อนจึงจะกรอก/แก้ไขตัวเลขได้ (ดูข้อมูลได้ทุกคน)</div>';
+function fnFin(){
+ return fnHead('สรุปรายรับ-รายจ่ายรายเดือน','ยอดยกมาต้นปี (เงินบำรุงคงเหลือจากปีงบ 2569) '+fnF(FN_OPEN)+' บาท')+fnNote()
+ +'<div style="overflow-x:auto"><table class="sm"><thead><tr><th>เดือน</th><th>แผนรายจ่าย</th><th>รายรับจริง</th><th>รายจ่ายจริง</th><th>รายรับ − รายจ่าย</th><th>คงเหลือสะสม</th><th>จ่ายจริง − แผน</th></tr></thead><tbody>'
+ +FN_M.map((m,i)=>'<tr><td>'+m+'</td><td class="r">'+fnI(fnPM(i))+'</td><td>'+fnIn('fin',i,'inc')+'</td><td>'+fnIn('fin',i,'exp')+'</td><td class="r" id="fc-n-'+i+'"></td><td class="r" id="fc-b-'+i+'"></td><td class="r" id="fc-d-'+i+'"></td></tr>').join('')
+ +'<tr class="t"><td>รวมปี</td><td class="r" id="fc-tp"></td><td class="r" id="fc-ti"></td><td class="r" id="fc-te"></td><td class="r" id="fc-tn"></td><td class="r" id="fc-tb"></td><td class="r" id="fc-td"></td></tr></tbody></table></div><br><button type="button" class="fn-btn" onclick="fnPrint()">🖨 พิมพ์</button>';
+}
+function fnComp(){
+ return fnHead('สรุปรายจ่ายค่าตอบแทนรายเดือน','เทียบกับแผน หมวด 3 ค่าตอบแทนทางการแพทย์ และหมวด 9 ค่าตอบแทนปฏิบัติงานนอกเวลาราชการ')+fnNote()
+ +'<div style="overflow-x:auto"><table class="sm"><thead><tr><th>เดือน</th><th>แผน หมวด 3</th><th>จ่ายจริง หมวด 3</th><th>แผน หมวด 9</th><th>จ่ายจริง หมวด 9</th><th>รวมจ่ายจริง</th><th>จ่ายสะสม</th><th>คงเหลือตามแผน (สะสม)</th></tr></thead><tbody>'
+ +FN_M.map((m,i)=>'<tr><td>'+m+'</td><td class="r">'+fnI(fnMon(FN_P[2],i))+'</td><td>'+fnIn('comp',i,'c3')+'</td><td class="r">'+fnI(fnMon(FN_P[8],i))+'</td><td>'+fnIn('comp',i,'c9')+'</td><td class="r" id="fk-s-'+i+'"></td><td class="r" id="fk-c-'+i+'"></td><td class="r" id="fk-r-'+i+'"></td></tr>').join('')
+ +'<tr class="t"><td>รวมปี</td><td class="r">'+fnI(FN_P[2][1]+FN_P[2][2])+'</td><td class="r" id="fk-t3"></td><td class="r">'+fnI(FN_P[8][1]+FN_P[8][2])+'</td><td class="r" id="fk-t9"></td><td class="r" id="fk-ts"></td><td class="r" id="fk-tc"></td><td class="r" id="fk-tr"></td></tr></tbody></table></div><br><button type="button" class="fn-btn" onclick="fnPrint()">🖨 พิมพ์</button>';
+}
+function fnEmp(){
+ let a=0,s=0;
+ const rows=FN_EMP.map((r,k)=>{const t=r[2]*r[3],so=Math.round(t*0.05);a+=t;s+=so;return '<tr><td style="text-align:center">'+(k+1)+'</td><td>'+r[0]+'</td><td>'+r[1]+'</td><td class="r">'+fnF(r[2])+'</td><td class="r">'+r[3]+'</td><td class="r">'+fnF(t)+'</td><td class="r">'+fnF(so)+'</td><td class="r"><b>'+fnF(t+so)+'</b></td></tr>'}).join('');
+ const mo=FN_EMP.reduce((t,r)=>t+r[2],0), all=a+s+FN_WC, ap=FN_P[7][1], bm=FN_P[7][2];
+ return fnHead('ประมาณการรายจ่ายค่าจ้างลูกจ้าง พกส./ลูกจ้างชั่วคราว')
+ +fnKp([['รวมประมาณการ (บาท)',fnI(all)],['ค่าจ้างต่อเดือน (เงินเดือนรวม)',fnI(mo)],['จำนวนลูกจ้าง (คน)',FN_EMP.length]])
+ +'<div style="overflow-x:auto"><table class="sm"><thead><tr><th>ที่</th><th>ชื่อ - สกุล</th><th>ตำแหน่ง</th><th>เงินเดือน</th><th>เดือน</th><th>รวมค่าจ้าง</th><th>ประกันสังคม (5%)</th><th>รวมต่อคน</th></tr></thead><tbody>'+rows
+ +'<tr class="t"><td></td><td colspan="2">รวมค่าจ้าง (8.1) / เงินสมทบประกันสังคม (8.2)</td><td class="r">'+fnF(mo)+'</td><td></td><td class="r">'+fnF(a)+'</td><td class="r">'+fnF(s)+'</td><td class="r">'+fnF(a+s)+'</td></tr>'
+ +'<tr><td></td><td colspan="6">8.3 เงินสมทบกองทุนทดแทน</td><td class="r">'+fnF(FN_WC)+'</td></tr><tr class="t"><td></td><td colspan="6">รวมค่าจ้างลูกจ้างชั่วคราว (หมวด 8)</td><td class="r">'+fnF(all)+'</td></tr></tbody></table></div>'
+ +'<div class="lv-sec" style="font-weight:700;color:#0369a1;margin:14px 0 6px">แหล่งงบประมาณ (ตามแผนการใช้จ่ายเงินบำรุง)</div><table class="sm"><tbody><tr><td>งบ อปท./สงป.</td><td class="r">'+fnF(ap)+'</td></tr><tr><td>เงินบำรุง รพ.สต.</td><td class="r">'+fnF(bm)+'</td></tr><tr class="t"><td>รวม</td><td class="r">'+fnF(ap+bm)+'</td></tr></tbody></table>'
+ +'<p class="sm" style="color:#64748b;margin-top:8px">ที่มา: ชีต "จ้างลูกจ้าง" และ "แผนการใช้จ่ายเงินบำรุง2570" ในไฟล์แผนเงินบำรุง ปี 2570 · ประกันสังคมคิด 5% ของค่าจ้างรวมตามไฟล์</p><button type="button" class="fn-btn" onclick="fnPrint()">🖨 พิมพ์</button>';
+}
+function fnCalc(){
+ const S=(id,v)=>{const e=$lv(id);if(e)e.textContent=fnF(v)};
+ let cum=FN_OPEN,pi=0,ti=0,te=0,pc=0,c3=0,c9=0,pk=0,pp=0;
+ for(let i=0;i<12;i++){
+  const inc=fnV('fin',i,'inc'),exp=fnV('fin',i,'exp'),p=fnPM(i);cum+=inc-exp;pi+=p;ti+=inc;te+=exp;
+  S('fc-n-'+i,inc-exp);S('fc-b-'+i,cum);S('fc-d-'+i,exp-p);
+  const a=fnV('comp',i,'c3'),b=fnV('comp',i,'c9');c3+=a;c9+=b;pk+=fnMon(FN_P[2],i)+fnMon(FN_P[8],i);
+  S('fk-s-'+i,a+b);S('fk-c-'+i,c3+c9);S('fk-r-'+i,pk-c3-c9);
+ }
+ S('fc-tp',pi);S('fc-ti',ti);S('fc-te',te);S('fc-tn',ti-te);S('fc-tb',cum);S('fc-td',te-pi);
+ S('fk-t3',c3);S('fk-t9',c9);S('fk-ts',c3+c9);S('fk-tc',c3+c9);S('fk-tr',pk-c3-c9);
+}
+function fnChg(e){const t=e.target,k=t.dataset&&t.dataset.k;if(!k)return;const i=t.dataset.i,f=t.dataset.f,o=Object.assign({},fnD[k]&&fnD[k][i]);o[f]=Math.max(0,+t.value||0);fnD[k]=Object.assign({},fnD[k]);fnD[k][i]=o;
+ DB.set((k==='fin'?'finMonthly':'finComp')+'/2570/'+i,o).catch(err=>alert('บันทึกไม่สำเร็จ: '+err.message));fnCalc()}
+function fnShow(k){
+ fnTab=k;['plan','fin','comp','emp'].forEach(x=>$lv('fn-tab-'+x).classList.toggle('on',x===k));
+ $lv('fn-body').innerHTML={plan:fnPlan,fin:fnFin,comp:fnComp,emp:fnEmp}[k]();
+ if(k==='fin'||k==='comp')fnCalc();
+}
+function fnPrint(){const w=window.open('','_blank');if(!w)return;let h=$lv('fn-body').innerHTML.replace(/<button[\s\S]*?<\/button>/g,'').replace(/<input[^>]*value="([^"]*)"[^>]*>/g,'$1').replace(/<input[^>]*>/g,'');
+ w.document.write('<html><head><meta charset="utf-8"><title>การเงินและงบประมาณ 2570</title><style>@page{size:A4 landscape;margin:10mm}body{font-family:Sarabun,Tahoma,sans-serif;font-size:12px}table{width:100%;border-collapse:collapse;margin-bottom:10px}th,td{border:1px solid #333;padding:3px 5px}.r{text-align:right}tr.t td{background:#eee;font-weight:700}.fn-kp{display:flex;gap:10px;margin-bottom:8px}.fn-kp div{border:1px solid #999;padding:4px 10px}</style></head><body>'+h+'<table style="border:0;margin-top:30px"><tr><td style="border:0;text-align:center">ลงชื่อ......................................ผู้รายงาน<br>( นางสาวพรรณกาญจน์ ไวแสน )<br>พยาบาลวิชาชีพชำนาญการ</td><td style="border:0;text-align:center">ลงชื่อ......................................หัวหน้าหน่วยงาน<br>( นายตะวัน กุดวงค์แก้ว )<br>ผู้อำนวยการ รพ.สต.บ้านนายอ</td></tr></table></body></html>');w.document.close();setTimeout(()=>w.print(),400)}
 </script>
 </body>
 </html>
