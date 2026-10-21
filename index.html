@@ -1450,10 +1450,39 @@ button[onclick="toggleAIChat()"].w-14::before{content:"";position:absolute;inset
                 <p class="text-xs text-cyan-300 pt-2"><i class="fa-solid fa-phone mr-1"></i> สายด่วน รพ.สต.: 042-163-603</p>
             </div>
         </div>
+        <div id="visit-stats" class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-8 flex flex-wrap justify-center gap-4 text-center">
+            <div class="bg-sky-900/30 border border-white/20 rounded-xl px-6 py-3 min-w-[170px]"><p class="text-slate-300 text-xs"><i class="fa-regular fa-eye mr-1"></i>ผู้เข้าชมเว็บไซต์วันนี้</p><p class="text-2xl font-bold text-cyan-300 mt-1"><span id="visit-today">-</span> <span class="text-xs text-slate-300 font-normal">คน</span></p></div>
+            <div class="bg-sky-900/30 border border-white/20 rounded-xl px-6 py-3 min-w-[170px]"><p class="text-slate-300 text-xs"><i class="fa-solid fa-chart-column mr-1"></i>ผู้เข้าชมเว็บไซต์ทั้งหมด</p><p class="text-2xl font-bold text-emerald-300 mt-1"><span id="visit-total">-</span> <span class="text-xs text-slate-300 font-normal">คน</span></p></div>
+        </div>
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-10 pt-6 border-t border-sky-600 text-center text-xs text-sky-100">
             © 2569 รพ.สต.บ้านนายอ ต.สร้างค้อ อ.ภูพาน จ.สกลนคร. สงวนลิขสิทธิ์ทั้งหมด | ออกแบบด้วยแนวคิดยุค AI
         </div>
     </footer>
+
+    <script>
+    // ===== สถิติผู้เข้าชมเว็บไซต์ (Firebase: visits/total และ visits/days/YYYY-MM-DD) =====
+    // นับ 1 ครั้งต่อ 1 เบราว์เซอร์ต่อวัน (เวลาประเทศไทย) รีเฟรชหน้าไม่นับซ้ำ
+    (function(){
+      var day=new Date(Date.now()+7*3600*1000).toISOString().slice(0,10),KEY='rpstVisitDay',tries=0;
+      var fmt=function(n){return Number(n||0).toLocaleString('th-TH')};
+      var setTxt=function(id,v){var e=document.getElementById(id);if(e)e.textContent=v};
+      function seen(){try{return localStorage.getItem(KEY)===day}catch(e){try{return sessionStorage.getItem(KEY)===day}catch(e2){return true}}}
+      function mark(){try{localStorage.setItem(KEY,day)}catch(e){try{sessionStorage.setItem(KEY,day)}catch(e2){}}}
+      function start(){
+        if(typeof rtdb==='undefined'||!rtdb||!window.DB){if(++tries<40)return setTimeout(start,500);return}
+        try{
+          DB.listen('visits',function(d){var ds=(d&&d.days)||{};setTxt('visit-today',fmt(ds[day]));setTxt('visit-total',fmt(d&&d.total))},function(){});
+          if(!seen()){
+            mark();
+            DB.txn('visits/days/'+day,function(n){return (n||0)+1});
+            DB.txn('visits/total',function(n){return (n||0)+1});
+          }
+        }catch(e){}
+      }
+      if(document.readyState==='complete')start();else window.addEventListener('load',start);
+    })();
+    </script>
+
 
     <script>
         // Tab Switching Logic
