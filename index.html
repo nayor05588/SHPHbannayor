@@ -2808,6 +2808,8 @@ function hashPw(user,pw){
                 let local=[]; try{local=loadUsersLocal()}catch(e){}
                 const up={};
                 { const ca=o.items.find(a=>a.u==='admin'); if(ca&&ca.h==='5dd6ae1e98e6d1c7fce237aaae36f93a4f9815c326c358e4af744a9db3b3b689'){ up['appUsers/admin']=clean(AUTH_DEFAULT_USERS[0]); } }
+                // อัปเดตบัญชีเริ่มต้นบนฐานข้อมูลกลางตามไฟล์ Excel (ทำเฉพาะรายการที่ยังไม่มีฟิลด์ตำแหน่ง จึงไม่ทับรหัสที่ผู้ใช้เปลี่ยนเองภายหลัง)
+                if(o.items.length){ AUTH_SEED_USERS.forEach(sd=>{ const c=o.items.find(a=>a.u===sd.u); if(c&&!c.pos){ up['appUsers/'+enc(sd.u)]=clean(Object.assign({},c,{name:sd.name,pos:sd.pos,h:sd.h,must:false})); } }); }
                 if(!o.items.length){
                     local.forEach(a=>{up['appUsers/'+enc(a.u)]=clean(a)});
                 } else if(lsGet('nayo_users_cloud_v1')!=='1'){
