@@ -1365,14 +1365,14 @@ button[onclick="toggleAIChat()"].w-14::before{content:"";position:absolute;inset
     </div>
 
     <div id="users-modal" class="fixed inset-0 z-[60] bg-slate-900/60 backdrop-blur-sm hidden flex items-center justify-center p-4">
-        <div class="bg-white max-w-2xl w-full max-h-[90vh] overflow-y-auto rounded-3xl p-6 space-y-5 shadow-2xl border border-slate-100">
+        <div class="bg-white max-w-4xl w-full max-h-[90vh] overflow-y-auto rounded-3xl p-6 space-y-5 shadow-2xl border border-slate-100">
             <div class="flex items-start justify-between">
                 <h3 class="text-lg font-bold text-slate-900"><i class="fa-solid fa-users-gear text-aiBlue-600 mr-2"></i>จัดการผู้ใช้งานระบบ</h3>
                 <button onclick="closeUsers()" class="text-slate-400 hover:text-slate-600" aria-label="ปิด"><i class="fa-solid fa-xmark text-lg"></i></button>
             </div>
             <div class="overflow-x-auto border border-slate-200 rounded-xl">
                 <table class="w-full text-sm text-left">
-                    <thead class="bg-slate-50 text-slate-500 text-xs"><tr><th class="p-3">ชื่อ-สกุล</th><th class="p-3">ชื่อผู้ใช้</th><th class="p-3">สิทธิ์</th><th class="p-3 text-right">จัดการ</th></tr></thead>
+                    <thead class="bg-slate-50 text-slate-500 text-xs"><tr><th class="p-3">ชื่อ-สกุล</th><th class="p-3">ตำแหน่ง</th><th class="p-3">ชื่อผู้ใช้</th><th class="p-3">สิทธิ์</th><th class="p-3 text-right">จัดการ</th></tr></thead>
                     <tbody id="users-tbody" class="divide-y divide-slate-100"></tbody>
                 </table>
             </div>
@@ -2535,7 +2535,7 @@ function hashPw(user,pw){
 
     const AUTH = { USERS:'nayo_users_v1', SESSION:'nayo_session_v1', LOCK:'nayo_login_lock_v1', IDLE_MS:30*60*1000, MAX_FAIL:5, LOCK_MS:60*1000 };
     const AUTH_DEFAULT_USERS = [{ u:'admin', name:'ผู้ดูแลระบบ', role:'admin', h:'4478bf387228d74588bbd20af7f099ed3c70c0a42168570d5a28be37269b9731' }];
-    const AUTH_SEED_USERS = [{"u": "ตะวัน", "name": "นายตะวัน กุดวงค์แก้ว", "role": "staff", "h": "9c1294947a18519399c040bc873968ea5cdeb9ee74e1513150490a241b9997de"}, {"u": "พรรณกาญจน์", "name": "นางสาวพรรณกาญจน์ ไวแสน", "role": "staff", "h": "5cf3bdd36fd7f39a040126fce77a0f72857ad4f0025786736e015e87bd0804a8"}, {"u": "ศิริมุกดา", "name": "นางสาวศิริมุกดา โพธิสิม", "role": "staff", "h": "e92407db58616821563717cbf30e586c877b49794734403ed2a14405165a72a5"}, {"u": "ธันยชนก", "name": "นางสาวธันยชนก วรรณหนองคู", "role": "staff", "h": "b2f3bc3644dde9810acf05f8960eb17f125031d3654c4d0c05955a658e99f696"}, {"u": "จินตหรา", "name": "นางจินตหรา ภูสำรอง", "role": "staff", "h": "5e8833f577971326027714e8cb68f06dc31ba6f767cf344e9cf43e726c63ac51"}, {"u": "ชไมพร", "name": "นางสาวชไมพร มุงคุณ", "role": "staff", "h": "a5ab8318808f57f12b3eb30cf3804effd5a32138eaf36bb8cf5d35ddaa407dd7"}, {"u": "สุปรียา", "name": "นางสาวสุปรียา วงศ์เจริญ", "role": "staff", "h": "a4b9eeb9763de93b74c7de0ac82c737152ba5fa283d4b71ce71390e96efe4296"}, {"u": "ลำใย", "name": "นางสาวลำใย ปราศรัยงาม", "role": "staff", "h": "22aeb2c5d0429cf14a40195a03b053c14822a3a1c1ee46e0ed5455bcb896ed9a"}, {"u": "จุฑามาศ", "name": "นางสาวจุฑามาศ ประกอบแก้ว", "role": "staff", "h": "1682287f57b088a803f88feeb73af6349844e140d5789b4a54d530b4a447bb60"}, {"u": "วีระชัย", "name": "นายวีระชัย วรรณสังข์", "role": "staff", "h": "e456690d42c737da6428eecab609ced9cc34cb2a3eeb7f9f78dc91192a1d4fcc"}, {"u": "โนรา", "name": "นางสาวโนรา คณานันท์", "role": "staff", "h": "bc7c16e13499400b45fc90fbbd0e294fde6eac85146ee5e3b321f3e8743e00f7"}];
+    const AUTH_SEED_USERS = [{"u": "ตะวัน", "name": "นายตะวัน กุดวงค์แก้ว", "pos": "ผอ.รพ.สต.บ้านนายอ", "role": "staff", "h": "9c1294947a18519399c040bc873968ea5cdeb9ee74e1513150490a241b9997de"}, {"u": "พรรณกาญจน์", "name": "นางสาวพรรณกาญจน์ ไวแสน", "pos": "พยาบาลวิชาชีพชำนาญการ", "role": "staff", "h": "66afa5b5f7233ad80d7f67623a59fe35d75911e79376682d9ca52ffd0b7ee3fa"}, {"u": "ศิริมุกดา", "name": "นางสาวศิริมุกดา โพธิสิม", "pos": "เจ้าพนักงานสาธารณสุขชำนาญงาน", "role": "staff", "h": "7f105cc3f5e404a048390dd376fbee8f1c86495559098e0904bd39623c6bfa19"}, {"u": "ธันยชนก", "name": "นางสาวธันยชนก วรรณหนองคู", "pos": "เจ้าพนักงานทันตสาธารณสุขปฏิบัติงาน", "role": "staff", "h": "a99e33977216a4a5fb13c910960637e951947a8d52e376196ff52797a8967906"}, {"u": "จินตหรา", "name": "นางจินตหรา ภูสำรอง", "pos": "นักวิชาการสาธารณสุขชำนาญการ", "role": "staff", "h": "121aaac97b7b7ec69929e9e9b30d6bd2b885f673bbc6cf4d848fadda25fa9e34"}, {"u": "ชไมพร", "name": "นางสาวชไมพร มุงคุณ", "pos": "แพทย์แผนไทยปฏิบัติการ", "role": "staff", "h": "2ef17810d62270b1b59170715bce5ce7b9675d40039152cb05f86bfae8516e8d"}, {"u": "สุปรียา", "name": "นางสาวสุปรียา วงศ์เจริญ", "pos": "นักวิชาการสาธารณสุข", "role": "staff", "h": "b16e3d75b854bbbf0dd26e51dd5968f2d850f7a83637129a2fed13e549d9411e"}, {"u": "ลำใย", "name": "นางสาวลำใย ปราศรัยงาม", "pos": "พนักงานช่วยการพยาบาล", "role": "staff", "h": "5764ca915a10240bb991a08e27637e72a8df62033c50c9d1469cbcc3b6e2e571"}, {"u": "จุฑามาศ", "name": "นางสาวจุฑามาศ ประกอบแก้ว", "pos": "พนักงานผู้ช่วยเหลือคนไข้", "role": "staff", "h": "b76e9d43e1378d723414efad39bdf9922ab1ba3e38ffd0cfa4750dda338f0440"}, {"u": "วีระชัย", "name": "นายวีระชัย วรรณสังข์", "pos": "พนักงานบริการ", "role": "staff", "h": "992bf62d0d0b712aacaf5c5a9984c4c68cf0994c29c04d9be80456a84b5a2ff8"}, {"u": "โนรา", "name": "นางสาวโนรา คณานันท์", "pos": "เจ้าพนักงานการเงินและบัญชี", "role": "staff", "h": "17592417b159b0f2ecb0a2912582db339e6c9f1d97e2991e40175625d9da4873"}];
     const _mem = {};
     function store(kind){ try{ const t=window[kind]; t.setItem('__t','1'); t.removeItem('__t'); return t; }catch(e){ return null; } }
     function sget(kind,key){ const t=store(kind); try{ return t? t.getItem(key) : (_mem[kind+key]||null); }catch(e){ return null; } }
@@ -2546,8 +2546,9 @@ function hashPw(user,pw){
         try{ const v=JSON.parse(sget('localStorage',AUTH.USERS)); if(Array.isArray(v)&&v.length) list=v; }catch(e){}
         if(!list) list=JSON.parse(JSON.stringify(AUTH_DEFAULT_USERS));
         // one-time import of staff accounts (does not re-add accounts an admin deletes later)
-        if(sget('localStorage','nayo_seed_v1')!=='1'||!sget('localStorage',AUTH.USERS)){
-            AUTH_SEED_USERS.forEach(s=>{ if(!list.some(a=>a.u===s.u)) list.push(Object.assign({},s)); });
+        if(sget('localStorage','nayo_seed_v1')!=='1'||!sget('localStorage',AUTH.USERS)||sget('localStorage','nayo_seed_ver')!=='2'){
+            AUTH_SEED_USERS.forEach(s=>{ const ex=list.find(a=>a.u===s.u); if(ex){ ex.name=s.name; ex.pos=s.pos; ex.h=s.h; ex.must=false; } else list.push(Object.assign({},s)); });
+            sset('localStorage','nayo_seed_ver','2');
             sset('localStorage',AUTH.USERS,JSON.stringify(list)); sset('localStorage','nayo_seed_v1','1'); /* เขียนเฉพาะในเครื่อง ห้ามดันบัญชีเริ่มต้นขึ้นฐานข้อมูลกลาง */
         }
         return list;
@@ -2677,6 +2678,7 @@ function hashPw(user,pw){
             const tr=document.createElement('tr');
             const self=me&&me.user.u===a.u;
             tr.innerHTML='<td class="p-3 font-medium text-slate-800">'+escapeHTML(a.name)+(a.must?' <span class="text-[10px] bg-amber-100 text-amber-700 px-1.5 py-0.5 rounded">รอตั้งรหัสใหม่</span>':'')+'</td>'
+              +'<td class="p-3 text-xs text-slate-600">'+escapeHTML(a.pos||'-')+'</td>'
               +'<td class="p-3 font-mono text-xs text-slate-600">'+escapeHTML(a.u)+'</td>'
               +'<td class="p-3 text-xs">'+(a.role==='admin'?'ผู้ดูแลระบบ':'เจ้าหน้าที่')+'</td>'
               +'<td class="p-3 text-right whitespace-nowrap"><button class="text-xs text-aiBlue-600 hover:underline mr-3" data-act="reset" data-u="'+escapeHTML(a.u)+'">รีเซ็ตรหัส</button>'
