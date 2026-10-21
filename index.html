@@ -2147,7 +2147,8 @@ function lvDel(id){if(!lvAdm()){showToast('การลบใบลาทำไ�
 const CR_KEY='rpst_carreq', CR_ST=['รออนุมัติ','อนุญาต','ไม่อนุญาต'];
 const CR_DEF={plate:'บษ 1663 สกลนคร',driver:'นายวีระชัย วรรณสังข์'};
 const CR_HEAD='นางจินตหรา ภูสำรอง', CR_DIR='นายตะวัน กุดวงค์แก้ว';
-let crView='form', crFYsel=null, crMon='*';
+let crView='form', crFYsel=null, crMon='*', crPage=1;
+const CR_PER=10;
 function crLoad(){return window.SYNC?SYNC.cr.load():[]}
 function crSave(a){try{return window.SYNC?SYNC.cr.save(a):false}catch(e){return false}}
 const crT=t=>t?String(t).replace(':','.'):'';
@@ -2178,8 +2179,8 @@ function crFYopts(recs){
   const set=new Set(recs.map(r=>lvFY(r.d1)));set.add(lvFY(lvToday()));
   const a=[...set].sort((x,y)=>y-x);if(!crFYsel||!set.has(crFYsel))crFYsel=lvFY(lvToday());
   const mo=LV_MON.map((m,i)=>'<option value="'+i+'"'+(crMon===i?' selected':'')+'>'+m+' '+(i<3?crFYsel-1:crFYsel)+'</option>').join('');
-  return '<label>ปีงบประมาณ (1 ต.ค. – 30 ก.ย.)<select onchange="crFYsel=+this.value;crShow(\'report\')">'+a.map(y=>'<option value="'+y+'"'+(y===crFYsel?' selected':'')+'>พ.ศ. '+y+'</option>').join('')+'</select></label>'
-    +'<label>เดือน<select onchange="crMon=this.value===\'*\'?\'*\':+this.value;crShow(\'report\')"><option value="*"'+(crMon==='*'?' selected':'')+'>ทั้งปีงบประมาณ</option>'+mo+'</select></label>';
+  return '<label>ปีงบประมาณ (1 ต.ค. – 30 ก.ย.)<select onchange="crFYsel=+this.value;crPage=1;crShow(\'report\')">'+a.map(y=>'<option value="'+y+'"'+(y===crFYsel?' selected':'')+'>พ.ศ. '+y+'</option>').join('')+'</select></label>'
+    +'<label>เดือน<select onchange="crMon=this.value===\'*\'?\'*\':+this.value;crPage=1;crShow(\'report\')"><option value="*"'+(crMon==='*'?' selected':'')+'>ทั้งปีงบประมาณ</option>'+mo+'</select></label>';
 }
 function crShow(v){
   crView=v;const recs=crLoad();
@@ -2206,19 +2207,29 @@ function crShow(v){
     +'<button type="button" class="lv-btn" style="background:#64748b" onclick="crPrintForm()">พิมพ์แบบ 3 (ไม่บันทึก)</button></div>';
     return;
   }
-  const rs=crRows(recs);
+  const rs=crRows(recs),pages=Math.max(1,Math.ceil(rs.length/CR_PER));
+  if(crPage>pages)crPage=pages;if(crPage<1)crPage=1;
+  const off=(crPage-1)*CR_PER,pg=rs.slice(off,off+CR_PER);
   $lv('cr-body').innerHTML='<div class="lv-g" style="align-items:end;max-width:560px">'+crFYopts(recs)+'</div>'
     +'<div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px;align-items:center"><b style="margin-right:auto;font-size:14px">'+crSummary(rs)+'</b>'
     +'<button class="lv-btn" style="margin:0;padding:6px 14px;font-size:13px" onclick="crPrint()">🖨 พิมพ์ / บันทึก PDF</button>'
     +'<button class="lv-btn" style="margin:0;padding:6px 14px;font-size:13px;background:#16a34a" onclick="crXls()">⬇ ดาวน์โหลด Excel</button></div>'
     +'<div style="font-weight:700;text-align:center;margin-bottom:8px">'+crTitle()+'</div>'
-    +'<div class="lv-wrap">'+crTable(rs,false)+'</div>'
+    +'<div class="lv-wrap">'+crTable(pg,false,off)+'</div>'+crPager(rs.length,pages)
     +'<div style="font-size:12px;color:#64748b;margin-top:8px">ดึงรายการจากใบขออนุญาตที่บันทึกในหน้า "ขออนุญาตใช้รถ" อัตโนมัติ · เลือกผลการอนุมัติ (อนุญาต/ไม่อนุญาต) ได้ในช่องท้ายตาราง ซึ่งจะแสดงเครื่องหมายในช่อง "คำสั่ง" เมื่อพิมพ์แบบ 3 ซ้ำ</div>';
 }
 function crRows(recs){
   return recs.filter(r=>lvFY(r.d1)===crFYsel&&(crMon==='*'||lvMI(r.d1)===crMon))
-    .sort((a,b)=>(a.d1+(a.t1||''))<(b.d1+(b.t1||''))?-1:1);
+    .sort((a,b)=>{const ka=(a.written||'')+'|'+(a.d1||'')+(a.t1||'')+'|'+(a.id||''),kb=(b.written||'')+'|'+(b.d1||'')+(b.t1||'')+'|'+(b.id||'');return ka<kb?1:ka>kb?-1:0});
 }
+function crPager(total,pages){
+  if(total<=CR_PER)return '<div style="font-size:12px;color:#64748b;margin-top:8px;text-align:center">แสดงทั้งหมด '+total+' รายการ</div>';
+  const a=(crPage-1)*CR_PER+1,b=Math.min(total,crPage*CR_PER),bt=(l,p,dis,on)=>'<button type="button" class="lv-btn" style="margin:0;padding:5px 11px;font-size:13px;'+(on?'':'background:#e2e8f0;color:#0f172a;')+(dis?'opacity:.45;cursor:default;':'')+'"'+(dis?' disabled':' onclick="crGoPage('+p+')"')+'>'+l+'</button>';
+  let n=[];for(let p=1;p<=pages;p++){if(p===1||p===pages||Math.abs(p-crPage)<=2)n.push(p);else if(n[n.length-1]!=='…')n.push('…')}
+  return '<div style="display:flex;gap:6px;flex-wrap:wrap;justify-content:center;align-items:center;margin-top:10px"><span style="font-size:12px;color:#64748b;margin-right:8px">แสดง '+a+'–'+b+' จาก '+total+' รายการ (หน้าละ '+CR_PER+' แถว)</span>'
+   +bt('‹ ก่อนหน้า',crPage-1,crPage<=1)+n.map(p=>p==='…'?'<span style="color:#64748b">…</span>':bt(p,p,false,p===crPage)).join('')+bt('ถัดไป ›',crPage+1,crPage>=pages)+'</div>';
+}
+function crGoPage(p){crPage=p;crShow('report')}
 function crSummary(rs){
   const n=s=>rs.filter(r=>r.status===s).length;
   return 'รวม '+rs.length+' ครั้ง · อนุญาต '+n('อนุญาต')+' · ไม่อนุญาต '+n('ไม่อนุญาต')+' · รออนุมัติ '+n('รออนุมัติ');
@@ -2228,12 +2239,13 @@ function crTitle(){
   if(crMon!=='*')t+=' เดือน'+LV_MON[crMon]+' '+(crMon<3?crFYsel-1:crFYsel);
   return t;
 }
-function crTable(rs,pr){
+function crTable(rs,pr,off){
+  off=off||0;
   const H=['ที่','วันที่ขอ','ผู้ขอใช้รถ','สถานที่ที่ไป','เรื่อง (เพื่อติดต่อราชการ)','จังหวัด','ผู้โดยสาร<br>(คน)','ไป<br>(วัน-เวลา)','กลับ<br>(วัน-เวลา)','ทะเบียนรถ','พนักงานขับรถ','ผลการอนุมัติ'];
   let h='<table class="lv-t"><thead><tr>'+H.map(x=>'<th>'+x+'</th>').join('')+(pr?'':'<th style="border:0;background:none"></th>')+'</tr></thead><tbody>';
   if(!rs.length)h+='<tr><td colspan="'+(pr?12:13)+'" class="lv-empty">ยังไม่มีรายการขออนุญาตใช้รถในช่วงที่เลือก</td></tr>';
   rs.forEach((r,i)=>{
-    h+='<tr><td>'+(i+1)+'</td><td>'+lvTH(r.written)+'</td><td class="l">'+lvEsc(r.name)+(r.pos?'<br><span style="color:#64748b">'+lvEsc(r.pos)+'</span>':'')+'</td>'
+    h+='<tr><td>'+(off+i+1)+'</td><td>'+lvTH(r.written)+'</td><td class="l">'+lvEsc(r.name)+(r.pos?'<br><span style="color:#64748b">'+lvEsc(r.pos)+'</span>':'')+'</td>'
      +'<td class="l">'+lvEsc(r.dest)+'</td><td class="l">'+lvEsc(r.purpose)+'</td><td>'+lvEsc(r.prov)+'</td><td>'+(r.pax||'')+'</td>'
      +'<td>'+crGo(r.d1,r.t1)+'</td><td>'+crGo(r.d2,r.t2)+'</td><td>'+lvEsc(r.plate)+'</td><td class="l">'+lvEsc(r.driver)+'</td>'
      +'<td>'+(pr?lvEsc(r.status):'<select class="cr-st" onchange="crSetSt(\''+r.id+'\',this.value)">'+CR_ST.map(s=>'<option'+(s===r.status?' selected':'')+'>'+s+'</option>').join('')+'</select>')+'</td>'
@@ -2271,7 +2283,7 @@ function crSubmit(pr){
   if(!r.name||!r.dest||!r.purpose||!r.d1||r.d2<r.d1){showToast('กรุณากรอก ชื่อ-สกุล สถานที่ เรื่อง และวันเดินทางให้ครบถ้วนและถูกต้อง');return}
   const a=crLoad();a.push(r);
   if(!crSave(a)){showToast('บันทึกไม่สำเร็จ (เบราว์เซอร์ไม่อนุญาตให้เก็บข้อมูล)');return}
-  crFYsel=lvFY(r.d1);crMon='*';showToast('บันทึกคำขอใช้รถเรียบร้อย');crShow('report');
+  crFYsel=lvFY(r.d1);crMon='*';crPage=1;showToast('บันทึกคำขอใช้รถเรียบร้อย');crShow('report');
   if(pr)crPrintDoc(r);
 }
 function crPrintForm(){const r=crFormRec();if(!r.name){showToast('กรุณากรอกชื่อ-สกุลก่อนพิมพ์แบบ 3');return}crPrintDoc(r)}
@@ -3723,7 +3735,7 @@ const TT={stats:['สถานการณ์สุขภาพเดือน�
 const F={stats:[['label','หัวข้อ'],['value','ตัวเลข/ค่าที่แสดง'],['unit','หน่วย'],['color','สีตัวเลข','c']],
  clinics:[['title','ชื่อคลินิก/บริการ'],['time','วัน-เวลาให้บริการ'],['desc','รายละเอียด','a'],['icon','ไอคอน (เช่น fa-solid fa-baby)'],['color','สีการ์ด','c'],['url','ลิงก์ระบบภายนอก (เว้นว่าง = ใช้ปุ่มจองคิว)']],
  news:[['title','หัวข้อข่าว'],['cat','ป้ายหมวด'],['date','วันที่ (เช่น 12 ต.ค. 2569)'],['by','โดย (หน่วยงาน)'],['img','รูปภาพประกอบข่าว (อัปโหลด 1 ภาพ เว้นว่างได้)','i'],['desc','สรุปสั้น','a'],['body','เนื้อหาเต็ม (แสดงตอนกดอ่านรายละเอียด)','a']],
- staff:[['name','ชื่อ-สกุล'],['pos','ตำแหน่ง'],['img','ลิงก์รูป https://... (เว้นว่าง = ใช้รูปเดิม)'],['hide','ซ่อนจากหน้าเว็บ','k']],
+ staff:[['name','ชื่อ-สกุล'],['pos','ตำแหน่ง'],['img','รูปบุคลากร (อัปโหลดรูปใหม่แทนรูปเดิม / เว้นว่าง = ใช้รูปเดิม)','i'],['hide','ซ่อนจากหน้าเว็บ','k']],
  'ai.prompts':[['label','ข้อความบนปุ่ม'],['q','คำถามที่ส่งเมื่อกดปุ่ม']],
  'ai.rules':[['keys','คำที่จับ (คั่นด้วย ,)'],['reply','คำตอบของ AI','a']]};
 const IC='w-full mt-1 px-3 py-2 rounded-xl border border-sky-200 text-sm text-slate-800 bg-white focus:outline-none focus:border-sky-500';
@@ -3732,7 +3744,7 @@ function cur(k){if(!ST[k]){if(k==='ai'){const a=CL(Object.assign({},ORIG.ai,DATA
 const arr=n=>n.split('.').reduce((o,k)=>o[k],ST);
 function fld(n,i,f,v){const [k,l,t]=f,h=`WEB.set('${n}',${i},'${k}',`;
  if(t==='c')return `<label class="text-xs text-slate-500">${l}<select onchange="${h}this.value)" class="${IC}">${Object.keys(CN).map(c=>`<option value="${c}"${v===c?' selected':''}>${CN[c]}</option>`).join('')}</select></label>`;
- if(t==='i'){const has=okImg(v);return `<div class="text-xs text-slate-500 md:col-span-2">${l}<div class="mt-1 flex flex-wrap items-center gap-3">${has?`<img src="${E(v)}" alt="" class="w-28 h-20 object-cover rounded-xl border border-sky-200 bg-slate-100">`:'<div class="w-28 h-20 rounded-xl border border-dashed border-sky-300 bg-white flex items-center justify-center text-sky-300 text-2xl"><i class="fa-regular fa-image"></i></div>'}<div class="space-y-2"><input type="file" accept="image/*" onchange="WEB.upImg('${n}',${i},'${k}',this)" class="block text-xs text-slate-600 file:mr-3 file:px-3 file:py-1.5 file:rounded-lg file:border-0 file:bg-sky-100 file:text-sky-800">${has?`<button type="button" class="text-rose-600" onclick="WEB.clrImg('${n}',${i},'${k}')">ลบรูปภาพ</button>`:''}</div></div></div>`}
+ if(t==='i'){const has=okImg(v),sf=n==='staff',pc=sf?'w-24 h-32 object-cover object-top':'w-28 h-20 object-cover',org=sf&&!has&&i<SC.length?IMG0[i]:'';return `<div class="text-xs text-slate-500 md:col-span-2">${l}<div class="mt-1 flex flex-wrap items-center gap-3">${has?`<img src="${E(v)}" alt="" class="${pc} rounded-xl border border-sky-200 bg-slate-100">`:org?`<img src="${E(org)}" alt="" class="${pc} rounded-xl border border-sky-200 bg-slate-100" title="รูปเดิม">`:'<div class="w-28 h-20 rounded-xl border border-dashed border-sky-300 bg-white flex items-center justify-center text-sky-300 text-2xl"><i class="fa-regular fa-image"></i></div>'}<div class="space-y-2"><input type="file" accept="image/*" onchange="WEB.upImg('${n}',${i},'${k}',this)" class="block text-xs text-slate-600 file:mr-3 file:px-3 file:py-1.5 file:rounded-lg file:border-0 file:bg-sky-100 file:text-sky-800">${has?`<button type="button" class="text-rose-600" onclick="WEB.clrImg('${n}',${i},'${k}')">ลบรูปภาพ</button>`:''}</div></div></div>`}
  if(t==='k')return `<label class="text-sm flex items-center gap-2 pt-5"><input type="checkbox" ${v?'checked':''} onchange="${h}this.checked)"> ${l}</label>`;
  if(t==='a')return `<label class="text-xs text-slate-500 md:col-span-2">${l}<textarea rows="3" oninput="${h}this.value)" class="${IC}">${E(v)}</textarea></label>`;
  return `<label class="text-xs text-slate-500">${l}<input value="${E(v)}" oninput="${h}this.value)" class="${IC}"></label>`}
@@ -3743,7 +3755,7 @@ function draw(){const k=SEC;cur(k);
  let h='<div class="flex flex-wrap gap-2">'+Object.keys(TT).map(s=>`<button type="button" onclick="WEB.open('${s}')" class="px-4 py-2 rounded-xl text-sm font-medium border ${s===k?'ai-gradient text-white border-transparent':'bg-white text-sky-800 border-sky-200'}"><i class="fa-solid ${TT[s][1]} mr-1.5"></i>${TT[s][0]}</button>`).join('')+'</div>';
  if(k==='ai'){const a=ST.ai;h+=`<label class="block text-sm font-medium">ข้อความต้อนรับของ AI<textarea rows="3" oninput="WEB.ai('welcome',this.value)" class="${IC}">${E(a.welcome)}</textarea></label><label class="block text-sm font-medium">คำตอบทั่วไป (เมื่อไม่ตรงคำที่จับข้อใดเลย)<textarea rows="3" oninput="WEB.ai('def',this.value)" class="${IC}">${E(a.def)}</textarea></label>`+listEd('ai.prompts','ปุ่มคำถามด่วน')+listEd('ai.rules','ชุดคำถาม–คำตอบ (ตรวจตามลำดับ ข้อแรกที่ตรงจะถูกใช้)')}
  else{if(k==='stats')h+=panel43();h+=listEd(k,TT[k][0])}
- h+='<div class="flex flex-wrap gap-2 sticky bottom-3"><button type="button" onclick="WEB.save()" class="px-5 py-2.5 rounded-xl ai-gradient text-white font-medium shadow-lg"><i class="fa-solid fa-cloud-arrow-up mr-1.5"></i>บันทึกและเผยแพร่หมวดนี้</button><button type="button" onclick="WEB.reset()" class="px-4 py-2.5 rounded-xl bg-white border border-sky-200 text-sky-800 text-sm shadow">ย้อนกลับเป็นค่าที่เผยแพร่อยู่</button></div><p class="text-xs text-slate-500">รูปภาพข่าวอัปโหลดได้ 1 ภาพต่อข่าว (ทำเนียบบุคลากรใช้ลิงก์ https) • หมวดที่ยังไม่เคยบันทึกจะแสดงข้อมูลเดิมของหน้าเว็บ • บันทึกแล้วผู้เข้าชมเห็นทันที</p>';
+ h+='<div class="flex flex-wrap gap-2 sticky bottom-3"><button type="button" onclick="WEB.save()" class="px-5 py-2.5 rounded-xl ai-gradient text-white font-medium shadow-lg"><i class="fa-solid fa-cloud-arrow-up mr-1.5"></i>บันทึกและเผยแพร่หมวดนี้</button><button type="button" onclick="WEB.reset()" class="px-4 py-2.5 rounded-xl bg-white border border-sky-200 text-sky-800 text-sm shadow">ย้อนกลับเป็นค่าที่เผยแพร่อยู่</button></div><p class="text-xs text-slate-500">รูปภาพข่าวอัปโหลดได้ 1 ภาพต่อข่าว • รูปบุคลากรอัปโหลดแทนรูปเดิมได้ (กด "ลบรูปภาพ" = กลับไปใช้รูปเดิม) • หมวดที่ยังไม่เคยบันทึกจะแสดงข้อมูลเดิมของหน้าเว็บ • บันทึกแล้วผู้เข้าชมเห็นทันที</p>';
  $('web-body').innerHTML=h}
 // ---- ดึงสถิติจาก 43 แฟ้ม (ประมวลผลในเบราว์เซอร์ ไม่ส่งข้อมูลรายบุคคลออก) ----
 let F43=[],R43=null,M43=new Date().toISOString().slice(0,7);
@@ -3798,7 +3810,7 @@ function panel43(){const L=R43&&R43.length?`<div class="overflow-x-auto"><table 
  return `<div class="bg-sky-50 border border-sky-200 rounded-2xl p-4 space-y-3"><h4 class="font-bold text-slate-800"><i class="fa-solid fa-file-import mr-1.5 text-sky-600"></i>ดึงข้อมูลจาก 43 แฟ้ม</h4><p class="text-xs text-slate-600">เลือกไฟล์ .csv/.txt โดยตั้งชื่อไฟล์ตามแฟ้ม เช่น service, ncdscreen, person, chronic, community_service, epi, anc ระบบคำนวณในเครื่องของท่านเท่านั้น ไม่ส่งข้อมูลรายบุคคลขึ้นเซิร์ฟเวอร์ เมื่อกดบันทึกจะเก็บเฉพาะตัวเลขสรุปในการ์ด ส่วน "AI ความพึงพอใจ" ระบบคำนวณอัตโนมัติจากแบบประเมินความพึงพอใจผู้ใช้บริการ ไม่ต้องกรอกเอง</p><div class="grid md:grid-cols-3 gap-2"><label class="text-xs text-slate-500">เดือนที่ต้องการสรุป<input type="month" value="${M43}" onchange="WEB.m43(this.value)" class="${IC}"></label><label class="text-xs text-slate-500 md:col-span-2">ไฟล์ 43 แฟ้ม (เลือกได้หลายไฟล์พร้อมกัน)<input type="file" multiple accept=".csv,.txt" onchange="WEB.f43(this)" class="${IC}"></label><label class="text-xs text-slate-500 md:col-span-3">รหัสบริการตรวจเยี่ยมบ้าน (ไม่บังคับ ค่าในคอลัมน์ COMSERVICE ของแฟ้ม community_service คั่นด้วย , เว้นว่าง = นับทุกรหัส) <input value="${E(C43())}" oninput="WEB.c43(this.value)" placeholder="ตรวจรหัสให้ตรงนิยามของหน่วยก่อนใช้" class="${IC}"></label></div>${window.SATSUM?SATSUM.html():''}${F43.length?`<p class="text-xs text-slate-500">ไฟล์ที่เลือก: ${E(F43.map(f=>f.name).join(', '))}</p>`:''}${L}</div>`}
 window.WEB={open(s){SEC=s;draw()},set(n,i,k,v){arr(n)[i][k]=v},
  async upImg(n,i,k,inp){const f=inp.files[0];if(!f)return;if(!/^image\//.test(f.type)){alert('กรุณาเลือกไฟล์ภาพ');inp.value='';return}
-  try{showToast('กำลังอัปโหลดรูปภาพ...');arr(n)[i][k]=await IMG.upload(f,'news-'+Date.now());draw();showToast('อัปโหลดรูปภาพแล้ว กดบันทึกและเผยแพร่เพื่อแสดงบนหน้าเว็บ')}catch(e){alert('อัปโหลดรูปไม่สำเร็จ: '+e.message);inp.value=''}},
+  try{showToast('กำลังอัปโหลดรูปภาพ...');arr(n)[i][k]=await IMG.upload(f,(n==='staff'?'staff-':'news-')+Date.now());draw();showToast('อัปโหลดรูปภาพแล้ว กดบันทึกและเผยแพร่เพื่อแสดงบนหน้าเว็บ')}catch(e){alert('อัปโหลดรูปไม่สำเร็จ: '+e.message);inp.value=''}},
  clrImg(n,i,k){arr(n)[i][k]='';draw()},ai(k,v){ST.ai[k]=v},
  add(n){arr(n).push(n==='stats'?{color:'cyan'}:n==='clinics'?{color:'aiBlue',icon:'fa-solid fa-stethoscope'}:{});draw()},
  del(n,i){if(confirm('ลบรายการนี้?')){arr(n).splice(i,1);draw()}},
