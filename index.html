@@ -3915,15 +3915,85 @@ const DAILY_LIMIT=5,LIMITED_SVC=['คลินิกทันตกรรม','�
 window.openQueueFull=function(){const m=$('queue-full-modal');if(m)m.classList.remove('hidden')};
 window.closeQueueFull=function(){const m=$('queue-full-modal');if(m)m.classList.add('hidden')};
 
+// ===== แก้ไข/ลบการจองคิว : เฉพาะผู้ใช้สิทธิ์ admin เท่านั้น =====
+const isAdm=()=>{try{return !!(window.lvIsAdmin&&window.lvIsAdmin())}catch(e){return false}};
+let PRIV={},PRIVON=false,PRIVOK=false,PRIVFAIL=false,BK=null;
+function privListen(){
+  if(PRIVON||PRIVFAIL||typeof DB==='undefined'||!isAdm())return;
+  PRIVON=true;
+  try{DB.listen('bookings_private',v=>{PRIV=v||{};PRIVOK=true},()=>{PRIVOK=false;PRIVON=false;PRIVFAIL=true})}catch(e){PRIVON=false;PRIVFAIL=true}
+}
+const privRec=(date,id)=>{const m=PRIV[date]||{};const k=Object.keys(m).find(x=>m[x]&&m[x].qid===id);return k?{pid:k,v:m[k]}:null};
+const ADM_ONLY='การแก้ไข/ลบการจองคิวทำได้เฉพาะผู้ดูแลระบบ (admin) เท่านั้น';
+window.bkClose=function(){const m=$('bk-modal');if(m)m.remove();BK=null};
+window.bkEdit=function(date,id){
+  if(!isAdm()){showToast(ADM_ONLY);return}
+  const q=(DAYS[date]||{})[id];if(!q)return;
+  const pr=privRec(date,id),pv=pr?pr.v:{},ok=PRIVOK;
+  bkClose();BK={date:date,id:id};
+  const d=document.createElement('div');d.id='bk-modal';
+  d.className='fixed inset-0 z-[100] bg-slate-900/60 flex items-center justify-center p-4';
+  d.onclick=e=>{if(e.target===d)bkClose()};
+  const cls='w-full px-4 py-2.5 rounded-xl border border-slate-200 text-sm focus:outline-none focus:border-aiBlue-500 disabled:bg-slate-100 disabled:text-slate-400';
+  const lb='block text-xs font-semibold text-slate-600 mb-1';
+  const items=(SVC_ITEMS[q.svc]||[]);
+  d.innerHTML='<div class="bg-white rounded-3xl shadow-2xl w-full max-w-md max-h-[92vh] overflow-y-auto p-6 space-y-4" role="dialog" aria-modal="true" aria-label="แก้ไขการจองคิว">'
+   +'<h3 class="text-lg font-bold text-slate-900"><i class="fa-solid fa-pen-to-square text-aiBlue-600 mr-2"></i>แก้ไขการจองคิว</h3>'
+   +'<p class="text-sm text-slate-600">คิวที่ '+esc(q.no)+' · '+esc(q.svc)+' · '+esc(thDate(date))+'</p>'
+   +(ok?'':'<p class="text-xs text-amber-700 bg-amber-50 border border-amber-200 rounded-xl p-3">อ่านข้อมูลชื่อเต็ม/เบอร์โทรจากฐานข้อมูลไม่ได้ (ตรวจ Firebase Rules ของ bookings_private) จึงแก้ได้เฉพาะรายการบริการ</p>')
+   +'<div><label class="'+lb+'" for="bk-name">ชื่อ-สกุล</label><input id="bk-name" class="'+cls+'" maxlength="80" value="'+esc(pv.name||'')+'"'+(ok?'':' disabled')+'></div>'
+   +'<div><label class="'+lb+'" for="bk-phone">เบอร์โทรศัพท์</label><input id="bk-phone" class="'+cls+'" inputmode="tel" maxlength="12" value="'+esc(pv.phone||'')+'"'+(ok?'':' disabled')+'></div>'
+   +((items.length||q.item)?'<div><label class="'+lb+'" for="bk-item">บริการที่จอง</label><input id="bk-item" class="'+cls+'" maxlength="80" list="bk-dl" value="'+esc(q.item||'')+'"><datalist id="bk-dl">'+items.map(x=>'<option value="'+esc(x)+'">').join('')+'</datalist></div>':'')
+   +'<p class="text-xs text-slate-500">หากต้องการเปลี่ยนคลินิกหรือวันที่ ให้ลบการจองนี้แล้วจองใหม่ เพื่อให้เลขคิวและโควตารายวันถูกต้อง</p>'
+   +'<div class="flex gap-2 justify-end pt-1"><button type="button" onclick="bkClose()" class="px-4 py-2 rounded-xl border border-slate-200 text-sm text-slate-600 hover:bg-slate-50">ยกเลิก</button><button type="button" onclick="bkSave()" class="px-4 py-2 rounded-xl ai-gradient text-white text-sm font-semibold shadow-sm hover:opacity-90">บันทึก</button></div></div>';
+  document.body.appendChild(d);
+};
+window.bkSave=async function(){
+  if(!isAdm()){showToast(ADM_ONLY);return}
+  if(!BK)return;
+  const date=BK.date,id=BK.id,q=(DAYS[date]||{})[id];if(!q){bkClose();return}
+  const nm=$('bk-name'),ph=$('bk-phone'),it=$('bk-item');
+  const name=nm?nm.value.trim():'',phone=ph?ph.value.replace(/[\s-]/g,''):'',item=it?it.value.trim():(q.item||'');
+  const ok=PRIVOK;
+  if(ok){
+    if(!name){showToast('กรุณากรอกชื่อ-สกุล');return}
+    if(!/^0\d{8,9}$/.test(phone)){showToast('กรุณากรอกเบอร์โทรศัพท์ให้ถูกต้อง (9-10 หลัก)');return}
+  }
+  try{
+    const base='queue/'+date+'/'+id,ops=[];
+    if(ok)ops.push(DB.set(base+'/nm',mask(name)));
+    if((q.item||'')!==item)ops.push(DB.set(base+'/item',item||null));
+    if(ok){
+      const pr=privRec(date,id);
+      if(pr)ops.push(DB.set('bookings_private/'+date+'/'+pr.pid,Object.assign({},pr.v,{qid:id,no:q.no,svc:q.svc,item:item,name:name,phone:phone})));
+      else ops.push(DB.push('bookings_private/'+date,{qid:id,no:q.no,svc:q.svc,item:item,name:name,phone:phone}));
+    }
+    await Promise.all(ops);
+    bkClose();showToast('บันทึกการแก้ไขแล้ว');
+  }catch(e){showToast('แก้ไขไม่สำเร็จ: '+(e&&e.message||e)+' (ตรวจ Firebase Rules)')}
+};
+window.bkDel=async function(date,id){
+  if(!isAdm()){showToast(ADM_ONLY);return}
+  const q=(DAYS[date]||{})[id];if(!q)return;
+  if(!confirm('ลบการจองคิวที่ '+q.no+' ('+q.svc+') '+thDate(date)+' ?\nการลบไม่สามารถกู้คืนได้'))return;
+  try{
+    const pr=privRec(date,id);
+    await DB.remove('queue/'+date+'/'+id);
+    if(pr){try{await DB.remove('bookings_private/'+date+'/'+pr.pid)}catch(e){}}
+    delete MINE[id];showToast('ลบการจองคิวแล้ว');
+  }catch(e){showToast('ลบไม่สำเร็จ: '+(e&&e.message||e)+' (ตรวจ Firebase Rules)')}
+};
+
 function draw(){
   const box=$('booking-board-body');if(!box)return;
+  const adm=isAdm();if(adm)privListen();
   const t=today(),dates=Object.keys(DAYS||{}).filter(d=>d>=t).sort().slice(0,14);
   if(!dates.length){box.innerHTML='<p class="text-sm text-slate-500 bg-slate-50 border border-dashed border-slate-200 rounded-2xl p-5 text-center">ยังไม่มีการจองคิวล่วงหน้า</p>';return}
-  box.innerHTML=dates.map(d=>{
+  box.innerHTML=(adm?'<p class="text-xs text-aiBlue-600 bg-aiBlue-50 border border-sky-100 rounded-xl px-4 py-2"><i class="fa-solid fa-user-shield mr-1"></i>โหมดผู้ดูแลระบบ (admin): แก้ไขหรือลบการจองคิวได้ที่คอลัมน์ "จัดการ"</p>':'')+dates.map(d=>{
     const rows=Object.entries(DAYS[d]||{}).map(([id,v])=>Object.assign({id},v)).sort((a,b)=>String(a.svc||'').localeCompare(String(b.svc||''),'th')||(a.no||0)-(b.no||0));
     return '<div class="border border-slate-200 rounded-2xl overflow-hidden"><div class="flex items-center justify-between bg-aiBlue-50 px-4 py-3"><h4 class="font-bold text-slate-900 text-sm sm:text-base"><i class="fa-regular fa-calendar-check text-aiBlue-600 mr-2"></i>'+esc(thDate(d))+'</h4><span class="text-xs font-semibold text-aiBlue-600 bg-white rounded-full px-3 py-1 border border-sky-100">'+rows.length+' คิว</span></div>'
-     +'<div class="overflow-x-auto"><table class="w-full text-sm"><thead><tr class="text-left text-xs text-slate-500 border-b border-slate-100"><th class="px-4 py-2 font-semibold">คิวที่</th><th class="px-4 py-2 font-semibold">บริการ</th><th class="px-4 py-2 font-semibold">ผู้จอง</th><th class="px-4 py-2 font-semibold">สถานะ</th></tr></thead><tbody>'
-     +rows.map(r=>'<tr class="border-b border-slate-50 '+(MINE[r.id]?'bg-emerald-50':'')+'"><td class="px-4 py-2.5 font-bold text-aiBlue-600">'+esc(r.no)+'</td><td class="px-4 py-2.5 text-slate-700">'+esc(r.svc)+(r.item?' <span class="text-xs text-slate-500">('+esc(r.item)+')</span>':'')+'</td><td class="px-4 py-2.5 text-slate-700">'+esc(r.nm)+(MINE[r.id]?' <span class="text-xs text-emerald-600 font-semibold">(คิวของท่าน)</span>':'')+'</td><td class="px-4 py-2.5"><span class="inline-flex items-center gap-1 text-xs font-semibold text-emerald-700 bg-emerald-100 rounded-full px-2.5 py-1"><i class="fa-solid fa-circle-check"></i> จองสำเร็จ</span></td></tr>').join('')
+     +'<div class="overflow-x-auto"><table class="w-full text-sm"><thead><tr class="text-left text-xs text-slate-500 border-b border-slate-100"><th class="px-4 py-2 font-semibold">คิวที่</th><th class="px-4 py-2 font-semibold">บริการ</th><th class="px-4 py-2 font-semibold">ผู้จอง</th><th class="px-4 py-2 font-semibold">สถานะ</th>'+(adm?'<th class="px-4 py-2 font-semibold">จัดการ</th>':'')+'</tr></thead><tbody>'
+     +rows.map(r=>'<tr class="border-b border-slate-50 '+(MINE[r.id]?'bg-emerald-50':'')+'"><td class="px-4 py-2.5 font-bold text-aiBlue-600">'+esc(r.no)+'</td><td class="px-4 py-2.5 text-slate-700">'+esc(r.svc)+(r.item?' <span class="text-xs text-slate-500">('+esc(r.item)+')</span>':'')+'</td><td class="px-4 py-2.5 text-slate-700">'+esc(r.nm)+(MINE[r.id]?' <span class="text-xs text-emerald-600 font-semibold">(คิวของท่าน)</span>':'')+'</td><td class="px-4 py-2.5"><span class="inline-flex items-center gap-1 text-xs font-semibold text-emerald-700 bg-emerald-100 rounded-full px-2.5 py-1"><i class="fa-solid fa-circle-check"></i> จองสำเร็จ</span></td>'+(adm?'<td class="px-4 py-2.5 whitespace-nowrap"><button type="button" class="text-xs font-semibold text-aiBlue-600 hover:underline mr-3" onclick="bkEdit(\''+esc(d)+'\',\''+esc(r.id)+'\')"><i class="fa-solid fa-pen-to-square mr-1"></i>แก้ไข</button><button type="button" class="text-xs font-semibold text-rose-600 hover:underline" onclick="bkDel(\''+esc(d)+'\',\''+esc(r.id)+'\')"><i class="fa-solid fa-trash mr-1"></i>ลบ</button></td>':'')+'</tr>').join('')
      +'</tbody></table></div></div>';
   }).join('')}
 
@@ -3996,6 +4066,7 @@ window.bookingSubmit=async function(){
   finally{busy=false;if(btn){btn.disabled=false;btn.classList.remove('opacity-60')}}
 };
 
+try{const _st=window.switchTab;if(typeof _st==='function'&&!_st.__bk){const w=function(){const r=_st.apply(this,arguments);try{draw()}catch(e){}return r};w.__bk=1;window.switchTab=w}}catch(e){}
 (function init(n){
   const d=$('booking-date');if(d)d.min=today();
   if(typeof DB==='undefined'){if(n<20)return setTimeout(()=>init(n+1),500);$('booking-board-body').innerHTML='<p class="text-sm text-rose-600">ไม่สามารถเชื่อมต่อฐานข้อมูลเพื่อแสดงตารางคิวได้</p>';return}
