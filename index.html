@@ -3901,7 +3901,7 @@ try{DB.listen('site',d=>{DATA=d;if(d.stats)rStats(d.stats);if(d.clinics)rClin(d.
 // ===== ระบบจองคิวล่วงหน้า : บันทึกลง Firebase + ตารางรายวัน + แจ้งเตือนกลุ่มไลน์ (ผ่าน Google Apps Script) =====
 (function(){
 // วาง URL ของ Web app (Google Apps Script) ที่นี่ เพื่อให้แจ้งเตือนเข้ากลุ่มไลน์ รพ.สต. (ดูไฟล์ line-booking-relay.gs) ถ้าเว้นว่างจะยังจองคิวและแสดงตารางได้ตามปกติ แต่ไม่ส่งไลน์
-const LINE_RELAY_URL='https://script.google.com/macros/s/AKfycbxEK0Uqm-2wYaskFKg_hL8bRX-lEZrlo9eFaFx89V_rHk5X_y-zmBIJAo7CoZ83YmN4jg/exec';
+const LINE_RELAY_URL='https://script.google.com/macros/s/AKfycbyEYMEPfoR5pGvkWjmLCa_38eYu4HFylc_29DHszH1VSIlXotxp00DqafdA37XhKbhbIA/exec';
 const $=id=>document.getElementById(id), esc=v=>escapeHTML(String(v==null?'':v));
 const WD=['อาทิตย์','จันทร์','อังคาร','พุธ','พฤหัสบดี','ศุกร์','เสาร์'];
 const MM=['ม.ค.','ก.พ.','มี.ค.','เม.ย.','พ.ค.','มิ.ย.','ก.ค.','ส.ค.','ก.ย.','ต.ค.','พ.ย.','ธ.ค.'];
